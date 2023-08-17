@@ -27,7 +27,11 @@
 .App-link {
   color: #61dafb;
 }
-
+.ProseMirror{
+  width: 100%;
+  height: 250px;
+  overflow: auto;
+}
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
