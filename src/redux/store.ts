@@ -4,11 +4,13 @@ import thunkMiddleware from 'redux-thunk'
 import filterReducer from "./filterReducer";
 import concertReducer from "./concertReducer";
 import appReducer from "./appReducer";
+import promocodesReducer from "./promocodesReducer";
 export const rootReducer = combineReducers({
     concerts: concertsReducer,
     filter: filterReducer,
     concert: concertReducer,
-    app: appReducer
+    app: appReducer,
+    promocode: promocodesReducer
 })
 export const store = configureStore({
     reducer: rootReducer,
