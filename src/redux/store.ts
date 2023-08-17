@@ -1,8 +1,14 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import concertsReducer from "./concertsReducer";
 import thunkMiddleware from 'redux-thunk'
+import filterReducer from "./filterReducer";
+import concertReducer from "./concertReducer";
+import appReducer from "./appReducer";
 export const rootReducer = combineReducers({
-    concerts: concertsReducer
+    concerts: concertsReducer,
+    filter: filterReducer,
+    concert: concertReducer,
+    app: appReducer
 })
 export const store = configureStore({
     reducer: rootReducer,
