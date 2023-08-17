@@ -30,9 +30,23 @@ export const concertAPI = {
     }
 }
 export const promocodeAPI = {
-    fetchPromocodes(query: string = '', page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
-        return axiosInstance.get<ConcertsResponseType>(`concerts/?query=${query}&count=${count}&page=${page}`)
+    fetchPromocodes(page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
+        return axiosInstance.get<ResponseType<PromocodesType[]>>(`promocodes/?count=${count}&page=${page}`)
     },
+}
+
+
+
+type ResponseType<T> = {
+    data: T
+    total: number
+}
+export type PromocodesType = {
+    id: number
+    title: string
+    concertId: number
+    discount: number
+    date: string
 }
 export type ChangeResponseType = {
     id: number
@@ -56,14 +70,7 @@ export type ConcertAddType = {
     tickets: number
 
 }
-export type ConcertsResponseType = {
-    data: ConcertsType[]
-    total: number
-}
-type ResponseType<T> = {
-    data: T
-    total: number
-}
+
 export type ConcertsType = {
     id: number
     title: string
