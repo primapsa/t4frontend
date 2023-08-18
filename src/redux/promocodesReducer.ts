@@ -43,6 +43,20 @@ export const fetchPromocodes = createAsyncThunk('promocodes/fetch', async (param
         thunkAPI.dispatch(addAppStatusNotification(notification))
     }
 })
+export const deletePromocode = createAsyncThunk('promocodes/delete', async (id: number, thunkAPI) => {
+    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+
+    try {
+        const deleted = await promocodeAPI.deletePromocode(id)
+        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+        const notification = {status: STATUS.SUCCESS, message: MESSAGE.REMOVED}
+        thunkAPI.dispatch(addAppStatusNotification(notification))
+        return {id}
+    } catch (error) {
+        const notification = {status: STATUS.ERROR, message: (error as Error).message}
+        thunkAPI.dispatch(addAppStatusNotification(notification))
+    }
+})
 export const promocodeSlice = createSlice({
     name: 'promocodes',
     initialState,
@@ -60,6 +74,9 @@ export const promocodeSlice = createSlice({
             .addCase(fetchPromocodes.fulfilled, (state, action) => {
                 state.list = action.payload?.data as PromocodesType[]
                 state.total = action.payload?.total as number
+            })
+            .addCase(deletePromocode.fulfilled, (state, action) => {
+                state.list = state.list.filter(({id}) => id !== (action.payload?.id) as number )
             })
     }
 })
