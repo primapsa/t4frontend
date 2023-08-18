@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 import {REST_API} from "../const/restApi";
 import {PAGE} from "../const/page";
 
@@ -33,6 +33,9 @@ export const promocodeAPI = {
     fetchPromocodes(page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
         return axiosInstance.get<ResponseType<PromocodesType[]>>(`promocodes/?count=${count}&page=${page}`)
     },
+    deletePromocode(id: number) {
+        return axiosInstance.delete<AxiosResponse>(`promocodes/${id}`)
+    }
 }
 
 
