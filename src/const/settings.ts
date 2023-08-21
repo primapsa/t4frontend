@@ -8,3 +8,9 @@ export const TICKETS = {
         MAX: 1000000
     }
 }
+export const PROMOCODES = {
+    DISCOUNT: {
+        MIN: 0,
+        MAX: 100
+    }
+}

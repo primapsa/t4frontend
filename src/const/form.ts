@@ -1,6 +1,7 @@
 import * as yup from 'yup';
-import {TICKETS} from "./settings";
-const validation = yup.object().shape({
+import {TICKETS, PROMOCODES} from "./settings";
+
+const concertsValidation = yup.object().shape({
     title: yup.string().min(3, 'Минимум 3 символа').max(100, 'Максимум 100 символов'),
     date: yup.date().required('Выберите дату и время'),
     typeId: yup.string().required('Выберите тип'),
@@ -12,24 +13,36 @@ const validation = yup.object().shape({
     poster: yup.mixed().required('Выберите постер'),
     desc: yup.string().min(3, 'Минимум 3 символа').max(500, 'Максимум 500 символов'),
 })
+const promocodesValidation = yup.object().shape({
+    title: yup.string().min(3, 'Минимум 3 символа').max(100, 'Максимум 100 символов'),
+    discount: yup.number().min(PROMOCODES.DISCOUNT.MIN, 'Недопустимое значение').max(PROMOCODES.DISCOUNT.MAX, 'Превышено макс. значение '),
+    date: yup.date().required('Выберите дату и время'),
+})
 export const FORM = {
- INIT: {
-     title: '',
-     date: '',
-     typeId: '',
-     tickets: 0,
-     price: 0,
-     address: '',
-     latitude: '',
-     longitude: '',
-     singerVoiceId: '',
-     concertName: '',
-     composer: '',
-     wayHint: '',
-     headliner: '',
-     censor: '',
-     poster: ''
- },
+    INIT: {
+        CONCERTS: {
+            title: '',
+            date: '',
+            typeId: '',
+            tickets: 0,
+            price: 0,
+            address: '',
+            latitude: '',
+            longitude: '',
+            singerVoiceId: '',
+            concertName: '',
+            composer: '',
+            wayHint: '',
+            headliner: '',
+            censor: '',
+            poster: ''
+        },
+        PROMOCODES: {
+            title: '',
+            date: '',
+            discount: 0
+        }
+    },
     RESET: {
         singerVoiceId: '',
         concertName: '',
@@ -38,5 +51,10 @@ export const FORM = {
         headliner: '',
         censor: ''
     },
-    VALIDATION: validation
+    VALIDATION: {
+        CONCERTS: concertsValidation,
+        PROMOCODES: promocodesValidation
+    }
 }
+
+export type ConcertsFormType = typeof FORM.INIT.CONCERTS
