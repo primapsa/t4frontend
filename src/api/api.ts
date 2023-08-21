@@ -1,6 +1,7 @@
 import axios, {AxiosResponse} from "axios";
 import {REST_API} from "../const/restApi";
 import {PAGE} from "../const/page";
+import {makeQuery} from "../utils/utils";
 
 const axiosInstance = axios.create({
     baseURL: REST_API.BASE_URL,
@@ -10,8 +11,9 @@ const axiosInstance = axios.create({
 })
 
 export const concertAPI = {
-    fetchConcerts(query: string = '', page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
-        return axiosInstance.get<ResponseType<ConcertsType[]>>(`concerts/?query=${query}&count=${count}&page=${page}`)
+    fetchConcerts(param: {query: string, type: number}, page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
+
+        return axiosInstance.get<ResponseType<ConcertsType[]>>(`concerts/${makeQuery(param, page, count)}`)
     },
     fetchConcertType() {
         return axiosInstance.get<ConcertTypesType[]>('type/')
@@ -35,7 +37,14 @@ export const promocodeAPI = {
     },
     deletePromocode(id: number) {
         return axiosInstance.delete<AxiosResponse>(`promocodes/${id}`)
+    },
+    addPromocode(promocode: PromocodeAddType) {
+        return axiosInstance.post<PromocodesType>('promocodes/', promocode)
+    },
+    editPromocode(promocode:PromocodesType) {
+        return axiosInstance.put<PromocodesType>(`promocodes/${promocode.id}`, promocode)
     }
+
 }
 
 
@@ -44,10 +53,10 @@ type ResponseType<T> = {
     data: T
     total: number
 }
+export type PromocodeAddType = Omit<PromocodesType, 'id' >
 export type PromocodesType = {
     id: number
     title: string
-    concertId: number
     discount: number
     date: string
 }
@@ -87,9 +96,13 @@ export type ConcertsType = {
     latitude: string
     longitude: string
     type: string
+    typeId_id: number
     voice: string
     price: number
     tickets: number
+    address: string
+    singerVoiceId_id: number
+    poster: string
 }
 export type ConcertTypesType = {
     value: string
