@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 })
 
 export const concertAPI = {
-    fetchConcerts(param: {query: string, type: number}, page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
+    fetchConcerts(param: { query: string, type: number, ids: string }, page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
 
         return axiosInstance.get<ResponseType<ConcertsType[]>>(`concerts/${makeQuery(param, page, count)}`)
     },
@@ -41,19 +41,47 @@ export const promocodeAPI = {
     addPromocode(promocode: PromocodeAddType) {
         return axiosInstance.post<PromocodesType>('promocodes/', promocode)
     },
-    editPromocode(promocode:PromocodesType) {
+    editPromocode(promocode: PromocodesType) {
         return axiosInstance.put<PromocodesType>(`promocodes/${promocode.id}`, promocode)
     }
-
 }
-
+export const cartAPI = {
+    fetchUserCart(userId: number) {
+        return axiosInstance.get<CartConcertsType[]>(`cart/user/${userId}`)
+    },
+    addCart(cart: CartAddType) {
+        return axiosInstance.post<CartType>('cart/', cart)
+    },
+    deleteCart(id: number) {
+        return axiosInstance.delete(`cart/${id}`)
+    }
+}
 
 
 type ResponseType<T> = {
     data: T
     total: number
 }
-export type PromocodeAddType = Omit<PromocodesType, 'id' >
+export type PromocodeAddType = Omit<PromocodesType, 'id'>
+//export type CartAddType = Partial<Pick<Omit<CartType, 'id'>, 'promocodeId' | 'count'>>
+export type CartAddType = Omit<CartType, 'id'>
+export type CartType = {
+    id: number
+    userId: number
+    concertId: number
+    count: number
+    promocodeId?: number | null
+    price: number
+}
+export type CartConcertsType = {
+    count: number
+    discount: number | null
+    id: number
+    poster: string
+    price: number
+    tickets: number
+    title: string
+}
 export type PromocodesType = {
     id: number
     title: string
