@@ -1,13 +1,13 @@
 import React from 'react';
 import { ActionIcon, Flex } from '@mantine/core';
 import { IconTrash, IconEdit } from '@tabler/icons-react';
-const ActionBar = ({deleteItem, editItem, id}: ActionBarPropsType) => {
-    const onDeleteHandler = () => deleteItem(id)
-    const onEditHandler = () => editItem(id)
+const ActionBar = ({del, edit, id}: ActionBarPropsType) => {
+    const onDeleteHandler = del ? () => del(id) : null
+    const onEditHandler = edit ? () => edit(id) : null
     return (
         <Flex direction={'column'}>
-           <ActionIcon variant="outline" title="delete" color={'red'} onClick={onDeleteHandler}><IconTrash/></ActionIcon>
-           <ActionIcon variant="outline" title="edit" color={'blue'} onClick={onEditHandler}><IconEdit/></ActionIcon>
+            {onDeleteHandler && <ActionIcon variant="outline" title="delete" color={'red'} onClick={onDeleteHandler}><IconTrash/></ActionIcon>}
+            {onEditHandler && <ActionIcon variant="outline" title="edit" color={'blue'} onClick={onEditHandler}><IconEdit/></ActionIcon>}
         </Flex>
     );
 };
@@ -15,7 +15,7 @@ const ActionBar = ({deleteItem, editItem, id}: ActionBarPropsType) => {
 export default ActionBar;
 
 type ActionBarPropsType = {
-    deleteItem: (id: number) => void
-    editItem: (id: number) => void
+    del?: (id: number) => void
+    edit?: (id: number) => void
     id: number
 }
