@@ -54,6 +54,19 @@ export const cartAPI = {
     },
     deleteCart(id: number) {
         return axiosInstance.delete(`cart/${id}`)
+    },
+    validateCartPomocode(param: { promocode: string, id: number }) {
+        return axiosInstance.post<ValidatePromocodeType>(`promocode/`, param)
+    }
+}
+export const paypalAPI = {
+    createOrder(ids: number[]) {
+        return axiosInstance.post('paypal/create/', {ids})
+    }
+}
+export const authAPI = {
+    login(credentials: CredentialsType) {
+        return axiosInstance.post<AuthResponseType>('user/login/', credentials)
     }
 }
 
@@ -65,6 +78,10 @@ type ResponseType<T> = {
 export type PromocodeAddType = Omit<PromocodesType, 'id'>
 //export type CartAddType = Partial<Pick<Omit<CartType, 'id'>, 'promocodeId' | 'count'>>
 export type CartAddType = Omit<CartType, 'id'>
+export type AuthResponseType = {
+    refresh: string
+    access: string
+}
 export type CartType = {
     id: number
     userId: number
@@ -72,6 +89,11 @@ export type CartType = {
     count: number
     promocodeId?: number | null
     price: number
+}
+export type CredentialsType = {
+    username: string
+    password: string
+    email: string
 }
 export type CartConcertsType = {
     count: number
@@ -81,6 +103,7 @@ export type CartConcertsType = {
     price: number
     tickets: number
     title: string
+    promocode: string | null
 }
 export type PromocodesType = {
     id: number
@@ -90,6 +113,11 @@ export type PromocodesType = {
 }
 export type ChangeResponseType = {
     id: number
+}
+export type ValidatePromocodeType = {
+    cartId: number
+    title: string
+    discount: number
 }
 export type ConcertAddType = {
     title: string
