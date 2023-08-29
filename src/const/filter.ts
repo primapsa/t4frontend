@@ -1,4 +1,5 @@
 export const FILTER = {
     QUERY: '',
-    TYPE: 0
+    TYPE: 0,
+    IDS: ''
 }

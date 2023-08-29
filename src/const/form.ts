@@ -41,6 +41,10 @@ export const FORM = {
             title: '',
             date: '',
             discount: 0
+        },
+        AUTH: {
+            email: '',
+            password: ''
         }
     },
     RESET: {
