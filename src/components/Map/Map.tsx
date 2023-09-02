@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {GoogleMap, MarkerF, useLoadScript} from "@react-google-maps/api";
-import {Loader} from '@mantine/core';
+import {Flex, Loader} from '@mantine/core';
 
 const Map = ({coordinates}: MapPropsType) => {
 
@@ -8,26 +8,30 @@ const Map = ({coordinates}: MapPropsType) => {
         googleMapsApiKey: '',
     });
     //AIzaSyDPif_2RLdimRxXRC3LwWxgnpwiK1Y-5Vc
-    const center = coordinates[0]
-    const places = coordinates.map((p, i) => <MarkerF position={p} key={i}  title={p.title} />)
-    if (!isLoaded) {
-        return <Loader/>
-    }
+    const center = useMemo(() => coordinates[0], [coordinates])
+    const places = useMemo(() =>
+        coordinates.map((p, i) =>
+            <MarkerF position={p} key={i} title={p.title}/>), [coordinates])
+
     return (
-        <div style={{width: '1000px', height: '500px'}}>
-            {isLoaded &&
+        <Flex align={'center'} h={'300px'} w={'100%'} justify={'center'}>
+            {isLoaded ?
                 <GoogleMap
                     mapContainerClassName="map-container"
                     mapContainerStyle={{width: '100%', height: '100%'}}
                     center={center}
-                    zoom={10}
-                >
+                    zoom={10}>
                     {places}
                 </GoogleMap>
+                :
+                <Loader/>
             }
-        </div>
+        </Flex>
     );
 };
+export default React.memo(Map)
+
+
 type MapPropsType = {
     coordinates: Array<{
         lat: number
@@ -35,4 +39,3 @@ type MapPropsType = {
         title: string
     }>
 }
-export default Map
