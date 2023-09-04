@@ -1,36 +1,50 @@
 import React from 'react';
-import {Paper, Title, Text, Flex} from '@mantine/core';
-import {NavLink, Link} from "react-router-dom";
-import {LINKS} from "../../const/routes";
+import {Flex, Image, Paper, Text} from '@mantine/core';
+import {useStyles} from "./styles";
+import {MEDIA} from "../../const/media";
 
 const Item = (props: ItemPropsType) => {
+
+    const {classes} = useStyles()
+
     return (
-            <Paper p={'sm'} mt={'sm'}>
-                <Flex>
-                    <div>
-                        <Title order={4}>{props.title}</Title>
-                        <Text fw={500}>{props.type}</Text>
-                        <Text>Дата: {props.date}</Text>
-                    </div>
-                    <div>
-                        <Text>Билетов: {props.tickets}</Text>
-                        <Text>Цена билета: {props.price}</Text>
-                        <Text>Место: {`${props.latitude} ${props.longitude}`}</Text>
-                    </div>
-                    <div>
-                        {props.voice && <Text>Тип голоса: {props.voice}</Text>}
-                        {props.concertName && <Text>Название концерта: {props.concertName}</Text>}
-                        {props.composer && <Text>Композитор: {props.composer}</Text>}
-                        {props.censor && <Text>Ценз: {props.censor}</Text>}
-                        {props.wayHint && <Text>Ценз: {props.wayHint}</Text>}
-                        {props.headliner && <Text>Ценз: {props.headliner}</Text>}
-                    </div>
+        <Paper className={classes.paper}>
+            <Flex>
+                <Image
+                    className={classes.image}
+                    src={`${MEDIA.URL}${props.poster}`}
+                    width={100} height={100}
+                    withPlaceholder
+                    alt={'poster'}
+                />
+                <Flex className={classes.concert}>
+                    <Text className={classes.concert__title}>{props.title}</Text>
+                    <Flex className={classes.concert__info}>
+                        <Flex className={classes.concert__flex}>
+                            <Text>{props.type}</Text>
+                            <Text>{props.date}</Text>
+                        </Flex>
+                        <Flex className={classes.concert__tickets}>
+                            <Text>Билетов: {props.ticket}</Text>
+                            <Text>Стоимость: {props.price} USD</Text>
+                            <Text>Место: {props.address}</Text>
+                        </Flex>
+                        <Flex className={classes.concert__flex}>
+                            {props.voice && <Text>Тип голоса: {props.voice}</Text>}
+                            {props.concertName && <Text>Название концерта: {props.concertName}</Text>}
+                            {props.composer && <Text>Композитор: {props.composer}</Text>}
+                            {props.censor && <Text>Ценз: {props.censor}</Text>}
+                            {props.wayHint && <Text>Проезд: {props.wayHint}</Text>}
+                            {props.headliner && <Text>Хедлайнер: {props.headliner}</Text>}
+                        </Flex>
+                    </Flex>
                 </Flex>
-            </Paper>
+            </Flex>
+        </Paper>
     );
 };
 
-export default Item;
+export default React.memo(Item);
 
 type ItemPropsType = {
     id: number
@@ -41,10 +55,10 @@ type ItemPropsType = {
     headliner: null | string
     censor: null | string
     date: string
-    latitude: string
-    longitude: string
+    address: string
     type: string
     voice: string
     price: number
-    tickets: number
+    ticket: number
+    poster: string
 }
