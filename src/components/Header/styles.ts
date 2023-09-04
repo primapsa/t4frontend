@@ -2,7 +2,16 @@ import {createStyles, rem} from "@mantine/core";
 
 export const useStyles = createStyles((theme) => ({
     header: {
-        border: 0
+        border: 0,
+        [theme.fn.smallerThan('xs')]: {
+           padding: '0 10px'
+        }
+    },
+    text: {
+      fontSize: '15px',
+        [theme.fn.smallerThan('xs')]: {
+            display: 'none'
+        }
     },
     container: {
         display: 'flex',
@@ -13,6 +22,7 @@ export const useStyles = createStyles((theme) => ({
         margin: `0px auto`,
         padding: 0,
         border: 0,
+        justifyContent: 'space-between',
         [theme.fn.smallerThan('lg')]: {
             maxWidth: rem(950),
         },
@@ -32,34 +42,26 @@ export const useStyles = createStyles((theme) => ({
 
     links: {
         display: 'flex',
-        [theme.fn.smallerThan('lg')]: {
-            marginLeft: rem(200)
-        },
-        [theme.fn.smallerThan('md')]: {
-            marginLeft: rem(150)
-        },
-        [theme.fn.smallerThan('sm')]: {
-            marginLeft: rem(50)
-        },
-        [theme.fn.smallerThan('xs')]: {
-            marginLeft: rem(10)
-        },
-        marginLeft: rem(280),
-
     },
     home: {
         display: 'flex',
         textDecoration: 'none'
     },
+    button: {
+        maxWidth: '150px',
+        cursor: "pointer",
+        marginLeft: '20px',
+        '&:hover': {
+            color: 'red'}
+    },
+
     linkHeader: {
         marginLeft: rem(12),
         color: '#232134',
-        fontFamily: 'Poppins, sans-serif',
         fontWeight: 600,
         fontSize: rem(24),
         fontStyle: 'normal',
-        lineHeight: rem(36),
-        letterSpacing: '-0.02em',
+
         [theme.fn.smallerThan('xs')]: {
             display: 'none'
         }
@@ -72,7 +74,7 @@ export const useStyles = createStyles((theme) => ({
         fontSize: rem(16),
         fontWeight: 500,
         lineHeight: rem(20),
-        fontStyle: 'normal',
+
         '&:last-child': {
             marginRight: 0
         },

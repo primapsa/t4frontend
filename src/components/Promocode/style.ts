@@ -1,24 +1,19 @@
 import {createStyles} from "@mantine/core";
 
 export const useStyles = createStyles((theme) => ({
-    wrapper: {
-        marginTop: '10px',
-        alignItems: 'center',
-        width: '100%'
-    },
-    badge: {
-       justifyContent: "flex-end"
-    },
-    input: {
-        margin: '0 5px',
-        minHeight: '15px',
-        height: '22px'
-    },
-    button: {
-        marginLeft: '15px'
-    },
-    icon: {
-        height: '15px'
-    },
 
-}))
+    promocode: {
+        padding: '10px',
+        width: '400px',
+        [theme.fn.smallerThan('500')]: {
+            width: '250px'
+        },
+    },
+    promocode__title: {
+        fontWeight: 'bolder'
+    },
+    promocode__inner: {
+        justifyContent: "space-between",
+        marginBottom: '20px'
+    },
+}));
