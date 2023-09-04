@@ -1,12 +1,13 @@
 import axios, {AxiosResponse} from "axios";
 import {REST_API} from "../const/restApi";
 import {PAGE} from "../const/page";
-import {makeQuery} from "../utils/utils";
+import {getAuthToken, makeQuery} from "../utils/utils";
+import {boolean, string} from "yup";
 
 const axiosInstance = axios.create({
     baseURL: REST_API.BASE_URL,
     headers: {
-        'Authorization': `Token `,
+        'Authorization': getAuthToken(),
     }
 })
 
@@ -49,6 +50,9 @@ export const cartAPI = {
     fetchUserCart(userId: number) {
         return axiosInstance.get<CartConcertsType[]>(`cart/user/${userId}`)
     },
+    deleteUserCart(userId: number) {
+        return axiosInstance.delete(`cart/user/${userId}`)
+    },
     addCart(cart: CartAddType) {
         return axiosInstance.post<CartType>('cart/', cart)
     },
@@ -57,16 +61,31 @@ export const cartAPI = {
     },
     validateCartPomocode(param: { promocode: string, id: number }) {
         return axiosInstance.post<ValidatePromocodeType>(`promocode/`, param)
+    },
+    updateCart(id: number, cart: Partial<CartType>) {
+        return axiosInstance.patch<PatchCartType>(`cart/${id}`, cart)
     }
 }
 export const paypalAPI = {
     createOrder(ids: number[]) {
         return axiosInstance.post('paypal/create/', {ids})
+    },
+    processPayment(){
+
     }
 }
 export const authAPI = {
     login(credentials: CredentialsType) {
         return axiosInstance.post<AuthResponseType>('user/login/', credentials)
+    },
+    me() {
+        return axiosInstance.get<AuthMeResponse>('user/me/')
+    },
+    socialLogin(jwt: string) {
+        return axiosInstance.post<AuthResponseType>('user/login/social/', {jwt})
+    },
+    register(register: AuthRequestRegType) {
+        return axiosInstance.post<AuthRegisterType>('user/register/', register)
     }
 }
 
@@ -76,11 +95,24 @@ type ResponseType<T> = {
     total: number
 }
 export type PromocodeAddType = Omit<PromocodesType, 'id'>
+export type AuthRequestRegType = Omit<AuthRegisterType, 'id'>
 //export type CartAddType = Partial<Pick<Omit<CartType, 'id'>, 'promocodeId' | 'count'>>
 export type CartAddType = Omit<CartType, 'id'>
 export type AuthResponseType = {
     refresh: string
     access: string
+}
+type PatchCartType = {
+    id: number
+    data: Partial<CartType>
+}
+export type PayPalResponseTYpe = {
+    billingToken: string | null
+    facilitatorAccessToken: string
+    orderID: string
+    payerID: string
+    paymentID: string
+    paymentSource?: string
 }
 export type CartType = {
     id: number
@@ -89,6 +121,23 @@ export type CartType = {
     count: number
     promocodeId?: number | null
     price: number
+    statusId?: number
+}
+export type AuthRegisterType = {
+    id: number
+    username: string
+    first_name?: string
+    last_name?: string
+    email: string
+}
+export type AuthMeResponse = {
+    code: number
+    data?: AuthMeType
+}
+export type AuthMeType = {
+    email: string
+    is_staff: boolean
+    id: number
 }
 export type CredentialsType = {
     username: string
@@ -155,10 +204,11 @@ export type ConcertsType = {
     typeId_id: number
     voice: string
     price: number
-    tickets: number
+    ticket: number
     address: string
     singerVoiceId_id: number
     poster: string
+    desc: string
 }
 export type ConcertTypesType = {
     value: string
