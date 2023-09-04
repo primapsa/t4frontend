@@ -3,22 +3,30 @@ import {STATUS} from "../const/statuses";
 
 const initialState: AppStateType = {
     status: STATUS.IDLE,
-    notification: []
+    notification: [],
+    popup: null
 }
+
 export const appSlice = createSlice({
     name: 'app',
     initialState,
     reducers: {
-        addAppStatus(state, action: ActionType<AppStatus> ) {
+        addAppStatus(state, action: ActionType<AppStatus>) {
             state.status = action.payload
 
         },
-        addAppStatusNotification(state, action: ActionType<AppNotificationType>){
+        addAppStatusNotification(state, action: ActionType<AppNotificationType>) {
             state.status = action.payload.status
             state.notification.push(action.payload)
         },
         clearAppNotification(state) {
             state.notification = []
+        },
+        addPopupContent(state, action){
+            state.popup = action.payload
+        },
+        clearPopup(state) {
+            state.popup = null
         }
         // setPage(state, action) {
         //     state.page = action.payload
@@ -26,7 +34,7 @@ export const appSlice = createSlice({
     },
     extraReducers: (builder) => {
         // builder
-        //     .addCase(fetchConcerts.fulfilled, (state, action) => {
+        //     .addCase(registerUser.fulfilled, (state, action) => {
         //         state.list = action.payload?.data as ConcertsType[]
         //         state.total = action.payload?.total as number
         //     })
@@ -34,7 +42,7 @@ export const appSlice = createSlice({
 
     }
 })
-export const {addAppStatus,addAppStatusNotification, clearAppNotification} = appSlice.actions
+export const {addAppStatus, addAppStatusNotification, clearAppNotification, addPopupContent, clearPopup} = appSlice.actions
 export default appSlice.reducer
 export type ActionType<T> = {
     payload: T
@@ -44,7 +52,12 @@ export type AppNotificationType = {
     status: AppStatus
     message: string
 }
+export type PopupType = {
+    title: string
+    message: string
+}
 export type AppStateType = {
-   status: AppStatus
-   notification: AppNotificationType[]
+    status: AppStatus
+    notification: AppNotificationType[]
+    popup: PopupType | null
 }
