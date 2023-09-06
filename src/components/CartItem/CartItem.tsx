@@ -2,12 +2,15 @@ import {Flex, Image, Paper, Text} from "@mantine/core";
 import {MEDIA} from "../../const/media";
 import NumberedCounter from "../NumberedCounter/NumberedCounter";
 import ActionBar from "../ActionBar/ActionBar";
-import Promocode from "../Promocode/Promocode";
+import Promocode from "../PromocodeBar/PromocodeBar";
 import React from "react";
 import {useStyles} from './styles'
+import {discountFormat} from "../../utils/utils";
 
 const CartItem = (props: CartItemPropsType) => {
+
     const {classes} = useStyles()
+
     return (
         <Paper className={classes.paper}>
             <Flex className={classes.wrapper}>
@@ -24,7 +27,7 @@ const CartItem = (props: CartItemPropsType) => {
                         />
                         <Flex className={classes.control__price}>
                             <Text td={!!props.discount ? 'line-through' : ''}>{`${props.price} USD`}</Text>
-                            {!!props.discount && <Text color={'red'}>{`${props.discount} USD`}</Text>}
+                            {!!props.discount && <Text color={'red'}>{`${discountFormat(props.discount)} USD`}</Text>}
                         </Flex>
                     </Flex>
                 </Flex>
