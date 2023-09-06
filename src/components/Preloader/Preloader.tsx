@@ -1,21 +1,21 @@
 import React from 'react';
-import {Center, Loader, Flex} from '@mantine/core';
+import {Flex, Loader} from '@mantine/core';
 
-const Preloader = ({isLoaded = true}: PleloaderType) => {
+const PreloaderExt = ({isLoaded = true}: PleloaderType) => {
     return (
         <>
             {
                 isLoaded &&
-                   <Flex style={{height: '80vh'}} justify={'center'} align={'center'}>
-                       <Loader variant="dots"/>
-                   </Flex>
-
+                <Flex style={{height: '80vh'}} justify={'center'} align={'center'}>
+                    <Loader variant="dots"/>
+                </Flex>
             }
         </>
     )
 
 };
+export default React.memo(PreloaderExt);
+
 type PleloaderType = {
     isLoaded?: boolean
 }
-export default React.memo(Preloader);
