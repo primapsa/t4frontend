@@ -5,16 +5,16 @@ import {Flex, Loader} from '@mantine/core';
 const Map = ({coordinates}: MapPropsType) => {
 
     const {isLoaded} = useLoadScript({
-        googleMapsApiKey: '',
+        googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
     });
-    //AIzaSyDPif_2RLdimRxXRC3LwWxgnpwiK1Y-5Vc
+
     const center = useMemo(() => coordinates[0], [coordinates])
     const places = useMemo(() =>
         coordinates.map((p, i) =>
             <MarkerF position={p} key={i} title={p.title}/>), [coordinates])
 
     return (
-        <Flex align={'center'} h={'300px'} w={'100%'} justify={'center'}>
+        <Flex align={'center'} h={'300px'} w={'100%'} justify={'center'} m={'30px 0'}>
             {isLoaded ?
                 <GoogleMap
                     mapContainerClassName="map-container"
