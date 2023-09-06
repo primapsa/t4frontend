@@ -1,42 +1,44 @@
-import React from "react";
+import React, {useCallback} from "react";
 import {Button, Card, Flex, Image, Text} from "@mantine/core";
 import {MEDIA} from "../../const/media";
 import {IconClockHour3, IconMapPinFilled, IconWallet} from "@tabler/icons-react";
 import {dateFormat} from "../../utils/utils";
+import {useStyles} from "./styles";
 
 const Ticket = ({id, source, title, address, date, price, onAddToCart}: TicketPropsType) => {
 
-    const onclickHandler = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const {classes} = useStyles()
+    const onclickHandler = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         onAddToCart(id)
-    }
+    },[id, onAddToCart])
+
     const dateTime = dateFormat(date)
 
     return (
-        <Card maw={'300px'} p={'10px'} h={'100%'}>
-            <Image
+        <Card className={classes.wrapper}>
+            <Image className={classes.img}
                 src={`${MEDIA.URL}${source}`}
-                width={280} height={380}
                 withPlaceholder
                 alt={'poster'}
                 fit={'fill'}/>
-            <Text fw={700} align={"center"} m={'5px 0'} h={'50px'}>{title}</Text>
-            <Flex mb={'10px'}>
+            <Text className={classes.title}>{title}</Text>
+            <Flex className={classes.address}>
                 <IconMapPinFilled/>
-                <Text fw={500} ml={'10px'}>{address}</Text>
+                <Text className={classes.address__text}>{address}</Text>
             </Flex>
             <Flex>
                 <IconClockHour3/>
-                <Flex direction={"column"} ml={'10px'} >
-                    <Text fw={500}>{dateTime.date} </Text>
-                    <Text fw={500}>{dateTime.time} </Text>
+                <Flex className={classes.date}>
+                    <Text className={classes.date__text}>{dateTime.date} </Text>
+                    <Text className={classes.date__text}>{dateTime.time} </Text>
                 </Flex>
             </Flex>
-            <Flex m={'10px 0'}>
+            <Flex className={classes.wallet}>
                 <IconWallet/>
-                <Text fw={500} ml={'10px'}>от {price} USD</Text>
+                <Text  className={classes.address}>от {price} USD</Text>
             </Flex>
-            <Flex justify={"right"}>
+            <Flex className={classes.buy}>
                 <Button onClick={onclickHandler} variant={"outline"}>Купить</Button>
             </Flex>
         </Card>
