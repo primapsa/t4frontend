@@ -1,6 +1,7 @@
 import {Flex, Paper, Text} from "@mantine/core";
 import React from "react";
 import {useStyles} from "./style";
+import {dateFormatDelimeter} from "../../utils/utils";
 
 const Promocode = ({title, discount, date}: PromocodeItemType) => {
 
@@ -12,7 +13,7 @@ const Promocode = ({title, discount, date}: PromocodeItemType) => {
                 <Text className={classes.promocode__title}>{title}</Text>
                 <Text>скидка {discount}%</Text>
             </Flex>
-            <Text>до {date}</Text>
+            <Text>до {dateFormatDelimeter(date)}</Text>
         </Paper>
     )
 }

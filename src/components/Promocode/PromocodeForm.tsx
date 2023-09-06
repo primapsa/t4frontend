@@ -9,23 +9,25 @@ import {DateTimePicker} from "@mantine/dates";
 import {IconCalendarTime} from "@tabler/icons-react";
 import React from "react";
 import {PromocodesType} from "../../api/api";
+import {dateFormatDelimeter} from "../../utils/utils";
 
-const PromocodeForm = ( { initValues } : PromocodeItemTypeForm) => {
+const PromocodeForm = ({initValues}: PromocodeItemTypeForm) => {
 
     const init = initValues ? {...initValues, date: new Date(initValues.date)} : initValues
     const dispatch = useDispatch()
     const form = useForm({
         validateInputOnBlur: true,
-        initialValues:  init || FORM.INIT.PROMOCODES,
+        initialValues: init || FORM.INIT.PROMOCODES,
         validate: yupResolver(FORM.VALIDATION.PROMOCODES),
     });
     const buttonDisable = !form.isValid()
     const buttonName = init ? 'Изменить' : 'Добавить'
-    const currentDate =  new Date()
+    const currentDate = new Date()
     const executePromocode = init ? editPromocode : addPromocode
 
     const formHandler = form.onSubmit((fields) => {
-        const promocode = {...fields, date: new Date(fields.date).toISOString(), id: init?.id || 0}
+
+        const promocode = {...fields, date: dateFormatDelimeter(new Date(fields.date).toISOString()), id: init?.id || 0}
         dispatch<AppDispatchType>(executePromocode(promocode))
         form.reset()
     })
@@ -50,6 +52,7 @@ const PromocodeForm = ( { initValues } : PromocodeItemTypeForm) => {
                     valueFormat="YYYY-MM-DD HH:MM"
                     placeholder="Выберите"
                     clearable={true}
+                    locale={'ru'}
                     minDate={currentDate}
                     dropdownType={'modal'}
                     icon={<IconCalendarTime size={rem(16)}/>}
@@ -69,4 +72,4 @@ export default React.memo(PromocodeForm)
 type PromocodeItemTypeForm = {
     initValues?: PromocodeInitValueType
 }
-export type PromocodeInitValueType = undefined |  PromocodesType
+export type PromocodeInitValueType = undefined | PromocodesType
