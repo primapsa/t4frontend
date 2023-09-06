@@ -1,15 +1,13 @@
 import axios, {AxiosResponse} from "axios";
 import {REST_API} from "../const/restApi";
 import {PAGE} from "../const/page";
-import {getAuthToken, makeQuery} from "../utils/utils";
-import {boolean, string} from "yup";
+import {addRequestHeader, makeQuery, refreshExpiredToken} from "../utils/utils";
 
-const axiosInstance = axios.create({
-    baseURL: REST_API.BASE_URL,
-    headers: {
-        'Authorization': getAuthToken(),
-    }
-})
+const axiosInstance = axios.create({baseURL: REST_API.BASE_URL})
+
+axiosInstance.interceptors.request.use(addRequestHeader)
+axiosInstance.interceptors.response.use(config => config, refreshExpiredToken(axiosInstance))
+
 
 export const concertAPI = {
     fetchConcerts(param: { query: string, type: number, ids: string }, page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
@@ -22,14 +20,17 @@ export const concertAPI = {
     fetchSingerVoice() {
         return axiosInstance.get<SingerVoiceType[]>('voice/')
     },
-    addConcert(concert: any) {
-        return axiosInstance.post<ConcertsType>('concerts/', concert, {headers: {'Content-Type': 'multipart/form-data'}})
+    addConcert(concert: FormData) {
+        return axiosInstance.post<ConcertsType[]>('concerts/', concert, {headers: {'Content-Type': 'multipart/form-data'}})
     },
     deleteConcert(id: number) {
         return axiosInstance.delete<ChangeResponseType>(`concerts/${id}`)
     },
     fetchConcert(id: number) {
         return axiosInstance.get<ConcertsType[]>(`concerts/${id}`)
+    },
+    updateConcert(id: number, concert: FormData) {
+        return axiosInstance.put<ConcertsType[]>(`concerts/${id}`, concert, {headers: {'Content-Type': 'multipart/form-data'}})
     }
 }
 export const promocodeAPI = {
@@ -70,9 +71,6 @@ export const paypalAPI = {
     createOrder(ids: number[]) {
         return axiosInstance.post('paypal/create/', {ids})
     },
-    processPayment(){
-
-    }
 }
 export const authAPI = {
     login(credentials: CredentialsType) {
@@ -86,6 +84,9 @@ export const authAPI = {
     },
     register(register: AuthRequestRegType) {
         return axiosInstance.post<AuthRegisterType>('user/register/', register)
+    },
+    refreshToken(token: { refresh: string }) {
+        return axiosInstance.post<RefreshTokenResponseType>('token/refresh/', token)
     }
 }
 
@@ -96,8 +97,8 @@ type ResponseType<T> = {
 }
 export type PromocodeAddType = Omit<PromocodesType, 'id'>
 export type AuthRequestRegType = Omit<AuthRegisterType, 'id'>
-//export type CartAddType = Partial<Pick<Omit<CartType, 'id'>, 'promocodeId' | 'count'>>
 export type CartAddType = Omit<CartType, 'id'>
+export type ConcertsFileType = Omit<ConcertsType, 'poster'> & {poster: File}
 export type AuthResponseType = {
     refresh: string
     access: string
@@ -129,6 +130,9 @@ export type AuthRegisterType = {
     first_name?: string
     last_name?: string
     email: string
+}
+type RefreshTokenResponseType = {
+    access: string
 }
 export type AuthMeResponse = {
     code: number
@@ -187,7 +191,6 @@ export type ConcertAddType = {
     tickets: number
 
 }
-
 export type ConcertsType = {
     id: number
     title: string
