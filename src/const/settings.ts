@@ -11,6 +11,6 @@ export const TICKETS = {
 export const PROMOCODES = {
     DISCOUNT: {
         MIN: 0,
-        MAX: 100
+        MAX: 99
     }
 }
