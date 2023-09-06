@@ -1,116 +1,117 @@
-import React, {useEffect} from 'react';
-import {PayPalScriptProvider, PayPalButtons} from "@paypal/react-paypal-js";
-import {Paper, Title, Text, Flex, Center, Image, NumberInput, Loader} from '@mantine/core';
+import React, {useCallback, useEffect, useMemo} from 'react';
+import {PayPalButtons, usePayPalScriptReducer} from "@paypal/react-paypal-js";
+import {Center, Flex, Text} from '@mantine/core';
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../../redux/store";
-import {CartConcertsType, CartType, ConcertsType} from "../../api/api";
-import {MEDIA} from "../../const/media";
-import {deleteCart, fetchCart} from "../../redux/cartReducer";
-import ActionBar from "../ActionBar/ActionBar";
-import {PAYPAL} from "../../const/PayPal";
+import {CartConcertsType} from "../../api/api";
+import {
+    deleteCart,
+    deleteCartUser,
+    fetchCart,
+    setCartPromocode,
+    updateCart,
+    validatePromocode
+} from "../../redux/cartReducer";
+import {AppStatus} from "../../redux/appReducer";
+import EmptyStateWithLoader from "../Empty/EmptyStateWithLoader";
+import CartItem from "../CartItem/CartItem";
+import {createPayOrder} from "../../utils/paypal";
+import {discountFormat} from "../../utils/utils";
+import {useStyles} from "./styles";
+import {AuthUserType} from "../../redux/authReducer";
+import Preloader from "../Preloader/Preloader";
+import {getCart, getStatus, getUser} from "../../selectors/selectors";
+
 
 const Cart = () => {
 
-    const userId = 1;
-    const purchases = useSelector<RootStateType, CartConcertsType[]>(state => state.cart.list)
-    const paypalOptions = {clientId: PAYPAL.CLIENT_ID}
+    const [{isPending}] = usePayPalScriptReducer();
+    const purchases = useSelector<RootStateType, CartConcertsType[]>(getCart)
+    const user = useSelector<RootStateType, AuthUserType>(getUser)
+    const status = useSelector<RootStateType, AppStatus>(getStatus)
+    const {classes} = useStyles()
     const dispatch = useDispatch()
 
+    const userId = user.id
     useEffect(() => {
         dispatch<AppDispatchType>(fetchCart(userId))
-    }, [])
-    const deleteItemHandler = (id: number) => {
-        dispatch<AppDispatchType>(deleteCart(id))
-    }
-    //
-    // const list = purchases.map(p => <CartItem
-    //     id={p.id}
-    //     title={p.title}
-    //     price={p.price}
-    //     count={p.count}
-    //     poster={p.poster}
-    //     key={p.id}
-    //     callback={deleteItemHandler}
-    // />)
-    const cart = purchases.reduce((acc, p) => {
-        acc.price += p.discount ? p.price * p.count * (1 - p.discount / 100) : p.price
-        acc.items.push(<CartItem
-            id={p.id}
-            title={p.title}
-            price={p.price}
-            count={p.count}
-            poster={p.poster}
-            key={p.id}
-            callback={deleteItemHandler}
-        />)
-        return acc
-    },  {price: 0, items: [] as any[]})
+    }, [userId])
 
-    if (!purchases) {
-        return <Loader/>
-    }
-    // @ts-ignore
+    const deleteItemHandler = useCallback((id: number) => {
+        dispatch<AppDispatchType>(deleteCart(id))
+    }, [])
+
+    const promocodeAddHandler = useCallback((promocode: string, id: number) => {
+        dispatch<AppDispatchType>(validatePromocode({promocode, id}))
+    }, [])
+
+    const changePromocdeHandler = useCallback((id: number, value: string) => {
+        dispatch(setCartPromocode({id, value}))
+    }, [])
+
+    const counterHandler = useCallback((id: number, count: number) => {
+        dispatch<AppDispatchType>(updateCart({id, data: {count}}))
+    }, [])
+
+    const paymentSuccess = useCallback(async (data: any, actions: any) => {
+        dispatch<AppDispatchType>(deleteCartUser({userId, data}))
+    }, [userId])
+
+    let cart = purchases.reduce((acc, p) => {
+        const price = p.price * p.count
+        const discount = p.discount ? price - price * (1 - p.discount / 100) : 0
+        const fullPrice = discount ? price - discount : discount
+
+        acc.discount += discount
+        acc.price += price - discount
+        acc.ids.push(p.id)
+        acc.items.push(
+            <CartItem
+                id={p.id}
+                title={p.title}
+                price={price}
+                count={p.count}
+                discount={fullPrice}
+                poster={p.poster}
+                key={p.id}
+                promocode={p.promocode}
+                onAdd={promocodeAddHandler}
+                onDelete={deleteItemHandler}
+                onChange={changePromocdeHandler}
+                onDecrement={(count) => counterHandler(p.id, count)}
+                onIncrement={(count) => counterHandler(p.id, count)}
+            />)
+        return acc
+    }, {price: 0, items: [] as any[], ids: [] as number[], discount: 0})
+
+    cart = useMemo(() => cart, [purchases])
+
+
     return (
-        <PayPalScriptProvider options={paypalOptions}>
-            <Center>
-                <Flex>
-                    <Flex direction={'column'}>
-                        {cart.items}
-                    </Flex>
-                    <Flex direction={'column'}>
-                        <Text fw={700}>{`Итого  ${cart.price}`}</Text>
-                        <PayPalButtons style={{layout: "horizontal"}}
-                                       createOrder={(data, actions) => {
-                                           return actions.order.create({
-                                               purchase_units: [
-                                                   {
-                                                       amount: {
-                                                           currency_code: 'USD',
-                                                           value: "10.00",
-                                                       },
-                                                   },
-                                               ],
-                                           });
-                                       }}
-                                       onCancel = { () => {console.log('Canceled')}}
-                                       onError = {(err) => {console.log(err)} }
-                                       onApprove={(data, actions) => {
-                                           return actions?.order?.capture().then(function (details) {
-                                               console.log('Payment completed. Thank you, ' + details?.payer?.name?.given_name)
-                                           });
-                                       }}/>
-                    </Flex>
+        <EmptyStateWithLoader isEmpty={!purchases.length} status={status}>
+            <Center className={classes.center}>
+                <Flex direction={'column'}>
+                    {cart.items}
+                </Flex>
+                <Flex className={classes.payblock}>
+                    {
+                        isPending ? <Preloader/> :
+                            <>
+                                <Text classNames={classes.text}>{`Итого:  ${cart.price} USD`}</Text>
+                                {
+                                    !!cart.discount &&
+                                    <Text
+                                        className={classes.text}>{`Скидка:  ${discountFormat(cart.discount)} USD`}</Text>
+                                }
+                                <PayPalButtons style={{layout: "horizontal"}}
+                                               createOrder={createPayOrder(cart.ids)}
+                                               onApprove={paymentSuccess}/>
+                            </>
+                    }
                 </Flex>
             </Center>
-
-        </PayPalScriptProvider>
+        </EmptyStateWithLoader>
     );
 };
-const CartItem = ({id, poster, title, price, count, callback}: CartItemPropsType) => {
-    return (
-        <Paper style={{margin: '10px'}}>
-            <Flex>
-                <Image src={`${MEDIA.URL}${poster}`} width={'100px'} height={'100px'}></Image>
-                <Flex direction={"column"}>
-                    <Text fw={700}>{title}</Text>
-                    <div>
-                        <Flex>
-                            <NumberInput value={count}></NumberInput>
-                            <Text>{`Стоимость: ${price} BYN`}</Text>
-                        </Flex>
-                    </div>
-                </Flex>
-                <ActionBar id={id} del={callback}/>
-            </Flex>
-        </Paper>
-    )
-}
-type CartItemPropsType = {
-    id: number
-    poster: string
-    title: string
-    count: number
-    price: number
-    callback: (id: number) => void
-}
+
 export default Cart;
