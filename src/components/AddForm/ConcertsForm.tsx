@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Box, Button, FileInput, Flex, NumberInput, rem, Select, TextInput} from '@mantine/core';
 import {useForm, yupResolver} from '@mantine/form';
 import {IconCalendarTime, IconPhotoPlus} from '@tabler/icons-react';
@@ -13,31 +13,35 @@ import TextEditor from "../TextEditor/TextEditor";
 import {formatConcertRequest, formatConcertUpdateRequest} from "../../utils/concertRequestFromat";
 import {concertInitAdapter} from "../../utils/concertInitAdapter";
 import {useStyles} from "./style";
+import {getConcerts, getSingerVoice} from "../../selectors/selectors";
 
 const ConcertsForm = ({init, onClose}: InitialValuesType) => {
 
     const {classes} = useStyles()
     const initial = init ? concertInitAdapter(init) : init
-    const [concertType, setConcertType] = useState<Number>(Number(initial.typeId || ''))
-    const concertsType = useSelector<RootStateType, ConcertTypesType[]>(state => state.concerts.type)
-    const singerVoice = useSelector<RootStateType, SingerVoiceType[]>(state => state.concerts.singerVoice)
+    const [concertType, setConcertType] = useState<Number>(Number(initial?.typeId || ''))
+    const concertsType = useSelector<RootStateType, ConcertTypesType[]>(getConcerts)
+    const singerVoice = useSelector<RootStateType, SingerVoiceType[]>(getSingerVoice)
 
     const currentDate = new Date();
     const dispatch = useDispatch()
 
     const form = useForm({
+
         validateInputOnBlur: true,
         initialValues: initial || FORM.INIT.CONCERTS,
         validate: yupResolver(FORM.VALIDATION.CONCERTS),
     });
 
-    const onChangeHandler = async (value: string) => {
+    const onChangeHandler =useCallback( async (value: string) => {
+
         form.setFieldValue('typeId', value)
         setConcertType(Number(value))
         form.setValues(FORM.RESET)
-    }
+    },[])
 
     const formHandler = form.onSubmit((fields) => {
+
         const formatted = formatConcertRequest(fields)
         init ?
             dispatch<AppDispatchType>(updateConcert({id: initial.id, concert: formatConcertUpdateRequest(fields)})) :
