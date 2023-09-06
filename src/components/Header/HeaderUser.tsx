@@ -1,19 +1,21 @@
-import {Button, Container, Flex, Group, Header as HeaderMantine, Title} from '@mantine/core';
+import {Button, Container, Flex, Group, Header as HeaderMantine, Text, Title} from '@mantine/core';
 import {NavLink} from "react-router-dom";
-import {useStyles} from "./HeaderStyle";
+import {useStyles} from "./styles";
 import React, {useCallback, useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../../redux/store";
 import {AuthUserType, checkAuth, logout} from "../../redux/authReducer";
 import {HeaderLinks} from "../../const/routes";
+import {IconLogout} from "@tabler/icons-react"
+import {getIsAuth, getIsStaff, getUser} from "../../selectors/selectors";
 
 const HeaderUser = () => {
 
     const {classes} = useStyles()
     const dispatch = useDispatch()
-    const isAuth = useSelector<RootStateType, boolean>(state => state.auth.isAuth)
-    const isAdmin = useSelector<RootStateType, boolean>(state => state.auth.isStaff)
-    const user = useSelector<RootStateType, AuthUserType>(state => state.auth.user)
+    const isAuth = useSelector<RootStateType, boolean>(getIsAuth)
+    const isAdmin = useSelector<RootStateType, boolean>(getIsStaff)
+    const user = useSelector<RootStateType, AuthUserType>(getUser)
 
     const userToggler = isAdmin ? 'admin' : 'user'
     const items = HeaderLinks[userToggler]
@@ -33,7 +35,7 @@ const HeaderUser = () => {
         dispatch<AppDispatchType>(logout())
     }, [])
     const onLoginHandler = useCallback(() => {
-        return <NavLink to={'login/'}/>
+        return <NavLink to={'login'}/>
     }, [])
 
 
@@ -49,11 +51,12 @@ const HeaderUser = () => {
                 <Flex>
                     {
                         isAuth ?
-                            <Flex direction={"column"} align={"center"}>
-                                {user.email}
-                                <Button onClick={onLogoutHandler} className={classes.button}>Выйти</Button>
-                            </Flex>
-                            :
+                            <Flex>
+                                <Text className={classes.text}>{user.email}</Text>
+                                <IconLogout
+                                    onClick={onLogoutHandler}
+                                    className={classes.button}/>
+                            </Flex> :
                             <Button onClick={onLoginHandler}>Войти</Button>
                     }
                 </Flex>
