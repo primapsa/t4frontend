@@ -5,16 +5,16 @@ const Pagination = ({total, page, onChange}: PaginationPropsType) => {
     return (
         <>
             {
-                !!total &&
+                total > 1 &&
                 <Paginate total={total} value={page} onChange={onChange} position={'center'}></Paginate>
             }
         </>
     )
-        ;
+
 };
 type PaginationPropsType = {
     total: number
     page: number
     onChange: (p: number) => void
 }
-export default Pagination;
+export default React.memo(Pagination);
