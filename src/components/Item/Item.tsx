@@ -2,6 +2,7 @@ import React from 'react';
 import {Flex, Image, Paper, Text} from '@mantine/core';
 import {useStyles} from "./styles";
 import {MEDIA} from "../../const/media";
+import {dateFormatDelimeter} from "../../utils/utils";
 
 const Item = (props: ItemPropsType) => {
 
@@ -22,7 +23,7 @@ const Item = (props: ItemPropsType) => {
                     <Flex className={classes.concert__info}>
                         <Flex className={classes.concert__flex}>
                             <Text>{props.type}</Text>
-                            <Text>{props.date}</Text>
+                            <Text>{dateFormatDelimeter(props.date)}</Text>
                         </Flex>
                         <Flex className={classes.concert__tickets}>
                             <Text>Билетов: {props.ticket}</Text>
