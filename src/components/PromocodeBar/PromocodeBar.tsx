@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Badge, Button, Flex, Input} from '@mantine/core';
 import {IconPlus} from '@tabler/icons-react';
 import {useStyles} from "./style";
@@ -9,17 +9,20 @@ const PromocodeBar = ({promocode, id, addCallback}: PromocodePropsType) => {
     const {classes} = useStyles()
     const [isVisible, setIsVisible] = useState<boolean>(false)
     const [value, setValue] = useState<string>(promocode || '')
-    const addHandler = () => {
+    const addHandler = useCallback(() => {
         addCallback(value, id)
         setValue('')
         setIsVisible(false)
-    }
-    const showHandler = () => {
-        setIsVisible(!isVisible)
-    }
-    const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)
-    const buttonName = isVisible ? 'Закрыть' : 'Промокод'
+    },[id, value, addCallback])
 
+    const showHandler = useCallback(() => {
+        setIsVisible(!isVisible)
+    },[isVisible])
+
+    const onChangeHandler = useCallback((e: React.ChangeEvent<HTMLInputElement>) =>
+        setValue(e.target.value),[value])
+
+    const buttonName = isVisible ? 'Закрыть' : 'Промокод'
 
     return (
         <Flex className={classes.badge}>
