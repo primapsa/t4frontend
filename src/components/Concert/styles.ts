@@ -1,4 +1,4 @@
-import {createStyles} from "@mantine/core";
+import {createStyles, rem} from "@mantine/core";
 import {boolean} from "yup";
 
 export const useStyles = createStyles((theme) => ({
@@ -15,7 +15,16 @@ export const useStyles = createStyles((theme) => ({
     },
     paper: {
         padding: '30px',
-        maxWidth: '1280px',
+        width: '950px',
+        [theme.fn.smallerThan('1100')]: {
+            width: rem(768),
+        }, [theme.fn.smallerThan('800')]: {
+            width: rem(500),
+        }, [theme.fn.smallerThan('550')]: {
+            width: rem(320),
+        }, [theme.fn.smallerThan('350')]: {
+            width: '100%',
+        },
 
     },
     wrapper: {
@@ -24,21 +33,49 @@ export const useStyles = createStyles((theme) => ({
         alignItems: 'center'
     },
     about: {
-      marginTop: '20px'
+        marginTop: '20px',
+        [theme.fn.smallerThan('550')]: {
+            flexDirection: 'column'
+        }
+
     },
     title: {
         fontSize: '36px',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        [theme.fn.smallerThan('800')]: {
+            fontSize: '26px'
+        },
+        [theme.fn.smallerThan('550')]: {
+            fontSize: '20px'
+        }
     },
     image: {
-        marginTop: '20px'
+        objectFit: "cover",
+        width: '100%',
+        height: '100%'
+    },
+    container: {
+        marginTop: '20px',
+        width: '380px',
+        [theme.fn.smallerThan('550')]: {
+            width: rem(250),
+        }, [theme.fn.smallerThan('350')]: {
+            width: rem(180),
+        },
+    },
+    optional: {
+        margin: '20px 0',
+        flexDirection: 'column'
     },
     innerHtml: {
         marginTop: '20px',
         maxWidth: '700px'
     },
     pin: {
-      margin: '0 20px'
+        margin: '0 20px',
+        [theme.fn.smallerThan('550')]: {
+            margin: '20px 0'
+        }
     },
     map: {
         marginTop: '20px',
@@ -49,7 +86,6 @@ export const useStyles = createStyles((theme) => ({
         width: '100%',
         height: '100%'
     },
-
 
 
     payblock: {

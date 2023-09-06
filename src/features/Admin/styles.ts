@@ -23,7 +23,7 @@ export const useStyles = createStyles(() => ({
         width: '100%'
     },
     item: {
-        flexGrow: 1,
+       width: '100%',
         margin: '10px 0'
     },
     content: {
@@ -32,5 +32,12 @@ export const useStyles = createStyles(() => ({
     },
     inner: {
       overflow: "scroll"
+    },
+    link: {
+        width: '100%',
+        textDecoration: "none",
+        '&:hover': {
+            boxShadow: '0px 5px 10px 2px rgba(29, 97, 150, 0.2)'
+        }
     }
 }));

@@ -18,6 +18,9 @@ export const useStyles = createStyles(() => ({
       flexWrap: "wrap"
     },
     link: {
-        textDecoration: 'none'
+        textDecoration: 'none',
+        '&:hover': {
+            boxShadow: '0px 5px 10px 2px rgba(29, 97, 150, 0.2)'
+        }
     }
 }));

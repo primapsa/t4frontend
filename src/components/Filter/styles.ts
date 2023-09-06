@@ -5,20 +5,20 @@ export const useStyles = createStyles((theme) => ({
     form: {
         padding: '0 10px',
         display: 'flex',
-        width: '100%',
+        width: '1280px',
         margin: '15px 0',
         justifyContent: 'space-between',
 
         [theme.fn.smallerThan('1280')]: {
-            maxWidth: rem(950),
+            width: rem(950),
         },
         [theme.fn.smallerThan('980')]: {
            flexDirection: "column",
-            maxWidth: rem(650),
+            width: rem(650),
             alignItems: 'center'
         },
         [theme.fn.smallerThan('650')]: {
-            maxWidth: rem(320),
+            width: rem(320),
         },
     },
     search: {
