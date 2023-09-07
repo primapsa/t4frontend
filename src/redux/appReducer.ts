@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, Dispatch} from "@reduxjs/toolkit";
 import {STATUS} from "../const/statuses";
 
 const initialState: AppStateType = {
@@ -50,4 +50,15 @@ export type AppStateType = {
     status: AppStatus
     notification: AppNotificationType[]
     popup: PopupType | null
+}
+
+export type AsyncThunkConfig = {
+    state?: unknown
+    dispatch?: Dispatch
+    extra?: unknown
+    rejectValue?: unknown
+    serializedErrorType?: unknown
+    pendingMeta?: unknown
+    fulfilledMeta?: unknown
+    rejectedMeta?: unknown
 }

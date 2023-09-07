@@ -1,39 +1,37 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {ConcertsType, ConcertTypesType, SingerVoiceType} from "../api/api";
-import {deleteConcert, fetchConcerts, fetchConcertsTypes, fetchSingerVoice} from "./concertsReducer";
 import {PAGE} from "../const/page";
+import {FILTER} from "../const/filter";
 
 const initialState: InitialStateType = {
-    query: '',
-    sort: 0,
-    count: PAGE.ITEM_PER_PAGE
+    query: FILTER.QUERY,
+    type: FILTER.TYPE,
+    count: PAGE.ITEM_PER_PAGE,
+    ids: FILTER.IDS
 }
 export const filterSlice = createSlice({
     name: 'filter',
     initialState,
     reducers: {
-        // addStatus(state, action) {
-        //     state.status = action.payload
-        // },
-        // setPage(state, action) {
-        //     state.page = action.payload
-        // }
+        resetFilter(state) {
+            state.query = FILTER.QUERY
+            state.type = FILTER.TYPE
+        },
+        setFilter(state, action) {
+            state.query = action.payload.query
+            state.type = action.payload.type
+        },
+        setFilterIds(state, action){
+            state.ids = action.payload
+        }
     },
-    extraReducers: (builder) => {
-        // builder
-        //     .addCase(fetchConcerts.fulfilled, (state, action) => {
-        //         state.list = action.payload?.data as ConcertsType[]
-        //         state.total = action.payload?.total as number
-        //     })
-
-
-    }
 })
-//export const {addStatus, setPage} = filterSlice.actions
+
+export const {resetFilter, setFilter} = filterSlice.actions
 export default filterSlice.reducer
 
 type InitialStateType = {
     query: string
-    sort: number
+    type: number
     count: number
+    ids: string
 }

@@ -1,75 +1,103 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {PAGE} from "../const/page";
-import {FILTER} from "../const/filter";
-import {CartAddType, cartAPI, CartConcertsType, CartType} from "../api/api";
+import {CartAddType, cartAPI, CartConcertsType, CartType, PayPalResponseTYpe, ValidatePromocodeType} from "../api/api";
 import {HTTP_STATUSES} from "../const/htttpStatus";
 import {STATUS} from "../const/statuses";
-import {addAppStatusNotification} from "./appReducer";
+import {addAppStatus, addAppStatusNotification, addPopupContent, AppStatus} from "./appReducer";
 import {MESSAGE} from "../const/messages";
+import {makePayPalMessage} from "../utils/paypal";
+import {
+    asyncThunkActionWithLoading,
+    handleAppNotification,
+    handleThunkError,
+    handleUncaughtError
+} from "../utils/utils";
 
 const initialState: InitialStateType = {
-    list: [],
-    // type: FILTER.TYPE,
-    // count: PAGE.ITEM_PER_PAGE
+    list: []
 }
+
 export const fetchCart = createAsyncThunk('cart/fetch', async (userId: number, thunkAPI) => {
-    try {
-        const response = await cartAPI.fetchUserCart(userId)
-        if (response.status === HTTP_STATUSES.OK) {
-            return response.data
-        }
-        const notification = {status: STATUS.ERROR, message: MESSAGE.UNCAUGHT}
-        thunkAPI.dispatch(addAppStatusNotification(notification))
-    } catch (error) {
-        const notification = {status: STATUS.ERROR, message: (error as Error).message}
-        thunkAPI.dispatch(addAppStatusNotification(notification))
-    }
+
+    return asyncThunkActionWithLoading(cartAPI.fetchUserCart, userId, thunkAPI)
 })
+
 export const addCart = createAsyncThunk('cart/add', async (cart: CartAddType, thunkAPI) => {
+
     try {
         const response = await cartAPI.addCart(cart)
-
         if (response.status === HTTP_STATUSES.CREATED) {
+
             const notification = {status: STATUS.SUCCESS, message: MESSAGE.ADDED_TO_CART}
             thunkAPI.dispatch(addAppStatusNotification(notification))
             return response.data
         }
-        const notification = {status: STATUS.ERROR, message: MESSAGE.UNCAUGHT}
-        thunkAPI.dispatch(addAppStatusNotification(notification))
-
+        return handleUncaughtError(thunkAPI)
 
     } catch (error) {
-        const notification = {status: STATUS.ERROR, message: (error as Error).message}
-        thunkAPI.dispatch(addAppStatusNotification(notification))
+        return handleThunkError(error as Error, thunkAPI)
     }
 })
+
 export const deleteCart = createAsyncThunk('cart/delete', async (cartId: number, thunkAPI) => {
+    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const response = await cartAPI.deleteCart(cartId)
-
+        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
         if (response.status === HTTP_STATUSES.OK) {
             return {cartId}
         }
-        const notification = {status: STATUS.ERROR, message: MESSAGE.UNCAUGHT}
-        thunkAPI.dispatch(addAppStatusNotification(notification))
+        return handleUncaughtError(thunkAPI)
+    } catch (error) {
+        return handleThunkError(error as Error, thunkAPI)
+    }
+})
 
+export const deleteCartUser = createAsyncThunk('cart/deleteCartUser',
+    async ({userId, data}: { userId: number, data: PayPalResponseTYpe }, thunkAPI) => {
+        thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+        try {
+            const response = await cartAPI.deleteUserCart(userId)
+            thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+            if (response.status === HTTP_STATUSES.NO_CONTENT) {
+                thunkAPI.dispatch(addPopupContent(makePayPalMessage(data)))
+                return response.data
+            }
+            return handleUncaughtError(thunkAPI)
+        } catch (error) {
+            return handleThunkError(error as Error, thunkAPI)
+        }
+    })
+
+export const updateCart = createAsyncThunk('cart/update', async (cart: { id: number, data: Partial<CartType> }, thunkAPI) => {
+
+    return asyncThunkActionWithLoading(cartAPI.updateCart, {id: cart.id, cart: cart.data}, thunkAPI)
+})
+
+export const validatePromocode = createAsyncThunk('cart/validatePromocode', async (param: { promocode: string, id: number }, thunkAPI) => {
+    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+    try {
+        const response = await cartAPI.validateCartPomocode(param)
+        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+
+        if (response.status === HTTP_STATUSES.OK) {
+            if (response.data) {
+                handleAppNotification(STATUS.SUCCESS,MESSAGE.ADDED, thunkAPI)
+                return response.data
+            }
+            return handleAppNotification(STATUS.ERROR,MESSAGE.NOT_FOUND, thunkAPI )
+        }
+        return handleAppNotification(STATUS.ERROR,MESSAGE.NOT_FOUND, thunkAPI )
 
     } catch (error) {
-        const notification = {status: STATUS.ERROR, message: (error as Error).message}
-        thunkAPI.dispatch(addAppStatusNotification(notification))
+        return handleThunkError(error as Error, thunkAPI)
     }
 })
 export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
-        resetFilter(state) {
-            // state.query = FILTER.QUERY
-            // state.type = FILTER.TYPE
-        },
-        setFilter(state, action) {
-            // state.query = action.payload.query
-            // state.type = action.payload.type
+        setCartPromocode(state, action) {
+            state.list = state.list.map(c => c.id === action.payload.id ? {...c, promocode: action.payload.value} : c)
         }
     },
     extraReducers: (builder) => {
@@ -79,21 +107,31 @@ export const cartSlice = createSlice({
                     state.list = action.payload
             })
             .addCase(deleteCart.fulfilled, (state, action) => {
-                const cartId  = action?.payload?.cartId
+                const cartId = action?.payload?.cartId
                 if (cartId)
-                    state.list = state.list.filter( ({id}) => id !== cartId)
+                    state.list = state.list.filter(({id}) => id !== cartId)
             })
-
-            // .addCase(addCart.fulfilled, (state, action) => {
-            //     if (action.payload)
-            //         state.list.push(action.payload)
-            // })
+            .addCase(validatePromocode.fulfilled, (state, action) => {
+                if (action.payload) {
+                    const {cartId, title, discount} = action.payload as ValidatePromocodeType
+                    state.list = state.list.map(c => c.id === cartId ? {...c, promocode: title, discount: discount} : c)
+                }
+            })
+            .addCase(updateCart.fulfilled, (state, action) => {
+                if (action.payload) {
+                    const updated = action.payload
+                    state.list = state.list.map(c => c.id === updated.id ? {...c, ...updated.data} : c)
+                }
+            })
+            .addCase(deleteCartUser.fulfilled, (state, action) => {
+                state.list = []
+            })
     }
 })
-export const {resetFilter, setFilter} = cartSlice.actions
+
+export const {setCartPromocode} = cartSlice.actions
 export default cartSlice.reducer
 
 type InitialStateType = {
     list: CartConcertsType[]
-
 }
