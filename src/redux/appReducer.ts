@@ -28,22 +28,12 @@ export const appSlice = createSlice({
         clearPopup(state) {
             state.popup = null
         }
-        // setPage(state, action) {
-        //     state.page = action.payload
-        // }
     },
-    extraReducers: (builder) => {
-        // builder
-        //     .addCase(registerUser.fulfilled, (state, action) => {
-        //         state.list = action.payload?.data as ConcertsType[]
-        //         state.total = action.payload?.total as number
-        //     })
-
-
-    }
 })
+
 export const {addAppStatus, addAppStatusNotification, clearAppNotification, addPopupContent, clearPopup} = appSlice.actions
 export default appSlice.reducer
+
 export type ActionType<T> = {
     payload: T
 }
