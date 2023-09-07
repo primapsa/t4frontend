@@ -1,91 +1,115 @@
-import React, {useEffect, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../../../redux/store";
 import {ConcertsType} from "../../../api/api";
 import {PAGE} from "../../../const/page";
-import {Button, Card, Center, Flex, Grid, Image, Text} from '@mantine/core';
-import {MEDIA} from "../../../const/media";
-import {IconClockHour3, IconMapPinFilled, IconWallet} from '@tabler/icons-react';
+import {Center, Flex} from '@mantine/core';
 import {fetchConcertsAdmin, setPage} from "../../../redux/concertsReducer";
 import Map from "../../../components/Map/Map"
 import Filter from "../../../components/Filter/Filter";
 import Pagination from "../../../components/Pagination/Pagination";
 import {Link} from "react-router-dom";
 import {LINKS} from "../../../const/routes";
+import {addCart} from "../../../redux/cartReducer";
+import Ticket from "../../../components/Ticket/Ticket";
+import {AppStatus} from "../../../redux/appReducer";
+import {AuthUserType} from "../../../redux/authReducer";
+import {makePayload} from "../../../utils/utils";
+import {useStyles} from "./styles";
+import PreloaderExt from "../../../components/Preloader/PreloaderExt";
+import {STATUS} from "../../../const/statuses";
+import EmptyStateExt from "../../../components/Empty/EmptyStateExt";
+import {
+    getConcerts,
+    getFilterQuery,
+    getFilterType,
+    getPage,
+    getStatus,
+    getTotal,
+    getUser
+} from "../../../selectors/selectors";
 
 const Tickets = () => {
-    const concerts = useSelector<RootStateType, ConcertsType[]>(state => state.concerts.list)
-    const total = useSelector<RootStateType, number>(state => state.concerts.total)
-    const page = useSelector<RootStateType, number>(state => state.concerts.page)
-    const query = useSelector<RootStateType, string>(state => state.filter.query)
-    const type = useSelector<RootStateType, number>(state => state.filter.type)
+
+    const {classes} = useStyles()
+    const concerts = useSelector<RootStateType, ConcertsType[]>(getConcerts)
+    const total = useSelector<RootStateType, number>(getTotal)
+    const page = useSelector<RootStateType, number>(getPage)
+    const query = useSelector<RootStateType, string>(getFilterQuery)
+    const type = useSelector<RootStateType, number>(getFilterType)
+    const status = useSelector<RootStateType, AppStatus>(getStatus)
+    const user = useSelector<RootStateType, AuthUserType>(getUser)
+
+
     const pages = Math.ceil(total / PAGE.ITEM_PER_PAGE)
     const dispatch = useDispatch()
 
-    const onChangeHandler = (page: number) => {
-        dispatch<AppDispatchType>(setPage(page))
-    }
-
-    const list = concerts.map(concert =>
-        <Grid.Col span={3} key={concert.id}>
-            <Link to={`../${LINKS.CONCERT}${concert.id}`}>
-                <Ticket date={concert.date}
-                        price={concert.price}
-                        title={concert.title}
-                        address={concert.address}
-                        source={concert.poster}
-                ></Ticket>
-            </Link>
-
-        </Grid.Col>)
 
     useEffect(() => {
         dispatch<AppDispatchType>(fetchConcertsAdmin())
-    }, [page, total,query,type])
+    }, [page, total, query, type])
 
 
-    const coordinates = useMemo(() => concerts.map(c => ({lat: parseFloat(c.latitude),
-        lng: parseFloat(c.longitude), title: c.title})), [concerts])
+    const onChangeHandler = useCallback((page: number) => {
+        dispatch<AppDispatchType>(setPage(page))
+    }, [page])
+
+    const addToCartHandler = useCallback((cId: number) => {
+
+        const concert = concerts.find(c => c.id == cId)
+        if (concert) {
+            const payload = makePayload(cId, concert.price, user.id)
+            dispatch<AppDispatchType>(addCart(payload))
+        }
+
+    }, [concerts])
+
+    const list = concerts.map(concert =>
+        <Link
+            to={`../${LINKS.CONCERT}${concert.id}`}
+            key={concert.id}
+            className={classes.link}>
+            <Ticket
+                id={concert.id}
+                date={concert.date}
+                price={concert.price}
+                title={concert.title}
+                address={concert.address}
+                source={concert.poster}
+                onAddToCart={addToCartHandler}
+            ></Ticket>
+        </Link>
+    )
+
+    const coordinates = useMemo(
+        () => concerts
+            .map(c =>
+                ({
+                    lat: parseFloat(c.latitude),
+                    lng: parseFloat(c.longitude), title: c.title
+                })
+            ), [concerts])
+
 
     return (
-        <Center>
-           <Flex direction={'column'}>
-               <Filter/>
-               <Grid maw={'1200px'}>
-                   {list}
-               </Grid>
-               <Pagination total={pages} page={page} onChange={onChangeHandler}/>
-               <Map coordinates={coordinates}/>
-           </Flex>
-        </Center>
+        <PreloaderExt  isLoaded={status===STATUS.LOADING} >
+            <Center className={classes.center}>
+                <Flex className={classes.wrapper}>
+                    <Filter/>
+                    <EmptyStateExt isEmpty={!list.length}>
+                        <Flex className={classes.tickets}>
+                            {list}
+                        </Flex>
+                        <Pagination
+                            total={pages}
+                            page={page}
+                            onChange={onChangeHandler}/>
+                        <Map coordinates={coordinates}/>
+                    </EmptyStateExt>
+                </Flex>
+            </Center>
+        </PreloaderExt>
     );
 };
-const Ticket = ({source, title, address, date, price = 99}: TicketPropsType) => {
-    return (
-        <Card>
-            <Image src={`${MEDIA.URL}${source}`} width={200} height={120} withPlaceholder alt={'poster'}></Image>
-            <Text fw={700}>{title}</Text>
-            <Flex>
-                <IconMapPinFilled/>
-                <Text fw={500}>{address}</Text>
-            </Flex>
-            <Flex>
-                <IconClockHour3/>
-                <Text fw={500}>{date}</Text>
-            </Flex>
-            <Flex>
-                <IconWallet/>
-                <Text fw={500}>от {price} BYN</Text>
-            </Flex>
-            <Button>Купить</Button>
-        </Card>
-    )
-}
-type TicketPropsType = {
-    source: string
-    title: string
-    address: string
-    date: string
-    price: number
-}
-export default Tickets;
+
+export default React.memo(Tickets);
