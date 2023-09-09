@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {Button, Center, Flex, Modal} from '@mantine/core';
 import {useDispatch, useSelector} from "react-redux";
-import {AppDispatchType, RootStateType} from "../../../redux/store";
+import {AppDispatchType, RootStateType, useAppDispatch} from "../../../redux/store";
 import {PromocodesType} from "../../../api/api";
 import {deletePromocode, fetchPromocodes} from "../../../redux/promocodesReducer";
 import ActionBar from "../../../components/ActionBar/ActionBar";
@@ -20,10 +20,10 @@ const Promocodes = () => {
 
     const [isModal, setIsModal] = useState<boolean>(false)
     const [itemEdit, setItemEdit] = useState<PromocodeInitValueType>(undefined)
-    const dispatch = useDispatch()
+    const dispatch = useAppDispatch()
 
     const deleteItemHandler = useCallback((id: number) => {
-        dispatch<AppDispatchType>(deletePromocode(id))
+        dispatch(deletePromocode(id))
     }, [promocodes])
 
     const editItemHandler = useCallback((pId: number) => {
@@ -44,7 +44,7 @@ const Promocodes = () => {
     )
 
     useEffect(() => {
-        dispatch<AppDispatchType>(fetchPromocodes())
+        dispatch(fetchPromocodes())
     }, [])
 
     const onModalCloseHandler = useCallback(() => setIsModal(false), [])
