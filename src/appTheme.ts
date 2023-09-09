@@ -18,11 +18,11 @@ export const appTheme: any = {
         },
     }),
     breakpoints: {
-        xs: '30em',
-        sm: '48em',
-        md: '64em',
-        lm: '52em',
-        lg: '74em',
+        xs: '30em',  // 480
+        sm: '48em',  //768
+        md: '64em',  // 1024
+        lm: '52em',  // 832
+        lg: '74em', // 1216
         xl: '90em',
     },
     fontFamily: "Inter, sans-serif",

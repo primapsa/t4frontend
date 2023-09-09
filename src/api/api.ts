@@ -3,7 +3,7 @@ import {REST_API} from "../const/restApi";
 import {PAGE} from "../const/page";
 import {addRequestHeader, makeQuery, refreshExpiredToken} from "../utils/utils";
 
-const axiosInstance = axios.create({baseURL: REST_API.BASE_URL})
+const axiosInstance = axios.create({baseURL: REST_API.BASE_URL2})
 
 axiosInstance.interceptors.request.use(addRequestHeader)
 axiosInstance.interceptors.response.use(config => config, refreshExpiredToken(axiosInstance))
@@ -63,8 +63,8 @@ export const cartAPI = {
     validateCartPomocode(param: { promocode: string, id: number }) {
         return axiosInstance.post<ValidatePromocodeType>(`promocode/`, param)
     },
-    updateCart(id: number, cart: Partial<CartType>) {
-        return axiosInstance.patch<PatchCartType>(`cart/${id}`, cart)
+    updateCart(param:{id: number, cart: Partial<CartType>}) {
+        return axiosInstance.patch<PatchCartType>(`cart/${param.id}`, param.cart)
     }
 }
 export const paypalAPI = {

@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {ConcertsFileType, ConcertsType} from "../../../api/api";
 import {deleteConcert, fetchConcertsAdmin, setPage} from "../../../redux/concertsReducer";
-import {AppDispatchType, RootStateType} from "../../../redux/store";
+import {AppDispatchType, RootStateType, useAppDispatch} from "../../../redux/store";
 import Item from "../../../components/Item/Item";
 import {Button, Flex, Modal} from '@mantine/core';
 import ConcertsForm from "../../../components/AddForm/ConcertsForm";
@@ -20,6 +20,7 @@ import {getConcerts, getPage, getStatus, getTotal} from "../../../selectors/sele
 
 const Concerts = () => {
 
+    const dispatch = useAppDispatch()
     const {classes} = useStyles()
     const [init, setInit] = useState<undefined | ConcertsFileType>(undefined)
     const [isModal, setIsModal] = useState(false)
@@ -30,11 +31,11 @@ const Concerts = () => {
 
     const pages = Math.ceil(total / PAGE.ITEM_PER_PAGE)
 
-    const dispatch = useDispatch()
-    const modalHandler = useCallback(() => setIsModal(false),[])
+
+    const modalHandler = useCallback(() => setIsModal(false), [])
 
     useEffect(() => {
-        dispatch<AppDispatchType>(fetchConcertsAdmin())
+        dispatch(fetchConcertsAdmin())
     }, [page, total])
 
     const onCloseHandler = useCallback(() => setIsModal(false), [])
@@ -45,24 +46,24 @@ const Concerts = () => {
     }, [])
 
     const onChangeHandler = useCallback((page: number) => {
-        dispatch<AppDispatchType>(setPage(page))
-    },[page])
+        dispatch(setPage(page))
+    }, [page])
 
     const onDeleteHandler = useCallback((id: number) => {
-        dispatch<AppDispatchType>(deleteConcert(id))
-    },[concerts])
+        dispatch(deleteConcert(id))
+    }, [concerts])
 
     const onEditHandler = useCallback(async (cId: number) => {
-            if (concerts) {
-                const edit = concerts.find(({id}) => id === cId)
-                if (edit) {
-                    const name = edit.poster
-                    const file = await generateImageFromUrl(`${MEDIA.URL}${name}`, name)
-                    setInit({...edit, poster: file})
-                    setIsModal(true)
-                }
+        if (concerts) {
+            const edit = concerts.find(({id}) => id === cId)
+            if (edit) {
+                const name = edit.poster
+                const file = await generateImageFromUrl(`${MEDIA.URL}${name}`, name)
+                setInit({...edit, poster: file})
+                setIsModal(true)
             }
-        }, [concerts])
+        }
+    }, [concerts])
 
     const list = concerts.map(e =>
         <Flex key={e.id} className={classes.item}>
@@ -87,22 +88,23 @@ const Concerts = () => {
         </Flex>)
 
     return (
-        <EmptyStateWithLoader isEmpty={!concerts.length} status={status}>
-            <Flex className={classes.center}>
-                <Flex className={classes.wrapper}>
-                    <Button className={classes.button} onClick={onClickHandler}>Добавить концерт</Button>
-                    <Modal classNames={{content: classes.content, inner: classes.inner}}
-                           opened={isModal}
-                           onClose={modalHandler}>
-                        <ConcertsForm init={init} onClose={onCloseHandler}/>
-                    </Modal>
+        <Flex className={classes.center}>
+            <Flex className={classes.wrapper}>
+                <Button className={classes.button} onClick={onClickHandler}>Добавить концерт</Button>
+                <Modal classNames={{content: classes.content, inner: classes.inner}}
+                       opened={isModal}
+                       onClose={modalHandler}>
+                    <ConcertsForm init={init} onClose={onCloseHandler}/>
+                </Modal>
+                <EmptyStateWithLoader isEmpty={!concerts.length} status={status}>
                     <Flex className={classes.concerts}>
                         {list}
                     </Flex>
-                    <Pagination total={pages} page={page} onChange={onChangeHandler}></Pagination>
-                </Flex>
+                </EmptyStateWithLoader>
+                <Pagination total={pages} page={page} onChange={onChangeHandler}></Pagination>
+
             </Flex>
-        </EmptyStateWithLoader>
+        </Flex>
     );
 };
 

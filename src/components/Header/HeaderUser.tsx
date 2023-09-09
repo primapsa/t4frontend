@@ -27,9 +27,9 @@ const HeaderUser = () => {
                     </NavLink>
                 ));
 
-    useEffect(() => {
-        dispatch<AppDispatchType>(checkAuth())
-    }, [])
+    // useEffect(() => {
+    //     dispatch<AppDispatchType>(checkAuth())
+    // }, [])
 
     const onLogoutHandler = useCallback(() => {
         dispatch<AppDispatchType>(logout())

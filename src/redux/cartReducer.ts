@@ -70,14 +70,22 @@ export const deleteCartUser = createAsyncThunk('cart/deleteCartUser',
 
 export const updateCart = createAsyncThunk('cart/update', async (cart: { id: number, data: Partial<CartType> }, thunkAPI) => {
 
-    return asyncThunkActionWithLoading(cartAPI.updateCart, {id: cart.id, cart: cart.data}, thunkAPI)
+    try {
+        const response = await cartAPI.updateCart({id: cart.id, cart: cart.data})
+
+        if (response.status === HTTP_STATUSES.OK) {
+            return response.data
+        }
+        return handleUncaughtError(thunkAPI)
+    } catch (error) {
+        return handleThunkError(error as Error, thunkAPI )
+    }
 })
 
 export const validatePromocode = createAsyncThunk('cart/validatePromocode', async (param: { promocode: string, id: number }, thunkAPI) => {
-    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+
     try {
         const response = await cartAPI.validateCartPomocode(param)
-        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
 
         if (response.status === HTTP_STATUSES.OK) {
             if (response.data) {

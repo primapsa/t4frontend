@@ -7,7 +7,7 @@ import {
     authPersistPut,
     handleThunkError,
     handleUncaughtError,
-    parseJwt
+    parseJwt, setTokens
 } from "../utils/utils";
 import {MESSAGE} from "../const/messages";
 import {addAppStatus, addPopupContent} from "./appReducer";
@@ -15,14 +15,16 @@ import {STATUS} from "../const/statuses";
 
 
 export const login = createAsyncThunk('auth/login', async (credentials: CredentialsType, thunkAPI) => {
-    return  asyncThunkActionWithLoading(authAPI.login, credentials, thunkAPI)
+        return asyncThunkActionWithLoading(authAPI.login, credentials, thunkAPI)
     }
 )
 
 export const checkAuth = createAsyncThunk('auth/me', async (param, thunkAPI) => {
     try {
         const response = await authAPI.me()
-
+        if(!response.status){
+            thunkAPI.dispatch(addAppStatus(STATUS.ERROR))
+        }
         if (response.status === HTTP_STATUSES.OK) {
             if (response.data.code) return response.data.data
         }
@@ -45,6 +47,7 @@ export const registerUser = createAsyncThunk('auth/register', async (reg: AuthRe
         thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
         if (response.status === HTTP_STATUSES.OK) {
             thunkAPI.dispatch(addPopupContent(MESSAGE.NEW_USER_SUCCESS))
+            return 'login'
         }
         return handleUncaughtError(thunkAPI)
     } catch (error) {
@@ -62,6 +65,9 @@ export const authSlice = createSlice({
             state.user = {} as AuthUserType
             localStorage.clear()
         },
+        setLoginType(state, action) {
+            state.type = action.payload
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -71,7 +77,13 @@ export const authSlice = createSlice({
                     state.isAuth = true
                     state.user = data
                     state.isStaff = data.is_staff
-                    authPersistPut({isAuth: true, isStaff: data.is_staff, user: data})
+                    // const storaged = {isAuth: true, isStaff: data.is_staff, user: data, type: 'login' as LoginType}
+                    authPersistPut(data)
+                }
+            })
+            .addCase(registerUser.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.type = action.payload
                 }
             })
             .addMatcher(isAnyOf(login.fulfilled, socialLogin.fulfilled), (state, action) => {
@@ -81,22 +93,24 @@ export const authSlice = createSlice({
                     state.isAuth = true
                     state.user = decodedToken
                     state.isStaff = decodedToken.is_staff
-                    localStorage.setItem('token', data.access)
-                    localStorage.setItem('refresh', data.refresh)
-                    authPersistPut({isAuth: true, isStaff: decodedToken.is_staff, user: decodedToken})
+                    setTokens(data)
+                    //authPersistPut({isAuth: true, isStaff: decodedToken.is_staff, user: decodedToken})
+                    authPersistPut(decodedToken)
                 }
             })
     }
 })
 
-export const {logout} = authSlice.actions
+export const {logout, setLoginType} = authSlice.actions
 export default authSlice.reducer
 
 export type AuthInitialType = {
     isAuth: boolean
     isStaff: boolean
     user: AuthUserType
+    type: LoginType
 }
+export type LoginType = 'login' | 'register'
 export type AuthUserType = {
     email: string
     exp?: number

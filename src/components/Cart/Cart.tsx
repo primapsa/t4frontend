@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useMemo} from 'react';
 import {PayPalButtons, usePayPalScriptReducer} from "@paypal/react-paypal-js";
 import {Center, Flex, Text} from '@mantine/core';
 import {useDispatch, useSelector} from "react-redux";
-import {AppDispatchType, RootStateType} from "../../redux/store";
+import {AppDispatchType, RootStateType, useAppDispatch} from "../../redux/store";
 import {CartConcertsType} from "../../api/api";
 import {
     deleteCart,
@@ -25,24 +25,25 @@ import {getCart, getStatus, getUser} from "../../selectors/selectors";
 
 const Cart = () => {
 
+    const dispatch = useAppDispatch()
     const [{isPending}] = usePayPalScriptReducer();
     const purchases = useSelector<RootStateType, CartConcertsType[]>(getCart)
     const user = useSelector<RootStateType, AuthUserType>(getUser)
     const status = useSelector<RootStateType, AppStatus>(getStatus)
     const {classes} = useStyles()
-    const dispatch = useDispatch()
+
 
     const userId = user.id
     useEffect(() => {
-        dispatch<AppDispatchType>(fetchCart(userId))
+        dispatch(fetchCart(userId))
     }, [userId])
 
     const deleteItemHandler = useCallback((id: number) => {
-        dispatch<AppDispatchType>(deleteCart(id))
+        dispatch(deleteCart(id))
     }, [])
 
     const promocodeAddHandler = useCallback((promocode: string, id: number) => {
-        dispatch<AppDispatchType>(validatePromocode({promocode, id}))
+        dispatch(validatePromocode({promocode, id}))
     }, [])
 
     const changePromocdeHandler = useCallback((id: number, value: string) => {
@@ -50,11 +51,11 @@ const Cart = () => {
     }, [])
 
     const counterHandler = useCallback((id: number, count: number) => {
-        dispatch<AppDispatchType>(updateCart({id, data: {count}}))
+        dispatch(updateCart({id, data: {count}}))
     }, [])
 
     const paymentSuccess = useCallback(async (data: any, actions: any) => {
-        dispatch<AppDispatchType>(deleteCartUser({userId, data}))
+        dispatch(deleteCartUser({userId, data}))
     }, [userId])
 
     let cart = purchases.reduce((acc, p) => {

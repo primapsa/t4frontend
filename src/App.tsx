@@ -1,32 +1,52 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-
 import {Container, MantineProvider} from "@mantine/core";
-import {HeaderSimple} from "./components/Header/HeaderMantine";
-import {appTheme, styles} from "./appTheme";
-import {HeaderLinks, ROUTES} from "./const/routes";
-import MainPage from "./features/Admin/MainPage";
+import {appTheme} from "./appTheme";
+import MainPage from "./features/Admin/Concerts/Concerts";
 import Concert from "./components/Concert/Concert";
 import Alert from "./components/Alert/Alert";
+import Promocodes from "./features/Admin/Promocodes/Promocodes";
+import Tickets from "./features/User/Tickets/Tickets";
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import {NotFound} from "./components/404/NotFound";
+import ProtectedRote from "./components/ProtectedRoute/ProtectedRote";
+import CartPage from "./features/User/CartPage/CartPage";
+import {Login} from "./components/Login/Login";
+import Unavaliable from "./components/Unavaliable/Unavaliable";
+import Auth from "./components/Auth/Auth";
+
 function App() {
-  return (
-      <MantineProvider withGlobalStyles withNormalizeCSS theme={appTheme}>
-          <Alert/>
-          <BrowserRouter>
-              <Container sx={styles}>
-                  <HeaderSimple links={HeaderLinks}/>
-                  <Routes>
-                      <Route path={'/'} element={<MainPage/>}/>
-                      <Route path={`/concert/:id`} element={<Concert/>}/>
-                      {/*<Route path={`/${ROUTES.ADMIN}`} element={}/>*/}
-                  </Routes>
-              </Container>
-          </BrowserRouter>
-      </MantineProvider>
-  );
+
+    return (
+        <MantineProvider withGlobalStyles withNormalizeCSS theme={appTheme}>
+           <Auth>
+               <Unavaliable>
+                   <Alert/>
+                   <BrowserRouter>
+                       <Container w={'100%'} p={'0px'} maw={'100%'}>
+                           <Routes>
+                               <Route path={'/'} element={<PrivateRoute/>}>
+                                   <Route index element={<Tickets/>}/>
+                                   <Route path={`tickets`} element={<Tickets/>}/>
+                                   <Route path={`cart`} element={<CartPage/>}/>
+                                   <Route path={`concert/:id`} element={<Concert/>}/>
+                               </Route>
+                               <Route path={'admin'} element={<ProtectedRote/>}>
+                                   <Route index element={<MainPage/>}/>
+                                   <Route path={'concerts'} element={<MainPage/>}/>
+                                   <Route path={`concert/:id`} element={<Concert/>}/>
+                                   <Route path={`promocodes`} element={<Promocodes/>}/>
+                               </Route>
+                               <Route path={'login'} element={<Login/>}/>
+                               <Route path="*" element={<NotFound/>}/>
+                           </Routes>
+                       </Container>
+                   </BrowserRouter>
+               </Unavaliable>
+           </Auth>
+        </MantineProvider>
+    );
 }
 
 export default App;
