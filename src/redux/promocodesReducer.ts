@@ -1,17 +1,16 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {
-    ChangeResponseType,
-    concertAPI,
-    ConcertsType,
-    ConcertTypesType,
-    promocodeAPI,
-    SingerVoiceType
-} from "../api/api";
-import {addStatus, deleteConcert, fetchConcerts, fetchConcertsTypes, fetchSingerVoice} from "./concertsReducer";
+import {PromocodeAddType, promocodeAPI} from "../api/api";
 import {PAGE} from "../const/page";
-import {addAppStatus, addAppStatusNotification, AppNotificationType, AppStatus} from "./appReducer";
+import {addAppStatus, addAppStatusNotification, AppStatus} from "./appReducer";
 import {STATUS} from "../const/statuses";
 import {MESSAGE} from "../const/messages";
+import {HTTP_STATUSES} from "../const/htttpStatus";
+import {
+    asyncThunkActionWithLoading,
+    handleAppNotification,
+    handleThunkError,
+    handleUncaughtError
+} from "../utils/utils";
 
 const initialState: InitialStateType = {
     list: [],
@@ -19,44 +18,59 @@ const initialState: InitialStateType = {
     page: PAGE.NUMBER,
     status: STATUS.IDLE
 }
-// export const fetchPromocodes = createAsyncThunk('promocodes/fetch', async (param, thunkAPI) => {
-//     let notification = {status: STATUS.SUCCESS, message: MESSAGE.ADDED} as AppNotificationType
-//     const result = {success: false}
-//     thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
-//     try {
-//         const deleteConcert = await promocodeAPI.fetchPromocodes()
-//     } catch (error) {
-//         notification = {status: STATUS.ERROR, message: (error as Error).message}
-//     }
-//     thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
-//     thunkAPI.dispatch(addAppStatusNotification(notification))
-//
-// })
+
 export const fetchPromocodes = createAsyncThunk('promocodes/fetch', async (param, thunkAPI) => {
-    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
-    try {
-        const promocodes = await promocodeAPI.fetchPromocodes()
-        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
-        return promocodes.data
-    } catch (error) {
-        const notification = {status: STATUS.ERROR, message: (error as Error).message}
-        thunkAPI.dispatch(addAppStatusNotification(notification))
-    }
+
+    return asyncThunkActionWithLoading(promocodeAPI.fetchPromocodes,undefined,thunkAPI)
 })
+
 export const deletePromocode = createAsyncThunk('promocodes/delete', async (id: number, thunkAPI) => {
     thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
 
     try {
-        const deleted = await promocodeAPI.deletePromocode(id)
-        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
-        const notification = {status: STATUS.SUCCESS, message: MESSAGE.REMOVED}
-        thunkAPI.dispatch(addAppStatusNotification(notification))
-        return {id}
+        const response = await promocodeAPI.deletePromocode(id)
+        if(response.status === HTTP_STATUSES.NO_CONTENT){
+            thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+            handleAppNotification(STATUS.SUCCESS, MESSAGE.REMOVED, thunkAPI)
+            return {id}
+        }
+        return handleUncaughtError(thunkAPI)
+
     } catch (error) {
-        const notification = {status: STATUS.ERROR, message: (error as Error).message}
-        thunkAPI.dispatch(addAppStatusNotification(notification))
+        return handleThunkError(error as Error, thunkAPI)
     }
 })
+export const addPromocode = createAsyncThunk('promocode/add', async (promocode: PromocodeAddType, thunkAPI) => {
+    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+    try {
+        const response = await promocodeAPI.addPromocode(promocode)
+        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+        if (response.status === HTTP_STATUSES.CREATED) {
+
+            handleAppNotification(STATUS.SUCCESS, MESSAGE.ADDED, thunkAPI)
+            return response.data
+        }
+        return handleUncaughtError(thunkAPI)
+
+    } catch (error) {
+        return handleThunkError(error as Error, thunkAPI)
+    }
+})
+export const editPromocode = createAsyncThunk('promocode/edit', async (promocode: PromocodesType, thunkAPI) => {
+    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+    try {
+        const response = await promocodeAPI.editPromocode(promocode)
+        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+        if (response.status === HTTP_STATUSES.OK) {
+            handleAppNotification(STATUS.SUCCESS, MESSAGE.UPDATED, thunkAPI)
+            return response.data
+        }
+        return handleUncaughtError(thunkAPI)
+    } catch (error) {
+        return handleThunkError(error as Error, thunkAPI)
+    }
+})
+
 export const promocodeSlice = createSlice({
     name: 'promocodes',
     initialState,
@@ -67,7 +81,7 @@ export const promocodeSlice = createSlice({
         },
         setPage(state, action) {
             state.page = action.payload
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -76,11 +90,20 @@ export const promocodeSlice = createSlice({
                 state.total = action.payload?.total as number
             })
             .addCase(deletePromocode.fulfilled, (state, action) => {
-                state.list = state.list.filter(({id}) => id !== (action.payload?.id) as number )
+                state.list = state.list.filter(({id}) => id !== (action.payload?.id) as number)
+            })
+            .addCase(addPromocode.fulfilled, (state, action) => {
+                if (action.payload)
+                    state.list.push(action.payload)
+            })
+            .addCase(editPromocode.fulfilled, (state, action) => {
+                const response = action.payload
+                if(response)
+                state.list = state.list.map( p => p.id === response.id ? response : p)
             })
     }
 })
-//export const {addStatus, setPage} = promocodeSlice.actions
+
 export default promocodeSlice.reducer
 
 type InitialStateType = {
@@ -93,6 +116,5 @@ export type PromocodesType = {
     id: number
     title: string
     discount: number
-    concertId: number
     date: string
 }
