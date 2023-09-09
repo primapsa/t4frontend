@@ -1,5 +1,4 @@
 import React, {useCallback, useEffect} from "react";
-import {useToggle} from '@mantine/hooks';
 import {useForm, yupResolver} from '@mantine/form';
 import {
     Anchor,
@@ -16,7 +15,7 @@ import {
 } from '@mantine/core';
 import {CredentialResponse, GoogleLogin, GoogleOAuthProvider} from '@react-oauth/google';
 import {AppDispatchType, RootStateType} from "../../redux/store";
-import {login, registerUser, socialLogin} from "../../redux/authReducer";
+import {login, LoginType, registerUser, setLoginType, socialLogin} from "../../redux/authReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {FORM} from "../../const/form";
 import {useNavigate} from "react-router-dom";
@@ -24,7 +23,8 @@ import {getIsAuth} from "../../selectors/selectors";
 
 
 export const Login = () => {
-    const [type, toggle] = useToggle(['login', 'register']);
+
+    const type = useSelector<RootStateType, LoginType>(state => state.auth.type)
     const isAuth = useSelector<RootStateType, boolean>(getIsAuth)
     const navigate = useNavigate();
 
@@ -40,17 +40,19 @@ export const Login = () => {
             dispatch<AppDispatchType>(socialLogin(credential))
     }, [])
 
-    const formHandler = useCallback(() => form.onSubmit((fields) => {
+    const formHandler = form.onSubmit((fields) => {
 
         const credentials = {...fields, username: fields.email}
         const action = type === 'login' ? login : registerUser
         dispatch<AppDispatchType>(action(credentials))
-    }), [])
+
+    })
 
     const onClickHandler = useCallback(() => {
-        toggle()
+        const toggleType = type === 'register' ? 'login' : 'register'
+        dispatch<AppDispatchType>(setLoginType(toggleType))
         form.reset()
-    }, [])
+    }, [type])
 
     useEffect(() => {
         if (isAuth)
@@ -106,7 +108,7 @@ export const Login = () => {
                                 type="button"
                                 color="dimmed"
                                 onClick={onClickHandler}
-                                size="xs" >
+                                size="xs">
                                 {type === 'register'
                                     ? 'Есть аккаунт? Войдите!'
                                     : "Нет аккаунта? Зарегистрируйтесь"}
