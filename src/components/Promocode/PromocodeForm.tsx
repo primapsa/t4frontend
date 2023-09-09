@@ -11,7 +11,7 @@ import React from "react";
 import {PromocodesType} from "../../api/api";
 import {dateFormatDelimeter} from "../../utils/utils";
 
-const PromocodeForm = ({initValues}: PromocodeItemTypeForm) => {
+const PromocodeForm = ({initValues, onClose}: PromocodeItemTypeForm) => {
 
     const init = initValues ? {...initValues, date: new Date(initValues.date)} : initValues
     const dispatch = useDispatch()
@@ -29,7 +29,8 @@ const PromocodeForm = ({initValues}: PromocodeItemTypeForm) => {
 
         const promocode = {...fields, date: dateFormatDelimeter(new Date(fields.date).toISOString()), id: init?.id || 0}
         dispatch<AppDispatchType>(executePromocode(promocode))
-        form.reset()
+        //form.reset()
+        onClose()
     })
 
     return (
@@ -71,5 +72,6 @@ export default React.memo(PromocodeForm)
 
 type PromocodeItemTypeForm = {
     initValues?: PromocodeInitValueType
+    onClose: ()=> void
 }
 export type PromocodeInitValueType = undefined | PromocodesType
