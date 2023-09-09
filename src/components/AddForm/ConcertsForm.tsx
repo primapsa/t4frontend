@@ -13,14 +13,14 @@ import TextEditor from "../TextEditor/TextEditor";
 import {formatConcertRequest, formatConcertUpdateRequest} from "../../utils/concertRequestFromat";
 import {concertInitAdapter} from "../../utils/concertInitAdapter";
 import {useStyles} from "./style";
-import {getConcerts, getSingerVoice} from "../../selectors/selectors";
+import {getConcertType, getSingerVoice} from "../../selectors/selectors";
 
 const ConcertsForm = ({init, onClose}: InitialValuesType) => {
 
     const {classes} = useStyles()
     const initial = init ? concertInitAdapter(init) : init
     const [concertType, setConcertType] = useState<Number>(Number(initial?.typeId || ''))
-    const concertsType = useSelector<RootStateType, ConcertTypesType[]>(getConcerts)
+    const concertsType = useSelector<RootStateType, ConcertTypesType[]>(getConcertType)
     const singerVoice = useSelector<RootStateType, SingerVoiceType[]>(getSingerVoice)
 
     const currentDate = new Date();
