@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useMemo} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {AppDispatchType, RootStateType} from "../../../redux/store";
+import {AppDispatchType, RootStateType, useAppDispatch} from "../../../redux/store";
 import {ConcertsType} from "../../../api/api";
 import {PAGE} from "../../../const/page";
 import {Center, Flex} from '@mantine/core';
@@ -31,6 +31,7 @@ import {
 
 const Tickets = () => {
 
+    const dispatch = useAppDispatch()
     const {classes} = useStyles()
     const concerts = useSelector<RootStateType, ConcertsType[]>(getConcerts)
     const total = useSelector<RootStateType, number>(getTotal)
@@ -42,16 +43,16 @@ const Tickets = () => {
 
 
     const pages = Math.ceil(total / PAGE.ITEM_PER_PAGE)
-    const dispatch = useDispatch()
+
 
 
     useEffect(() => {
-        dispatch<AppDispatchType>(fetchConcertsAdmin())
+        dispatch(fetchConcertsAdmin())
     }, [page, total, query, type])
 
 
     const onChangeHandler = useCallback((page: number) => {
-        dispatch<AppDispatchType>(setPage(page))
+        dispatch(setPage(page))
     }, [page])
 
     const addToCartHandler = useCallback((cId: number) => {
@@ -59,7 +60,7 @@ const Tickets = () => {
         const concert = concerts.find(c => c.id == cId)
         if (concert) {
             const payload = makePayload(cId, concert.price, user.id)
-            dispatch<AppDispatchType>(addCart(payload))
+            dispatch(addCart(payload))
         }
 
     }, [concerts])
