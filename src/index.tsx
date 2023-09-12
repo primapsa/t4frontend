@@ -6,18 +6,19 @@ import reportWebVitals from './reportWebVitals';
 import {store} from "./redux/store";
 import {Provider} from 'react-redux';
 import {MantineProvider, Button} from '@mantine/core';
+import {appTheme} from "./appTheme";
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
 );
 root.render(
-    <React.StrictMode>
+
         <Provider store={store}>
-            <MantineProvider theme={{fontFamily: 'Open Sans'}} withGlobalStyles withNormalizeCSS>
+            <MantineProvider withGlobalStyles withNormalizeCSS theme={appTheme}>
                 <App/>
             </MantineProvider>
         </Provider>
-    </React.StrictMode>
+
 );
 
 // If you want to start measuring performance in your app, pass a function
