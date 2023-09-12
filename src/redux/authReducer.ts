@@ -12,26 +12,38 @@ import {
 import {MESSAGE} from "../const/messages";
 import {addAppStatus, addPopupContent} from "./appReducer";
 import {STATUS} from "../const/statuses";
+import {AxiosResponse} from "axios";
+import {AxiosError} from "axios/index";
 
+const init: AuthInitialType = {
+    isAuth: false,
+    type: 'login',
+    error: null,
+    isStaff: false,
+    user: {} as AuthUserType,
+    userId: null
+}
 
 export const login = createAsyncThunk('auth/login', async (credentials: CredentialsType, thunkAPI) => {
-        return asyncThunkActionWithLoading(authAPI.login, credentials, thunkAPI)
+
+        thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+        try {
+            const response = await authAPI.login(credentials)
+            thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+            if (response.status === HTTP_STATUSES.OK) {
+                return response.data
+            }
+            return handleUncaughtError(thunkAPI)
+        } catch (error) {
+            thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+            return thunkAPI.rejectWithValue((error as AxiosError<{ detail: string }>)?.response?.data?.detail)
+        }
     }
 )
 
 export const checkAuth = createAsyncThunk('auth/me', async (param, thunkAPI) => {
-    try {
-        const response = await authAPI.me()
-        if(!response.status){
-            thunkAPI.dispatch(addAppStatus(STATUS.ERROR))
-        }
-        if (response.status === HTTP_STATUSES.OK) {
-            if (response.data.code) return response.data.data
-        }
-        return handleUncaughtError(thunkAPI)
-    } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
-    }
+
+    return asyncThunkActionWithLoading(authAPI.me, undefined, thunkAPI)
 })
 
 export const socialLogin = createAsyncThunk('auth/socialLogin', async (credentials: string, thunkAPI) => {
@@ -51,13 +63,14 @@ export const registerUser = createAsyncThunk('auth/register', async (reg: AuthRe
         }
         return handleUncaughtError(thunkAPI)
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+        return thunkAPI.rejectWithValue((error as AxiosError)?.response?.data)
     }
 })
 
 export const authSlice = createSlice({
     name: 'auth',
-    initialState: authPersistGet(),
+    initialState: authPersistGet() || init,
     reducers: {
         logout(state) {
             state.isAuth = false
@@ -76,14 +89,35 @@ export const authSlice = createSlice({
                     const data = action.payload
                     state.isAuth = true
                     state.user = data
+                    state.userId = data.id
                     state.isStaff = data.is_staff
-                    // const storaged = {isAuth: true, isStaff: data.is_staff, user: data, type: 'login' as LoginType}
+                    state.error = null
                     authPersistPut(data)
                 }
+            })
+            .addCase(checkAuth.rejected, (state, action) => {
+                state.isAuth = false
+                state.user = {} as AuthUserType
+                state.userId = null
+                state.isStaff = false
+                localStorage.clear()
+                state.error = null
             })
             .addCase(registerUser.fulfilled, (state, action) => {
                 if (action.payload) {
                     state.type = action.payload
+                    state.error = null
+                }
+            })
+            .addCase(registerUser.rejected, (state, action) => {
+                if (action.payload) {
+                    state.error = action.payload as string
+                }
+            })
+            .addCase(login.rejected, (state, action) => {
+
+                if (action.payload) {
+                    state.error = action.payload as string
                 }
             })
             .addMatcher(isAnyOf(login.fulfilled, socialLogin.fulfilled), (state, action) => {
@@ -93,9 +127,10 @@ export const authSlice = createSlice({
                     state.isAuth = true
                     state.user = decodedToken
                     state.isStaff = decodedToken.is_staff
+                    state.userId = decodedToken.id
                     setTokens(data)
-                    //authPersistPut({isAuth: true, isStaff: decodedToken.is_staff, user: decodedToken})
                     authPersistPut(decodedToken)
+                    state.error = null
                 }
             })
     }
@@ -104,11 +139,14 @@ export const authSlice = createSlice({
 export const {logout, setLoginType} = authSlice.actions
 export default authSlice.reducer
 
+
 export type AuthInitialType = {
     isAuth: boolean
     isStaff: boolean
+    userId: number | null
     user: AuthUserType
     type: LoginType
+    error: string | null
 }
 export type LoginType = 'login' | 'register'
 export type AuthUserType = {
