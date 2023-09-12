@@ -1,12 +1,14 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {ChangeResponseType, concertAPI, ConcertsType, ConcertTypesType, SingerVoiceType} from "../api/api";
 import {STATUS} from "../const/statuses";
 import {AppDispatchType, RootStateType} from "./store";
 import {PAGE} from "../const/page";
 import {MESSAGE} from "../const/messages";
-import {addAppStatus} from "./appReducer";
+import {addAppStatus, AppStatus} from "./appReducer";
 import {HTTP_STATUSES} from "../const/htttpStatus";
 import {handleAppNotification, handleThunkError} from "../utils/utils";
+import {AxiosError} from "axios/index";
+import {array} from "yup";
 
 const initialState: InitialStateType = {
     list: [],
@@ -15,6 +17,7 @@ const initialState: InitialStateType = {
     status: STATUS.IDLE,
     total: PAGE.TOTAL,
     page: PAGE.NUMBER,
+    errors: null
 }
 
 const createAppAsyncThunk = createAsyncThunk.withTypes<{
@@ -71,7 +74,6 @@ export const fetchConcertsAdmin = createAsyncThunk('concerts/fetchAdminPage', (p
 
 export const addNewConcert = createAsyncThunk('concerts/addNewConcert', async (concert: any, thunkAPI) => {
 
-    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const response = await concertAPI.addConcert(concert)
         thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
@@ -82,7 +84,8 @@ export const addNewConcert = createAsyncThunk('concerts/addNewConcert', async (c
         }
 
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        handleThunkError(error as Error, thunkAPI)
+        return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError)?.response?.data))
     }
 })
 
@@ -101,18 +104,20 @@ export const updateConcert = createAppAsyncThunk('concerts/update', async (param
         }
 
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        handleThunkError(error as Error, thunkAPI)
+        return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError)?.response?.data))
     }
 })
 
 export const deleteConcert = createAsyncThunk('concerts/deleteConcert', async (id: number, thunkAPI) => {
+
     thunkAPI.dispatch(addStatus(STATUS.LOADING))
     try {
         const deleteConcert = await concertAPI.deleteConcert(id)
         thunkAPI.dispatch(addStatus(STATUS.IDLE))
 
         if (deleteConcert.status === HTTP_STATUSES.OK) {
-            handleAppNotification(STATUS.SUCCESS, MESSAGE.UPDATED, thunkAPI)
+            handleAppNotification(STATUS.SUCCESS, MESSAGE.REMOVED, thunkAPI)
             return {id} as ChangeResponseType
         }
 
@@ -131,6 +136,9 @@ export const concertSlice = createSlice({
         },
         setPage(state, action) {
             state.page = action.payload
+        },
+        clearConcertsErrors(state) {
+            state.errors = null
         }
     },
     extraReducers: (builder) => {
@@ -150,34 +158,65 @@ export const concertSlice = createSlice({
                 if (id) {
                     state.list = state.list.filter(concert => concert.id !== id)
                     state.total -= 1
+                    if(state.page > 1 && !state.list.length){
+                        state.page -= 1
+                    }
                 }
             })
             .addCase(addNewConcert.fulfilled, (state, action) => {
+                state.status = STATUS.SUCCESS
                 if (action.payload) {
-                    state.list.push(action.payload[0])
+                    state.total += 1
+                    state.errors = null
+                    if(state.list.length < PAGE.ITEM_PER_PAGE){
+                        state.list.push(action.payload[0])
+                    }
                 }
             })
+            .addCase(addNewConcert.pending, (state) => {
+                state.status = STATUS.LOADING
+            })
             .addCase(updateConcert.fulfilled, (state, action) => {
+                state.status = STATUS.SUCCESS
                 if (action.payload) {
                     const concert = action.payload[0]
                     state.list = state.list.map(c => c.id === concert.id ? concert : c)
+                    state.errors = null
                 }
+            })
+            .addCase(updateConcert.rejected, (state, action) => {
+                state.status = STATUS.ERROR
+                const error = action.payload as string
+                if (error) {
+                    state.errors = JSON.parse(error) as ConcertErrorsType
+                }
+            })
+            .addCase(updateConcert.pending, (state, action) => {
+                state.status = STATUS.LOADING
             })
             .addCase(addNewConcert.rejected, (state, action) => {
                 state.status = STATUS.ERROR
+                const error = action.payload as string
+                if (error) {
+                    state.errors = JSON.parse(error) as ConcertErrorsType
+                }
             })
+
     }
 })
-export const {addStatus, setPage} = concertSlice.actions
+export const {addStatus, setPage, clearConcertsErrors} = concertSlice.actions
 export default concertSlice.reducer
 
 type InitialStateType = {
     list: ConcertsType[]
     type: ConcertTypesType[]
     singerVoice: SingerVoiceType[]
-    status: ConcertStatusType
+    status: AppStatus
     total: number
     page: number
-
+    errors: ConcertErrorsType | null
+}
+export type ConcertErrorsType = {
+    [key: string]: string[]
 }
 export type ConcertStatusType = 'loading' | 'idle' | 'error' | 'success'
