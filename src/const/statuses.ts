@@ -2,5 +2,6 @@ export const STATUS = {
     IDLE: 'idle',
     LOADING: 'loading',
     SUCCESS: 'success',
-    ERROR: 'error'
+    ERROR: 'error',
+    OFFLINE: 'offline'
 } as const

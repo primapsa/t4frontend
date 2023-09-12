@@ -13,7 +13,6 @@ export const appSlice = createSlice({
     reducers: {
         addAppStatus(state, action: ActionType<AppStatus>) {
             state.status = action.payload
-
         },
         addAppStatusNotification(state, action: ActionType<AppNotificationType>) {
             state.status = action.payload.status
@@ -37,7 +36,7 @@ export default appSlice.reducer
 export type ActionType<T> = {
     payload: T
 }
-export type AppStatus = 'idle' | 'loading' | 'error' | 'success'
+export type AppStatus = 'idle' | 'loading' | 'error' | 'success' | 'offline'
 export type AppNotificationType = {
     status: AppStatus
     message: string
