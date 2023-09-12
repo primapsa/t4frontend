@@ -1,19 +1,17 @@
-import {Container, Text, Title, Center, Flex} from '@mantine/core';
+import {Center, Flex, Text, Title} from '@mantine/core';
 import {useStyles} from "./styles";
 import React from "react";
 import {useSelector} from "react-redux";
 import {RootStateType} from "../../redux/store";
-import {AppStatus} from "../../redux/appReducer";
-import {getStatus} from "../../selectors/selectors";
-import {STATUS} from "../../const/statuses";
+import {getMemoOfflineStatus} from "../../selectors/selectors";
 
 const Unavaliable = ({children}: UnavalibalePropsType) => {
     const {classes} = useStyles();
-    const status = useSelector<RootStateType, AppStatus>(getStatus)
+    const status = useSelector<RootStateType>(getMemoOfflineStatus)
 
     return (
         <>
-            {status === STATUS.ERROR ?
+            {status ?
                 <Center>
                     <Flex className={classes.root}>
                         <div className={classes.label}>Unavaliable</div>
@@ -28,7 +26,8 @@ const Unavaliable = ({children}: UnavalibalePropsType) => {
         </>
     );
 }
-export default Unavaliable
+
+export default React.memo(Unavaliable)
 
 type UnavalibalePropsType = {
     children: React.ReactNode

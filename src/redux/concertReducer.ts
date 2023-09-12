@@ -12,7 +12,6 @@ const initialState: InitialStateType = {
 export const fetchConcert = createAsyncThunk('concert/fetchConcert', async (id: number, thunkAPI) => {
 
     return asyncThunkActionWithLoading(concertAPI.fetchConcert, id, thunkAPI)
-
 })
 
 export const concertSlice = createSlice({

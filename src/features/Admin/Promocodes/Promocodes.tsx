@@ -1,40 +1,31 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React from 'react';
 import {Button, Center, Flex, Modal} from '@mantine/core';
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatchType, RootStateType, useAppDispatch} from "../../../redux/store";
-import {PromocodesType} from "../../../api/api";
-import {deletePromocode, fetchPromocodes} from "../../../redux/promocodesReducer";
 import ActionBar from "../../../components/ActionBar/ActionBar";
-import PromocodeForm, {PromocodeInitValueType} from "../../../components/Promocode/PromocodeForm";
+import PromocodeForm from "../../../components/Promocode/PromocodeForm";
 import Promocode from "../../../components/Promocode/Promocode";
 import {useStyles} from "./styles";
 import EmptyStateWithLoader from "../../../components/Empty/EmptyStateWithLoader";
-import {AppStatus} from "../../../redux/appReducer";
-import {getPromocodes, getStatus} from "../../../selectors/selectors";
+import {usePromocodes} from "../../../hooks/usePromocodes";
+import Pagination from "../../../components/Pagination/Pagination";
+import {STATUS} from "../../../const/statuses";
 
 const Promocodes = () => {
 
     const {classes} = useStyles()
-    const promocodes = useSelector<RootStateType, PromocodesType[]>(getPromocodes)
-    const status = useSelector<RootStateType, AppStatus>(getStatus)
-
-    const [isModal, setIsModal] = useState<boolean>(false)
-    const [itemEdit, setItemEdit] = useState<PromocodeInitValueType>(undefined)
-    const dispatch = useAppDispatch()
-
-    const deleteItemHandler = useCallback((id: number) => {
-        dispatch(deletePromocode(id))
-    }, [promocodes])
-
-    const editItemHandler = useCallback((pId: number) => {
-        if (promocodes) {
-            const promocode = promocodes.find(({id}) => id === pId)
-            if (promocode) {
-                setItemEdit(promocode)
-                setIsModal(true)
-            }
-        }
-    }, [promocodes])
+    const {
+        promocodes,
+        deleteItemHandler,
+        editItemHandler,
+        status,
+        onClickHandler,
+        closeModal,
+        isModal,
+        itemEdit,
+        onModalCloseHandler,
+        page,
+        pages,
+        onChangePageHandler
+    } = usePromocodes()
 
     const list = promocodes.map(p =>
         <Flex key={p.id} className={classes.promocode}>
@@ -43,32 +34,25 @@ const Promocodes = () => {
         </Flex>
     )
 
-    useEffect(() => {
-        dispatch(fetchPromocodes())
-    }, [])
-
-    const onModalCloseHandler = useCallback(() => setIsModal(false), [])
-    const onClickHandler = useCallback(() => {
-        setItemEdit(undefined)
-        setIsModal(true)
-    }, [])
-    const closeModal = useCallback(() => setIsModal(false), [])
-
-
     return (
-        <EmptyStateWithLoader isEmpty={!promocodes.length} status={status}>
             <Center>
                 <Flex className={classes.wrapper}>
-                    <Button className={classes.button} onClick={onClickHandler}>Добавить промокод</Button>
+                    <Button className={classes.button}
+                            onClick={onClickHandler}
+                            disabled={status === STATUS.LOADING}>
+                        Добавить промокод
+                    </Button>
                     <Modal opened={isModal} onClose={closeModal}>
                         <PromocodeForm initValues={itemEdit} onClose={onModalCloseHandler}/>
                     </Modal>
-                    <Flex className={classes.promocodes}>
-                        {list}
-                    </Flex>
+                    <EmptyStateWithLoader isEmpty={!list.length} status={status}>
+                        <Flex className={classes.promocodes}>
+                            {list}
+                        </Flex>
+                        <Pagination total={pages} page={page} onChange={onChangePageHandler}></Pagination>
+                    </EmptyStateWithLoader>
                 </Flex>
             </Center>
-        </EmptyStateWithLoader>
     );
 };
 

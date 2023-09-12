@@ -1,51 +1,17 @@
-import React, {useCallback, useEffect} from 'react';
-import {GoogleMap, MarkerF, useLoadScript} from "@react-google-maps/api";
+import React from 'react';
+import {GoogleMap, MarkerF} from "@react-google-maps/api";
 import {Button, Center, Flex, Image, Paper, Text, TypographyStylesProvider} from '@mantine/core';
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatchType, RootStateType} from "../../redux/store";
-import {ConcertsType} from "../../api/api";
-import {useParams} from "react-router-dom";
-import {fetchConcert} from "../../redux/concertReducer";
-import {AppStatus} from "../../redux/appReducer";
 import {useStyles} from "./styles";
 import {IconClockHour3, IconMapPinFilled, IconWallet} from "@tabler/icons-react";
-import {dateFormatDelimeter, makePayload} from "../../utils/utils";
 import {MEDIA} from "../../const/media";
-import {addCart} from "../../redux/cartReducer";
-import {AuthUserType} from "../../redux/authReducer";
 import EmptyStateWithLoader from "../Empty/EmptyStateWithLoader";
 import Preloader from "../Preloader/Preloader";
+import {useSingleConcert} from "../../hooks/useSingleConcert";
 
 const Concert = () => {
 
     const {classes} = useStyles()
-    const {id} = useParams()
-    const concert = useSelector<RootStateType, ConcertsType>(state => state.concert.item)
-    const status = useSelector<RootStateType, AppStatus>(state => state.app.status)
-    const user = useSelector<RootStateType, AuthUserType>(state => state.auth.user)
-    const isAdmin = useSelector<RootStateType, boolean>(state => state.auth.isStaff)
-    const {isLoaded} = useLoadScript({
-        googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
-    });
-
-    const place = {lat: parseFloat(concert.latitude), lng: parseFloat(concert.longitude)} as const
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-        if (id) {
-            dispatch<AppDispatchType>(fetchConcert(parseInt(id, 10)))
-        }
-
-    }, [])
-
-    const addToCartHandler = useCallback(() => {
-        if (concert) {
-            const payload = makePayload(concert.id, concert.price, user.id)
-            dispatch<AppDispatchType>(addCart(payload))
-        }
-    }, [id])
-
-    const dateTime = dateFormatDelimeter(concert.date)
+    const {concert, status, dateTime, isAdmin, addToCartHandler, isLoaded, place} = useSingleConcert()
 
     return (
         <EmptyStateWithLoader isEmpty={!Object.keys(concert).length} status={status}>

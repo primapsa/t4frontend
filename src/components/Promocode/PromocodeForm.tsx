@@ -1,37 +1,14 @@
-import {useDispatch} from "react-redux";
-import {useForm, yupResolver} from "@mantine/form";
-import {FORM} from "../../const/form";
-import {addPromocode, editPromocode} from "../../redux/promocodesReducer";
-import {AppDispatchType} from "../../redux/store";
 import {Box, Button, Group, NumberInput, rem, TextInput} from "@mantine/core";
 import {PROMOCODES} from "../../const/settings";
 import {DateTimePicker} from "@mantine/dates";
 import {IconCalendarTime} from "@tabler/icons-react";
 import React from "react";
 import {PromocodesType} from "../../api/api";
-import {dateFormatDelimeter} from "../../utils/utils";
+import {usePromocodeForm} from "../../hooks/usePromocodeForm";
 
 const PromocodeForm = ({initValues, onClose}: PromocodeItemTypeForm) => {
 
-    const init = initValues ? {...initValues, date: new Date(initValues.date)} : initValues
-    const dispatch = useDispatch()
-    const form = useForm({
-        validateInputOnBlur: true,
-        initialValues: init || FORM.INIT.PROMOCODES,
-        validate: yupResolver(FORM.VALIDATION.PROMOCODES),
-    });
-    const buttonDisable = !form.isValid()
-    const buttonName = init ? 'Изменить' : 'Добавить'
-    const currentDate = new Date()
-    const executePromocode = init ? editPromocode : addPromocode
-
-    const formHandler = form.onSubmit((fields) => {
-
-        const promocode = {...fields, date: dateFormatDelimeter(new Date(fields.date).toISOString()), id: init?.id || 0}
-        dispatch<AppDispatchType>(executePromocode(promocode))
-        //form.reset()
-        onClose()
-    })
+  const {formHandler, form, currentDate, buttonName, buttonDisable} = usePromocodeForm({initValues, onClose})
 
     return (
         <form onSubmit={formHandler}>
@@ -70,7 +47,7 @@ const PromocodeForm = ({initValues, onClose}: PromocodeItemTypeForm) => {
 export default React.memo(PromocodeForm)
 
 
-type PromocodeItemTypeForm = {
+export type PromocodeItemTypeForm = {
     initValues?: PromocodeInitValueType
     onClose: ()=> void
 }

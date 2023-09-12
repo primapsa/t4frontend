@@ -1,34 +1,20 @@
-import React, {useCallback, useState} from 'react';
+import React from 'react';
 import {Badge, Button, Flex, Input} from '@mantine/core';
 import {IconPlus} from '@tabler/icons-react';
 import {useStyles} from "./style";
+import {usePromocodeBar} from "../../hooks/usePromocodeBar";
 
 
 const PromocodeBar = ({promocode, id, addCallback}: PromocodePropsType) => {
 
     const {classes} = useStyles()
-    const [isVisible, setIsVisible] = useState<boolean>(false)
-    const [value, setValue] = useState<string>(promocode || '')
-    const addHandler = useCallback(() => {
-        addCallback(value, id)
-        setValue('')
-        setIsVisible(false)
-    },[id, value, addCallback])
-
-    const showHandler = useCallback(() => {
-        setIsVisible(!isVisible)
-    },[isVisible])
-
-    const onChangeHandler = useCallback((e: React.ChangeEvent<HTMLInputElement>) =>
-        setValue(e.target.value),[value])
-
-    const buttonName = isVisible ? 'Закрыть' : 'Промокод'
+    const {buttonName, value, isVisible, onChangeHandler, addHandler, showHandler} = usePromocodeBar({promocode, id, addCallback})
 
     return (
         <Flex className={classes.badge}>
             {
                 !!promocode ?
-                    <Badge className={classes.badge} variant="outline" >
+                    <Badge className={classes.badge} variant="outline">
                         {promocode}
                     </Badge> :
                     <Button variant="subtle" compact onClick={showHandler}>
@@ -60,7 +46,7 @@ const PromocodeBar = ({promocode, id, addCallback}: PromocodePropsType) => {
 export default React.memo(PromocodeBar);
 
 
-type PromocodePropsType = {
+export type PromocodePropsType = {
     promocode: string | null
     id: number
     addCallback: (promocode: string, id: number) => void

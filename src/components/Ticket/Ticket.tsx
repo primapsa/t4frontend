@@ -5,7 +5,7 @@ import {IconClockHour3, IconMapPinFilled, IconWallet} from "@tabler/icons-react"
 import {dateFormat} from "../../utils/utils";
 import {useStyles} from "./styles";
 
-const Ticket = ({id, source, title, address, date, price, onAddToCart}: TicketPropsType) => {
+const Ticket = ({id, source, title, address, date, price,onAddToCart}: TicketPropsType) => {
 
     const {classes} = useStyles()
     const onclickHandler = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -39,7 +39,7 @@ const Ticket = ({id, source, title, address, date, price, onAddToCart}: TicketPr
                 <Text  className={classes.address}>от {price} USD</Text>
             </Flex>
             <Flex className={classes.buy}>
-                <Button onClick={onclickHandler} variant={"outline"}>Купить</Button>
+                <Button onClick={onclickHandler}  variant={"outline"}>Купить</Button>
             </Flex>
         </Card>
     )

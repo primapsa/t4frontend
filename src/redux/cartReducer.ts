@@ -39,6 +39,7 @@ export const addCart = createAsyncThunk('cart/add', async (cart: CartAddType, th
 })
 
 export const deleteCart = createAsyncThunk('cart/delete', async (cartId: number, thunkAPI) => {
+
     thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const response = await cartAPI.deleteCart(cartId)

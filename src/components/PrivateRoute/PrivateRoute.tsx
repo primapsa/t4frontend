@@ -3,7 +3,7 @@ import {Navigate, Outlet} from "react-router-dom";
 import {LINKS} from "../../const/routes";
 import {useSelector} from "react-redux";
 import {RootStateType} from "../../redux/store";
-import HeaderUser from "../Header/HeaderUser";
+import HeaderUser from "../Header/Header";
 import {getIsAuth, getIsStaff} from "../../selectors/selectors";
 
 const PrivateRoute = () => {

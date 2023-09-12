@@ -11,6 +11,7 @@ import {
     handleThunkError,
     handleUncaughtError
 } from "../utils/utils";
+import {concertSlice} from "./concertsReducer";
 
 const initialState: InitialStateType = {
     list: [],
@@ -19,17 +20,17 @@ const initialState: InitialStateType = {
     status: STATUS.IDLE
 }
 
-export const fetchPromocodes = createAsyncThunk('promocodes/fetch', async (param, thunkAPI) => {
+export const fetchPromocodes = createAsyncThunk('promocodes/fetch', async (page: number, thunkAPI) => {
 
-    return asyncThunkActionWithLoading(promocodeAPI.fetchPromocodes,undefined,thunkAPI)
+    return asyncThunkActionWithLoading(promocodeAPI.fetchPromocodes, page, thunkAPI)
 })
 
 export const deletePromocode = createAsyncThunk('promocodes/delete', async (id: number, thunkAPI) => {
-    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
 
+    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const response = await promocodeAPI.deletePromocode(id)
-        if(response.status === HTTP_STATUSES.NO_CONTENT){
+        if (response.status === HTTP_STATUSES.NO_CONTENT) {
             thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
             handleAppNotification(STATUS.SUCCESS, MESSAGE.REMOVED, thunkAPI)
             return {id}
@@ -40,7 +41,9 @@ export const deletePromocode = createAsyncThunk('promocodes/delete', async (id: 
         return handleThunkError(error as Error, thunkAPI)
     }
 })
+
 export const addPromocode = createAsyncThunk('promocode/add', async (promocode: PromocodeAddType, thunkAPI) => {
+
     thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const response = await promocodeAPI.addPromocode(promocode)
@@ -56,7 +59,9 @@ export const addPromocode = createAsyncThunk('promocode/add', async (promocode: 
         return handleThunkError(error as Error, thunkAPI)
     }
 })
+
 export const editPromocode = createAsyncThunk('promocode/edit', async (promocode: PromocodesType, thunkAPI) => {
+
     thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const response = await promocodeAPI.editPromocode(promocode)
@@ -91,19 +96,28 @@ export const promocodeSlice = createSlice({
             })
             .addCase(deletePromocode.fulfilled, (state, action) => {
                 state.list = state.list.filter(({id}) => id !== (action.payload?.id) as number)
+                state.total -= 1
+                if (state.page > 1 && !state.list.length) {
+                    state.page -= 1
+                }
             })
             .addCase(addPromocode.fulfilled, (state, action) => {
-                if (action.payload)
-                    state.list.push(action.payload)
+                if (action.payload) {
+                    state.total += 1
+                    if (state.list.length < PAGE.ITEM_PER_PAGE) {
+                        state.list.push(action.payload)
+                    }
+                }
+
             })
             .addCase(editPromocode.fulfilled, (state, action) => {
                 const response = action.payload
-                if(response)
-                state.list = state.list.map( p => p.id === response.id ? response : p)
+                if (response)
+                    state.list = state.list.map(p => p.id === response.id ? response : p)
             })
     }
 })
-
+export const {setPage} = promocodeSlice.actions
 export default promocodeSlice.reducer
 
 type InitialStateType = {

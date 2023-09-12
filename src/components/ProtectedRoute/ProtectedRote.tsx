@@ -2,7 +2,7 @@ import React from 'react';
 import {Navigate, Outlet} from "react-router-dom";
 import {useSelector} from "react-redux";
 import {RootStateType} from "../../redux/store";
-import HeaderUser from "../Header/HeaderUser";
+import HeaderUser from "../Header/Header";
 import {LINKS} from "../../const/routes";
 import {getIsAuth, getIsStaff} from "../../selectors/selectors";
 

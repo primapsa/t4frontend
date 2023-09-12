@@ -1,39 +1,13 @@
-import React, {useCallback, useEffect} from 'react';
-import {fetchConcertsTypes} from "../../redux/concertsReducer";
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatchType, RootStateType} from "../../redux/store";
-import {ConcertTypesType} from "../../api/api";
+import React from 'react';
 import {Button, Input, Select} from '@mantine/core';
 import {IconSearch} from '@tabler/icons-react';
-import {useForm} from '@mantine/form';
-import {resetFilter, setFilter} from "../../redux/filterReducer";
 import {useStyles} from "./styles";
-import {getConcertType, getFilterQuery, getFilterType} from "../../selectors/selectors";
+import {useFilter} from "../../hooks/useFilter";
 
 const Filter = () => {
 
     const {classes} = useStyles()
-    const types = useSelector<RootStateType, ConcertTypesType[]>(getConcertType)
-    const query = useSelector<RootStateType, string>(getFilterQuery)
-    const type = useSelector<RootStateType, number>(getFilterType)
-    const dispatch = useDispatch()
-
-    const form = useForm({
-        initialValues: {query, type},
-    });
-
-    useEffect(() => {
-        dispatch<AppDispatchType>(fetchConcertsTypes())
-    }, [])
-
-    const formHandler = form.onSubmit((fields) => {
-        dispatch<AppDispatchType>(setFilter(fields))
-    })
-    const resetHandler = useCallback(() => {
-        dispatch<AppDispatchType>(resetFilter())
-        form.reset()
-    }, [])
-
+    const {form, formHandler, resetHandler, types} = useFilter()
 
     return (
         <form onSubmit={formHandler} className={classes.form}>

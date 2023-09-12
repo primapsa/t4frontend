@@ -3,8 +3,7 @@ import {REST_API} from "../const/restApi";
 import {PAGE} from "../const/page";
 import {addRequestHeader, makeQuery, refreshExpiredToken} from "../utils/utils";
 
-const axiosInstance = axios.create({baseURL: REST_API.BASE_URL2})
-
+const axiosInstance = axios.create({baseURL: REST_API.BASE_URL})
 axiosInstance.interceptors.request.use(addRequestHeader)
 axiosInstance.interceptors.response.use(config => config, refreshExpiredToken(axiosInstance))
 
@@ -33,6 +32,7 @@ export const concertAPI = {
         return axiosInstance.put<ConcertsType[]>(`concerts/${id}`, concert, {headers: {'Content-Type': 'multipart/form-data'}})
     }
 }
+
 export const promocodeAPI = {
     fetchPromocodes(page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
         return axiosInstance.get<ResponseType<PromocodesType[]>>(`promocodes/?count=${count}&page=${page}`)
@@ -47,6 +47,7 @@ export const promocodeAPI = {
         return axiosInstance.put<PromocodesType>(`promocodes/${promocode.id}`, promocode)
     }
 }
+
 export const cartAPI = {
     fetchUserCart(userId: number) {
         return axiosInstance.get<CartConcertsType[]>(`cart/user/${userId}`)
@@ -67,11 +68,13 @@ export const cartAPI = {
         return axiosInstance.patch<PatchCartType>(`cart/${param.id}`, param.cart)
     }
 }
+
 export const paypalAPI = {
     createOrder(ids: number[]) {
         return axiosInstance.post('paypal/create/', {ids})
     },
 }
+
 export const authAPI = {
     login(credentials: CredentialsType) {
         return axiosInstance.post<AuthResponseType>('user/login/', credentials)
@@ -86,7 +89,7 @@ export const authAPI = {
         return axiosInstance.post<AuthRegisterType>('user/register/', register)
     },
     refreshToken(token: { refresh: string }) {
-        return axiosInstance.post<RefreshTokenResponseType>('token/refresh/', token)
+        return axios.post<RefreshTokenResponseType>(REST_API.BASE_URL+'token/refresh/', token)
     }
 }
 
@@ -135,8 +138,7 @@ type RefreshTokenResponseType = {
     access: string
 }
 export type AuthMeResponse = {
-    code: number
-    data?: AuthMeType
+    data: AuthMeType
 }
 export type AuthMeType = {
     email: string
