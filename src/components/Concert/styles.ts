@@ -1,17 +1,9 @@
 import {createStyles, rem} from "@mantine/core";
-import {boolean} from "yup";
 
 export const useStyles = createStyles((theme) => ({
 
     center: {
         marginTop: '20px'
-        // display: 'flex',
-        // alignItems: 'start',
-        // [theme.fn.smallerThan('sm')]: {
-        //     flexDirection: 'column',
-        //     alignItems: 'center',
-        //     padding: '0 10px'
-        // },
     },
     paper: {
         padding: '30px',

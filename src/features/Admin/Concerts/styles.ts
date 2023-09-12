@@ -7,7 +7,8 @@ export const useStyles = createStyles(() => ({
         justifyContent: 'center',
     },
     wrapper: {
-        maxWidth: '700px',
+        maxWidth: '850px',
+        height: '100%',
         width: '100%',
         flexDirection: 'column',
         alignItems: 'center',
