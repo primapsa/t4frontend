@@ -28,7 +28,7 @@ export const Login = () => {
             <Flex className={classes.container}>
                 <Paper radius="md" p="xl" withBorder className={classes.wrapper}>
                     <GoogleOAuthProvider
-                        clientId={'161049581039-40i0002ne5afm5uojndu52g73qoe5g5e.apps.googleusercontent.com'}>
+                        clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID as string}>
                         <Text size="lg">
                             {type === 'login' ? 'Войти с помощью' : 'Регистрация'}
                         </Text>
