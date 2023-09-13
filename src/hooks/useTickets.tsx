@@ -44,13 +44,14 @@ export const useTickets = () => {
         dispatch(setPage(page))
     }, [page])
 
-    const addToCartHandler = (cId: number) => {
+    const addToCartHandler =useCallback((cId: number) => {
         const concert = concerts.find(c => c.id == cId)
         if (concert && userId) {
             const payload = makePayload(cId, concert.price, userId)
             dispatch(addCart(payload))
         }
-    }
+    }, [userId])
+
 
     const list = concerts.map(concert =>
         <Link
