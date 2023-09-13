@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
-import {authAPI, AuthRequestRegType, CredentialsType} from "../api/api";
+import {authAPI, AuthRequestRegType, CredentialsType, promocodeAPI} from "../api/api";
 import {HTTP_STATUSES} from "../const/htttpStatus";
 import {
     asyncThunkActionWithLoading,
@@ -7,12 +7,12 @@ import {
     authPersistPut,
     handleThunkError,
     handleUncaughtError,
-    parseJwt, setTokens
+    parseJwt,
+    setTokens
 } from "../utils/utils";
 import {MESSAGE} from "../const/messages";
 import {addAppStatus, addPopupContent} from "./appReducer";
 import {STATUS} from "../const/statuses";
-import {AxiosResponse} from "axios";
 import {AxiosError} from "axios/index";
 
 const init: AuthInitialType = {
@@ -36,7 +36,7 @@ export const login = createAsyncThunk('auth/login', async (credentials: Credenti
             return handleUncaughtError(thunkAPI)
         } catch (error) {
             thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
-            return thunkAPI.rejectWithValue((error as AxiosError<{ detail: string }>)?.response?.data?.detail)
+            return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError).response?.data))
         }
     }
 )
@@ -64,7 +64,7 @@ export const registerUser = createAsyncThunk('auth/register', async (reg: AuthRe
         return handleUncaughtError(thunkAPI)
     } catch (error) {
         thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
-        return thunkAPI.rejectWithValue((error as AxiosError)?.response?.data)
+        return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError).response?.data))
     }
 })
 
@@ -117,8 +117,15 @@ export const authSlice = createSlice({
             .addCase(login.rejected, (state, action) => {
 
                 if (action.payload) {
-                    state.error = action.payload as string
+                    const err = JSON.parse(action.payload as string)
+                    state.error = err.detail
                 }
+            })
+            .addCase(login.pending, (state) => {
+                state.error = null
+            })
+            .addCase(registerUser.pending, (state) => {
+                state.error = null
             })
             .addMatcher(isAnyOf(login.fulfilled, socialLogin.fulfilled), (state, action) => {
                 if (action.payload) {

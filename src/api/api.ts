@@ -94,7 +94,7 @@ export const authAPI = {
 }
 
 
-type ResponseType<T> = {
+export type ResponseType<T> = {
     data: T
     total: number
 }

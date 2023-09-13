@@ -1,7 +1,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {PromocodeAddType, promocodeAPI} from "../api/api";
 import {PAGE} from "../const/page";
-import {addAppStatus, addAppStatusNotification, AppStatus} from "./appReducer";
+import {addAppStatus, AppStatus} from "./appReducer";
 import {STATUS} from "../const/statuses";
 import {MESSAGE} from "../const/messages";
 import {HTTP_STATUSES} from "../const/htttpStatus";
@@ -11,7 +11,7 @@ import {
     handleThunkError,
     handleUncaughtError
 } from "../utils/utils";
-import {concertSlice} from "./concertsReducer";
+import {AxiosError} from "axios";
 
 const initialState: InitialStateType = {
     list: [],
@@ -27,7 +27,6 @@ export const fetchPromocodes = createAsyncThunk('promocodes/fetch', async (page:
 
 export const deletePromocode = createAsyncThunk('promocodes/delete', async (id: number, thunkAPI) => {
 
-    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const response = await promocodeAPI.deletePromocode(id)
         if (response.status === HTTP_STATUSES.NO_CONTENT) {
@@ -38,7 +37,7 @@ export const deletePromocode = createAsyncThunk('promocodes/delete', async (id: 
         return handleUncaughtError(thunkAPI)
 
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -56,7 +55,7 @@ export const addPromocode = createAsyncThunk('promocode/add', async (promocode: 
         return handleUncaughtError(thunkAPI)
 
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -72,7 +71,7 @@ export const editPromocode = createAsyncThunk('promocode/edit', async (promocode
         }
         return handleUncaughtError(thunkAPI)
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
 

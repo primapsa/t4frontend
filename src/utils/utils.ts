@@ -117,7 +117,7 @@ export const generateImageFromUrl = async (url: string, name: string) => {
     return file
 }
 
-export const handleThunkError = (error: Error, thunkAPI: any) => {
+export const handleThunkError = (error: AxiosError, thunkAPI: any): string => {
     thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
     const notification = {status: STATUS.ERROR, message: error.message}
 
@@ -127,7 +127,7 @@ export const handleThunkError = (error: Error, thunkAPI: any) => {
         thunkAPI.dispatch(addAppStatusNotification(notification))
     }
 
-    return thunkAPI.rejectWithValue(error)
+    return thunkAPI.rejectWithValue(JSON.stringify(error.response?.data))
 }
 
 export const handleUncaughtError = (thunkAPI: any) => {
@@ -148,7 +148,7 @@ export const asyncThunkActionWithLoading = async (action: Function, actionParam:
         }
         return handleUncaughtError(thunkAPI)
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 }
 

@@ -1,5 +1,12 @@
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {ChangeResponseType, concertAPI, ConcertsType, ConcertTypesType, SingerVoiceType} from "../api/api";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {
+    ChangeResponseType,
+    concertAPI,
+    ConcertsType,
+    ConcertTypesType,
+    ResponseType,
+    SingerVoiceType
+} from "../api/api";
 import {STATUS} from "../const/statuses";
 import {AppDispatchType, RootStateType} from "./store";
 import {PAGE} from "../const/page";
@@ -8,7 +15,6 @@ import {addAppStatus, AppStatus} from "./appReducer";
 import {HTTP_STATUSES} from "../const/htttpStatus";
 import {handleAppNotification, handleThunkError} from "../utils/utils";
 import {AxiosError} from "axios/index";
-import {array} from "yup";
 
 const initialState: InitialStateType = {
     list: [],
@@ -39,7 +45,7 @@ export const fetchConcerts = createAsyncThunk('concerts/fetchConcerts', async (p
         thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
         return concerts.data
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -49,7 +55,7 @@ export const fetchConcertsTypes = createAsyncThunk('concerts/fetchConcertsType',
             const concertTypes = await concertAPI.fetchConcertType()
             return concertTypes.data
         } catch (error) {
-            return handleThunkError(error as Error, thunkAPI)
+            return handleThunkError(error as AxiosError, thunkAPI)
         }
     }
 )
@@ -60,7 +66,7 @@ export const fetchSingerVoice = createAsyncThunk
         return singerVoice.data
 
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -84,8 +90,7 @@ export const addNewConcert = createAsyncThunk('concerts/addNewConcert', async (c
         }
 
     } catch (error) {
-        handleThunkError(error as Error, thunkAPI)
-        return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError)?.response?.data))
+      return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -104,8 +109,7 @@ export const updateConcert = createAppAsyncThunk('concerts/update', async (param
         }
 
     } catch (error) {
-        handleThunkError(error as Error, thunkAPI)
-        return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError)?.response?.data))
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -122,7 +126,7 @@ export const deleteConcert = createAsyncThunk('concerts/deleteConcert', async (i
         }
 
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 
 })
@@ -144,8 +148,8 @@ export const concertSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchConcerts.fulfilled, (state, action) => {
-                state.list = action.payload?.data as ConcertsType[]
-                state.total = action.payload?.total as number
+                state.list = (action.payload as ResponseType<ConcertsType[]>).data
+                state.total = (action.payload as ResponseType<ConcertsType[]>).total
             })
             .addCase(fetchConcertsTypes.fulfilled, (state, action) => {
                 state.type = action.payload as ConcertTypesType[]
@@ -154,7 +158,7 @@ export const concertSlice = createSlice({
                 state.singerVoice = action.payload as SingerVoiceType[]
             })
             .addCase(deleteConcert.fulfilled, (state, action) => {
-                const id = Number(action.payload?.id)
+                const id = Number((action.payload as ChangeResponseType).id)
                 if (id) {
                     state.list = state.list.filter(concert => concert.id !== id)
                     state.total -= 1
@@ -169,7 +173,7 @@ export const concertSlice = createSlice({
                     state.total += 1
                     state.errors = null
                     if(state.list.length < PAGE.ITEM_PER_PAGE){
-                        state.list.push(action.payload[0])
+                        state.list.push(action.payload[0] as ConcertsType)
                     }
                 }
             })
@@ -179,7 +183,7 @@ export const concertSlice = createSlice({
             .addCase(updateConcert.fulfilled, (state, action) => {
                 state.status = STATUS.SUCCESS
                 if (action.payload) {
-                    const concert = action.payload[0]
+                    const concert = action.payload[0] as ConcertsType
                     state.list = state.list.map(c => c.id === concert.id ? concert : c)
                     state.errors = null
                 }

@@ -11,6 +11,7 @@ import {
     handleThunkError,
     handleUncaughtError
 } from "../utils/utils";
+import {AxiosError} from "axios/index";
 
 const initialState: InitialStateType = {
     list: []
@@ -34,13 +35,12 @@ export const addCart = createAsyncThunk('cart/add', async (cart: CartAddType, th
         return handleUncaughtError(thunkAPI)
 
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
 
 export const deleteCart = createAsyncThunk('cart/delete', async (cartId: number, thunkAPI) => {
 
-    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const response = await cartAPI.deleteCart(cartId)
         thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
@@ -49,7 +49,7 @@ export const deleteCart = createAsyncThunk('cart/delete', async (cartId: number,
         }
         return handleUncaughtError(thunkAPI)
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -65,7 +65,7 @@ export const deleteCartUser = createAsyncThunk('cart/deleteCartUser',
             }
             return handleUncaughtError(thunkAPI)
         } catch (error) {
-            return handleThunkError(error as Error, thunkAPI)
+            return handleThunkError(error as AxiosError, thunkAPI)
         }
     })
 
@@ -79,7 +79,7 @@ export const updateCart = createAsyncThunk('cart/update', async (cart: { id: num
         }
         return handleUncaughtError(thunkAPI)
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI )
+        return handleThunkError(error as AxiosError, thunkAPI )
     }
 })
 
@@ -98,9 +98,10 @@ export const validatePromocode = createAsyncThunk('cart/validatePromocode', asyn
         return handleAppNotification(STATUS.ERROR,MESSAGE.NOT_FOUND, thunkAPI )
 
     } catch (error) {
-        return handleThunkError(error as Error, thunkAPI)
+        return handleThunkError(error as AxiosError, thunkAPI)
     }
 })
+
 export const cartSlice = createSlice({
     name: 'cart',
     initialState,
