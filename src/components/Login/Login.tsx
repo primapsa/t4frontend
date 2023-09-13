@@ -16,15 +16,18 @@ import {GoogleLogin, GoogleOAuthProvider} from '@react-oauth/google';
 import PreloaderExt from "../Preloader/PreloaderExt";
 import {useLogin} from "../../hooks/useLogin";
 import {useStyles} from "./style";
-
+import {Navigate} from "react-router-dom";
 
 export const Login = () => {
 
-    const {isLoading, type, form, formHandler, onClickHandler, onGoogleSuccess} = useLogin()
+    const {isLoading, type, form, formHandler, onClickHandler, onGoogleSuccess, isAuth} = useLogin()
     const {classes} = useStyles()
 
+
     return (
-        <PreloaderExt isLoaded={!!isLoading}>
+        <>
+            { isAuth &&  <Navigate to="/" />}
+            <PreloaderExt isLoaded={!!isLoading}>
             <Flex className={classes.container}>
                 <Paper radius="md" p="xl" withBorder className={classes.wrapper}>
                     <GoogleOAuthProvider
@@ -88,8 +91,8 @@ export const Login = () => {
                     </GoogleOAuthProvider>
                 </Paper>
             </Flex>
-
         </PreloaderExt>
+        </>
 
     );
 }
