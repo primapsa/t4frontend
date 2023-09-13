@@ -3,7 +3,6 @@ import {AppDispatchType, RootStateType} from "../redux/store";
 import {login, LoginType, registerUser, setLoginType, socialLogin} from "../redux/authReducer";
 import {getIsAuth, getMemoLoadingStatus} from "../selectors/selectors";
 import {AppStatus} from "../redux/appReducer";
-import {useNavigate} from "react-router-dom";
 import {useForm, yupResolver} from "@mantine/form";
 import {FORM} from "../const/form";
 import {useCallback, useEffect} from "react";
@@ -15,7 +14,7 @@ export const useLogin = () => {
     const isAuth = useSelector<RootStateType, boolean>(getIsAuth)
     const isLoading = useSelector<RootStateType, AppStatus | undefined>(getMemoLoadingStatus)
     const error = useSelector<RootStateType, string | null>(state => state.auth.error)
-    const navigate = useNavigate();
+
 
     const form = useForm({
         initialValues: FORM.INIT.AUTH,
@@ -49,10 +48,6 @@ export const useLogin = () => {
 
     }, [type])
 
-    useEffect(() => {
-        if (isAuth)
-            navigate('/')
-    }, [isAuth])
 
     return {
         isLoading,
@@ -60,6 +55,7 @@ export const useLogin = () => {
         onGoogleSuccess,
         formHandler,
         form,
-        onClickHandler
+        onClickHandler,
+        isAuth
     }
 }
