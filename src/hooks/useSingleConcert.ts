@@ -32,12 +32,12 @@ export const useSingleConcert = () => {
 
     }, [])
 
-    const addToCartHandler = useCallback(() => {
+    const addToCartHandler = () => {
         if (concert) {
             const payload = makePayload(concert.id, concert.price, user.id)
             dispatch<AppDispatchType>(addCart(payload))
         }
-    }, [id])
+    }
 
     const dateTime = dateFormatDelimeter(concert.date)
 
