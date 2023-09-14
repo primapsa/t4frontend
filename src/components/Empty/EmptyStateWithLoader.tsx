@@ -13,7 +13,7 @@ const EmptyStateWithLoader = ({isEmpty, children, status}: EmptyStateWithLoaderT
     return (
         <>
             {
-                status === STATUS.IDLE && isEmpty ? <EmptyState/> : children
+                status && isEmpty ? <EmptyState/> : children
             }
         </>
     );
