@@ -1,7 +1,7 @@
 export const TICKETS = {
     COUNT: {
         MIN: 1,
-        MAX: 100
+        MAX: 1000
     },
     PRICE: {
         MIN: 1,
