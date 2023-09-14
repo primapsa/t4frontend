@@ -11,7 +11,7 @@ const concertsValidation = yup.object().shape({
     latitude: yup.string().matches(/\d+\.\d{5,}/, 'Введите корректную долготу, например: 41.40338'),
     longitude: yup.string().matches(/\d+\.\d{5,}/, 'Введите корректную широту, например: 2.17403'),
     poster: yup.mixed().required('Выберите постер'),
-    desc: yup.string().min(3, 'Минимум 3 символа').max(2000, 'Максимум 500 символов'),
+    desc: yup.string().min(3, 'Минимум 3 символа').max(15000, 'Максимум 15000 символов'),
 })
 const promocodesValidation = yup.object().shape({
     title: yup.string().min(3, 'Минимум 3 символа').max(100, 'Максимум 100 символов'),
