@@ -8,10 +8,9 @@ import {
     getPage,
     getStatus,
     getTotal,
-    getUser, getUserId
+    getUserId
 } from "../selectors/selectors";
 import {AppStatus} from "../redux/appReducer";
-import {AuthUserType} from "../redux/authReducer";
 import {PAGE} from "../const/page";
 import React, {useCallback, useEffect, useMemo} from "react";
 import {fetchConcertsAdmin, setPage} from "../redux/concertsReducer";
@@ -44,13 +43,13 @@ export const useTickets = () => {
         dispatch(setPage(page))
     }, [page])
 
-    const addToCartHandler =useCallback((cId: number) => {
+    const addToCartHandler = (cId: number) => {
         const concert = concerts.find(c => c.id == cId)
         if (concert && userId) {
             const payload = makePayload(cId, concert.price, userId)
             dispatch(addCart(payload))
         }
-    }, [userId])
+    }
 
 
     const list = concerts.map(concert =>
@@ -79,6 +78,6 @@ export const useTickets = () => {
                 })
             ), [concerts])
 
-    return {list,coordinates, page, status, pages, onChangeHandler}
+    return {list, coordinates, page, status, pages, onChangeHandler}
 
 }

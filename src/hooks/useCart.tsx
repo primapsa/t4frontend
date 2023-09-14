@@ -1,10 +1,9 @@
 import {useSelector} from "react-redux";
 import {RootStateType, useAppDispatch} from "../redux/store";
 import {CartConcertsType} from "../api/api";
-import {getCart, getStatus, getUser, getUserId} from "../selectors/selectors";
-import {AuthUserType} from "../redux/authReducer";
-import {addAppStatusNotification, AppStatus} from "../redux/appReducer";
-import React, {useCallback, useEffect, useMemo} from "react";
+import {getCart, getStatus, getUserId} from "../selectors/selectors";
+import {AppStatus} from "../redux/appReducer";
+import React, {useCallback, useEffect} from "react";
 import {
     deleteCart,
     deleteCartUser,
@@ -14,8 +13,6 @@ import {
     validatePromocode
 } from "../redux/cartReducer";
 import CartItem from "../components/CartItem/CartItem";
-import {STATUS} from "../const/statuses";
-import {MESSAGE} from "../const/messages";
 
 export const useCart = () => {
 
@@ -26,10 +23,9 @@ export const useCart = () => {
     const length = purchases.length
 
 
-
     useEffect(() => {
-        if(userId)
-        dispatch(fetchCart(userId))
+        if (userId)
+            dispatch(fetchCart(userId))
     }, [userId])
 
     const deleteItemHandler = useCallback((id: number) => {
@@ -49,38 +45,37 @@ export const useCart = () => {
     }, [])
 
     const paymentSuccess = useCallback(async (data: any, actions: any) => {
-        if(userId)
-        dispatch(deleteCartUser({userId, data}))
+        if (userId)
+            dispatch(deleteCartUser({userId, data}))
     }, [userId])
 
-    const cart = useMemo(() =>
-            purchases.reduce((acc, p) => {
-                const price = p.price * p.count
-                const discount = p.discount ? price - price * (1 - p.discount / 100) : 0
-                const fullPrice = discount ? price - discount : discount
+    const cart = purchases.reduce((acc, p) => {
+            const price = p.price * p.count
+            const discount = p.discount ? price - price * (1 - p.discount / 100) : 0
+            const fullPrice = discount ? price - discount : discount
 
-                acc.discount += discount
-                acc.price += price - discount
-                acc.ids.push(p.id)
-                acc.items.push(
-                    <CartItem
-                        id={p.id}
-                        title={p.title}
-                        price={price}
-                        count={p.count}
-                        discount={fullPrice}
-                        poster={p.poster}
-                        key={p.id}
-                        promocode={p.promocode}
-                        onAdd={promocodeAddHandler}
-                        onDelete={deleteItemHandler}
-                        onChange={changePromocdeHandler}
-                        onDecrement={(count) => counterHandler(p.id, count)}
-                        onIncrement={(count) => counterHandler(p.id, count)}
-                    />)
-                return acc
-            }, {price: 0, items: [] as any[], ids: [] as number[], discount: 0})
-        , [purchases])
+            acc.discount += discount
+            acc.price += price - discount
+            acc.ids.push(p.id)
+            acc.items.push(
+                <CartItem
+                    id={p.id}
+                    title={p.title}
+                    price={price}
+                    count={p.count}
+                    discount={fullPrice}
+                    poster={p.poster}
+                    key={p.id}
+                    promocode={p.promocode}
+                    onAdd={promocodeAddHandler}
+                    onDelete={deleteItemHandler}
+                    onChange={changePromocdeHandler}
+                    onDecrement={(count) => counterHandler(p.id, count)}
+                    onIncrement={(count) => counterHandler(p.id, count)}
+                />)
+            return acc
+        }, {price: 0, items: [] as any[], ids: [] as number[], discount: 0})
+
 
     return {
         length,
