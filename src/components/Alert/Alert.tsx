@@ -8,7 +8,7 @@ const Alert = () => {
 
     const {notifications, isShown, popup, onPopupClose} = useAlert()
     const {style} = useStyles()
-
+    console.log('ALERT')
     return (
         <>
             {

@@ -6,6 +6,7 @@ import {TICKETS} from "../../const/settings";
 import TextEditor from "../TextEditor/TextEditor";
 import {useStyles} from "./style";
 import {useConcertForm} from "../../hooks/useConcertForm";
+import AddressAutocomplete from "../Address/AddressAutocomplete";
 
 const ConcertsForm = ({init, onClose}: InitialValuesType) => {
 
@@ -17,7 +18,8 @@ const ConcertsForm = ({init, onClose}: InitialValuesType) => {
         onChangeHandler,
         concertsType,
         concertType,
-        singerVoice
+        singerVoice,
+        onSetCoordinates
     } = useConcertForm({init, onClose})
 
     return (
@@ -48,11 +50,11 @@ const ConcertsForm = ({init, onClose}: InitialValuesType) => {
                         />
                     </Box>
                     <Box className={classes.box}>
-                        <TextInput
+                        <AddressAutocomplete
+                            onSetCoordinates={onSetCoordinates}
                             label="Место проведения"
                             placeholder="Адрес"
-                            {...form.getInputProps('address')}
-                        />
+                            {...form.getInputProps('address')}/>
                         <TextInput
                             label="Координаты"
                             placeholder="Широта"
@@ -76,14 +78,12 @@ const ConcertsForm = ({init, onClose}: InitialValuesType) => {
                             label="Количество билетов"
                             placeholder="Введите"
                             min={TICKETS.COUNT.MIN}
-                            max={TICKETS.COUNT.MAX}
                             {...form.getInputProps('ticket')}
                         />
                         <NumberInput
                             label="Цена билета"
                             placeholder="Введите"
                             min={TICKETS.PRICE.MIN}
-                            max={TICKETS.PRICE.MAX}
                             {...form.getInputProps('price')}
                         />
                     </Box>

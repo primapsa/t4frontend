@@ -13,10 +13,10 @@ const Cart = () => {
 
     const [{isPending}] = usePayPalScriptReducer();
     const {classes} = useStyles()
-    const { cart, length, status, paymentSuccess } = useCart()
+    const { cart, total, status, paymentSuccess } = useCart()
 
     return (
-        <EmptyStateWithLoader isEmpty={!length} status={status}>
+        <EmptyStateWithLoader isEmpty={!Boolean(total)} status={status}>
             <Center className={classes.center}>
                 <Flex direction={'column'}>
                     {cart.items}

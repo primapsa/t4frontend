@@ -10,6 +10,7 @@ import {formatConcertRequest, formatConcertUpdateRequest} from "../utils/concert
 import {addNewConcert, ConcertErrorsType, updateConcert} from "../redux/concertsReducer";
 import {AppStatus} from "../redux/appReducer";
 import {STATUS} from "../const/statuses";
+import {PlaceCoordinatesType} from "../components/Address/AddressAutocomplete";
 
 export const useConcertForm = ({init, onClose}: InitialValuesType) => {
 
@@ -37,6 +38,12 @@ export const useConcertForm = ({init, onClose}: InitialValuesType) => {
         form.setValues(FORM.RESET)
     }, [])
 
+    const onSetCoordinates = useCallback((coordinates: PlaceCoordinatesType, place: string) => {
+        form.setFieldValue('latitude', coordinates.lat)
+        form.setFieldValue('longitude', coordinates.lng)
+        form.setFieldValue('address', place)
+    }, [dispatch])
+
     useEffect(() => {
         if (status === STATUS.ERROR && errors) {
             form.setErrors(errors)
@@ -62,7 +69,8 @@ export const useConcertForm = ({init, onClose}: InitialValuesType) => {
         onChangeHandler,
         concertsType,
         concertType,
-        singerVoice
+        singerVoice,
+        onSetCoordinates
     }
 }
 

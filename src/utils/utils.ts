@@ -33,6 +33,14 @@ export const getRefreshToken = (): string | null => {
     return localStorage.getItem('refresh')
 }
 
+export const getCartCount = (): number => {
+    return Number(localStorage.getItem('cart'))
+}
+
+export const setCartCount = (count: number) => {
+    return localStorage.setItem('cart', String(count))
+}
+
 export const makePayload = (concertId: number, price: number, userId: number): CartAddType => {
     return {concertId, price, userId, count: 1, promocodeId: null}
 }
@@ -73,7 +81,7 @@ export const discountFormat = (discount: number) => {
     return (Math.round(discount * 100) / 100).toFixed(2)
 }
 
-export const addRequestHeader =  (config: InternalAxiosRequestConfig<any>) => {
+export const addRequestHeader = (config: InternalAxiosRequestConfig<any>) => {
     const token = getAuthToken()
     if (token) {
         config.headers.Authorization = token
@@ -98,7 +106,7 @@ export const refreshExpiredToken = (axiosInstance: AxiosInstance) => async (erro
                     return axiosInstance(config)
                 }
             } catch (err) {
-               localStorage.clear()
+                localStorage.clear()
             }
         }
     }
@@ -117,8 +125,12 @@ export const generateImageFromUrl = async (url: string, name: string) => {
     return file
 }
 
-export const handleThunkError = (error: AxiosError, thunkAPI: any): string => {
-    thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+export const handleThunkStatusError = (error: AxiosError, thunkAPI: any, turnIDLE: boolean = true): string => {
+
+    if (turnIDLE) {
+        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+    }
+
     const notification = {status: STATUS.ERROR, message: error.message}
 
     if (error.message === 'Network Error') {
@@ -130,11 +142,34 @@ export const handleThunkError = (error: AxiosError, thunkAPI: any): string => {
     return thunkAPI.rejectWithValue(JSON.stringify(error.response?.data))
 }
 
-export const handleUncaughtError = (thunkAPI: any) => {
+export const handleThunkError = (error: AxiosError, thunkAPI: any, notification: boolean = true): string => {
 
-    thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+    const record = {status: STATUS.ERROR, message: error.message}
+
+    if (error.message === 'Network Error') {
+        thunkAPI.dispatch(addAppStatus(STATUS.OFFLINE))
+    } else {
+        if(notification)
+            thunkAPI.dispatch(addAppStatusNotification(record))
+    }
+
+    return thunkAPI.rejectWithValue(JSON.stringify(error.response?.data))
+}
+
+export const handleUncaughtStatusError = (thunkAPI: any, turnIDLE: boolean = true) => {
+
+    if (turnIDLE) {
+        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+    }
     const notification = {status: STATUS.ERROR, message: MESSAGE.UNCAUGHT}
     thunkAPI.dispatch(addAppStatusNotification(notification))
+    return thunkAPI.rejectWithValue(MESSAGE.UNCAUGHT)
+}
+export const handleUncaughtError = (thunkAPI: any) => {
+
+    const notification = {status: STATUS.ERROR, message: MESSAGE.UNCAUGHT}
+    thunkAPI.dispatch(addAppStatusNotification(notification))
+
     return thunkAPI.rejectWithValue(MESSAGE.UNCAUGHT)
 }
 
@@ -146,9 +181,9 @@ export const asyncThunkActionWithLoading = async (action: Function, actionParam:
         if (response.status === HTTP_STATUSES.OK) {
             return response.data
         }
-        return handleUncaughtError(thunkAPI)
+        return handleUncaughtStatusError(thunkAPI)
     } catch (error) {
-        return handleThunkError(error as AxiosError, thunkAPI)
+        return handleThunkStatusError(error as AxiosError, thunkAPI)
     }
 }
 

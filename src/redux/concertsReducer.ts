@@ -7,13 +7,13 @@ import {
     ResponseType,
     SingerVoiceType
 } from "../api/api";
-import {STATUS} from "../const/statuses";
+import {ITEM_STATUS, STATUS} from "../const/statuses";
 import {AppDispatchType, RootStateType} from "./store";
 import {PAGE} from "../const/page";
 import {MESSAGE} from "../const/messages";
 import {addAppStatus, AppStatus} from "./appReducer";
 import {HTTP_STATUSES} from "../const/htttpStatus";
-import {handleAppNotification, handleThunkError} from "../utils/utils";
+import {handleAppNotification, handleThunkStatusError} from "../utils/utils";
 import {AxiosError} from "axios/index";
 
 const initialState: InitialStateType = {
@@ -39,13 +39,13 @@ export const fetchConcerts = createAsyncThunk('concerts/fetchConcerts', async (p
     const {page} = state.concerts
     const {query, count, type, ids} = state.filter
 
-    thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+    // thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const concerts = await concertAPI.fetchConcerts({query, type, ids}, page, count)
-        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+        //thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
         return concerts.data
     } catch (error) {
-        return handleThunkError(error as AxiosError, thunkAPI)
+        return handleThunkStatusError(error as AxiosError, thunkAPI, false)
     }
 })
 
@@ -55,7 +55,7 @@ export const fetchConcertsTypes = createAsyncThunk('concerts/fetchConcertsType',
             const concertTypes = await concertAPI.fetchConcertType()
             return concertTypes.data
         } catch (error) {
-            return handleThunkError(error as AxiosError, thunkAPI)
+            return handleThunkStatusError(error as AxiosError, thunkAPI, false)
         }
     }
 )
@@ -66,16 +66,14 @@ export const fetchSingerVoice = createAsyncThunk
         return singerVoice.data
 
     } catch (error) {
-        return handleThunkError(error as AxiosError, thunkAPI)
+        return handleThunkStatusError(error as AxiosError, thunkAPI, false)
     }
 })
 
-export const fetchConcertsAdmin = createAsyncThunk('concerts/fetchAdminPage', (param, thunkAPI) => {
-
-    thunkAPI.dispatch(fetchConcerts())
-    thunkAPI.dispatch(fetchConcertsTypes())
-    thunkAPI.dispatch(fetchSingerVoice())
-
+export const fetchConcertsAdmin = createAsyncThunk('concerts/fetchAdminPage', async (param, thunkAPI) => {
+    await thunkAPI.dispatch(fetchConcerts())
+    await thunkAPI.dispatch(fetchConcertsTypes())
+    await thunkAPI.dispatch(fetchSingerVoice())
 })
 
 export const addNewConcert = createAsyncThunk('concerts/addNewConcert', async (concert: any, thunkAPI) => {
@@ -90,7 +88,7 @@ export const addNewConcert = createAsyncThunk('concerts/addNewConcert', async (c
         }
 
     } catch (error) {
-      return handleThunkError(error as AxiosError, thunkAPI)
+        return handleThunkStatusError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -109,7 +107,7 @@ export const updateConcert = createAppAsyncThunk('concerts/update', async (param
         }
 
     } catch (error) {
-        return handleThunkError(error as AxiosError, thunkAPI)
+        return handleThunkStatusError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -126,7 +124,7 @@ export const deleteConcert = createAsyncThunk('concerts/deleteConcert', async (i
         }
 
     } catch (error) {
-        return handleThunkError(error as AxiosError, thunkAPI)
+        return handleThunkStatusError(error as AxiosError, thunkAPI)
     }
 
 })
@@ -143,6 +141,22 @@ export const concertSlice = createSlice({
         },
         clearConcertsErrors(state) {
             state.errors = null
+        },
+        setConcertStatus(state, action) {
+            const id = action.payload
+            if (id)
+                state.list = state.list.map(e => e.id === id ? {...e, status: ITEM_STATUS.ADD} : e)
+        },
+        removeConcertStatus(state, action) {
+            const id = action.payload
+            state.list = state.list.map(concert => {
+                    if (concert.id === id) {
+                        delete concert.status
+                        return concert
+                    }
+                    return concert
+                }
+            )
         }
     },
     extraReducers: (builder) => {
@@ -157,12 +171,19 @@ export const concertSlice = createSlice({
             .addCase(fetchSingerVoice.fulfilled, (state, action) => {
                 state.singerVoice = action.payload as SingerVoiceType[]
             })
+            .addCase(deleteConcert.pending, (state, action) => {
+                const id = action.meta.arg
+                if (id) {
+                    state.list = state.list.map(e => e.id === id ? {...e, status: ITEM_STATUS.DELETE} : e)
+                }
+
+            })
             .addCase(deleteConcert.fulfilled, (state, action) => {
                 const id = Number((action.payload as ChangeResponseType).id)
                 if (id) {
                     state.list = state.list.filter(concert => concert.id !== id)
                     state.total -= 1
-                    if(state.page > 1 && !state.list.length){
+                    if (state.page > 1 && !state.list.length) {
                         state.page -= 1
                     }
                 }
@@ -172,13 +193,19 @@ export const concertSlice = createSlice({
                 if (action.payload) {
                     state.total += 1
                     state.errors = null
-                    if(state.list.length < PAGE.ITEM_PER_PAGE){
+                    if (state.list.length < PAGE.ITEM_PER_PAGE) {
                         state.list.push(action.payload[0] as ConcertsType)
                     }
                 }
             })
             .addCase(addNewConcert.pending, (state) => {
                 state.status = STATUS.LOADING
+            })
+            .addCase(fetchConcertsAdmin.pending, (state) => {
+                state.status = STATUS.LOADING
+            })
+            .addCase(fetchConcertsAdmin.fulfilled, (state) => {
+                state.status = STATUS.IDLE
             })
             .addCase(updateConcert.fulfilled, (state, action) => {
                 state.status = STATUS.SUCCESS
@@ -208,7 +235,7 @@ export const concertSlice = createSlice({
 
     }
 })
-export const {addStatus, setPage, clearConcertsErrors} = concertSlice.actions
+export const {addStatus, setPage, clearConcertsErrors, setConcertStatus, removeConcertStatus} = concertSlice.actions
 export default concertSlice.reducer
 
 type InitialStateType = {

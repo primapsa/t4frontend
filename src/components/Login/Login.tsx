@@ -23,15 +23,15 @@ export const Login = () => {
     const {isLoading, type, form, formHandler, onClickHandler, onGoogleSuccess, isAuth} = useLogin()
     const {classes} = useStyles()
 
-
+    if(isAuth){
+        return <Navigate to="/" />
+    }
     return (
-        <>
-            { isAuth &&  <Navigate to="/" />}
-            <PreloaderExt isLoaded={!!isLoading}>
+        <PreloaderExt isLoaded={!!isLoading}>
             <Flex className={classes.container}>
                 <Paper radius="md" p="xl" withBorder className={classes.wrapper}>
                     <GoogleOAuthProvider
-                        clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID as string}>
+                        clientId={'161049581039-40i0002ne5afm5uojndu52g73qoe5g5e.apps.googleusercontent.com'}>
                         <Text size="lg">
                             {type === 'login' ? 'Войти с помощью' : 'Регистрация'}
                         </Text>
@@ -92,8 +92,6 @@ export const Login = () => {
                 </Paper>
             </Flex>
         </PreloaderExt>
-        </>
-
     );
 }
 export default Login

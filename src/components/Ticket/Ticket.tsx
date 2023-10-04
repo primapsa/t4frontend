@@ -4,24 +4,26 @@ import {MEDIA} from "../../const/media";
 import {IconClockHour3, IconMapPinFilled, IconWallet} from "@tabler/icons-react";
 import {dateFormat} from "../../utils/utils";
 import {useStyles} from "./styles";
+import {ItemStatus} from "../../api/api";
+import {ITEM_STATUS} from "../../const/statuses";
 
-const Ticket = ({id, source, title, address, date, price,onAddToCart}: TicketPropsType) => {
+const Ticket = ({id, source, title, address, date, price, onAddToCart, status}: TicketPropsType) => {
 
     const {classes} = useStyles()
     const onclickHandler = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         onAddToCart(id)
-    },[id, onAddToCart])
+    }, [id, onAddToCart])
 
     const dateTime = dateFormat(date)
 
     return (
         <Card className={classes.wrapper}>
             <Image className={classes.img}
-                src={`${MEDIA.URL}${source}`}
-                withPlaceholder
-                alt={'poster'}
-                fit={'fill'}/>
+                   src={`${MEDIA.URL}${source}`}
+                   withPlaceholder
+                   alt={'poster'}
+                   fit={'fill'}/>
             <Text className={classes.title}>{title}</Text>
             <Flex className={classes.address}>
                 <IconMapPinFilled/>
@@ -36,10 +38,14 @@ const Ticket = ({id, source, title, address, date, price,onAddToCart}: TicketPro
             </Flex>
             <Flex className={classes.wallet}>
                 <IconWallet/>
-                <Text  className={classes.address}>от {price} USD</Text>
+                <Text className={classes.address}>от {price} USD</Text>
             </Flex>
             <Flex className={classes.buy}>
-                <Button onClick={onclickHandler}  variant={"outline"}>Купить</Button>
+                <Button onClick={onclickHandler}
+                        variant={"outline"}
+                        disabled={status === ITEM_STATUS.ADD}>
+                    Купить
+                </Button>
             </Flex>
         </Card>
     )
@@ -52,5 +58,6 @@ type TicketPropsType = {
     date: string
     price: number
     onAddToCart: (id: number) => void
+    status?: ItemStatus
 }
 export default React.memo(Ticket);

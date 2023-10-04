@@ -1,15 +1,15 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
 import {PromocodeAddType, promocodeAPI} from "../api/api";
 import {PAGE} from "../const/page";
 import {addAppStatus, AppStatus} from "./appReducer";
-import {STATUS} from "../const/statuses";
+import {ITEM_STATUS, STATUS} from "../const/statuses";
 import {MESSAGE} from "../const/messages";
 import {HTTP_STATUSES} from "../const/htttpStatus";
 import {
     asyncThunkActionWithLoading,
     handleAppNotification,
-    handleThunkError,
-    handleUncaughtError
+    handleThunkStatusError,
+    handleUncaughtStatusError
 } from "../utils/utils";
 import {AxiosError} from "axios";
 
@@ -34,10 +34,10 @@ export const deletePromocode = createAsyncThunk('promocodes/delete', async (id: 
             handleAppNotification(STATUS.SUCCESS, MESSAGE.REMOVED, thunkAPI)
             return {id}
         }
-        return handleUncaughtError(thunkAPI)
+        return handleUncaughtStatusError(thunkAPI)
 
     } catch (error) {
-        return handleThunkError(error as AxiosError, thunkAPI)
+        return handleThunkStatusError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -52,10 +52,10 @@ export const addPromocode = createAsyncThunk('promocode/add', async (promocode: 
             handleAppNotification(STATUS.SUCCESS, MESSAGE.ADDED, thunkAPI)
             return response.data
         }
-        return handleUncaughtError(thunkAPI)
+        return handleUncaughtStatusError(thunkAPI)
 
     } catch (error) {
-        return handleThunkError(error as AxiosError, thunkAPI)
+        return handleThunkStatusError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -69,9 +69,9 @@ export const editPromocode = createAsyncThunk('promocode/edit', async (promocode
             handleAppNotification(STATUS.SUCCESS, MESSAGE.UPDATED, thunkAPI)
             return response.data
         }
-        return handleUncaughtError(thunkAPI)
+        return handleUncaughtStatusError(thunkAPI)
     } catch (error) {
-        return handleThunkError(error as AxiosError, thunkAPI)
+        return handleThunkStatusError(error as AxiosError, thunkAPI)
     }
 })
 
@@ -94,6 +94,7 @@ export const promocodeSlice = createSlice({
                 state.total = action.payload?.total as number
             })
             .addCase(deletePromocode.fulfilled, (state, action) => {
+                state.status = STATUS.IDLE
                 state.list = state.list.filter(({id}) => id !== (action.payload?.id) as number)
                 state.total -= 1
                 if (state.page > 1 && !state.list.length) {
@@ -101,6 +102,7 @@ export const promocodeSlice = createSlice({
                 }
             })
             .addCase(addPromocode.fulfilled, (state, action) => {
+                state.status = STATUS.IDLE
                 if (action.payload) {
                     state.total += 1
                     if (state.list.length < PAGE.ITEM_PER_PAGE) {
@@ -110,10 +112,18 @@ export const promocodeSlice = createSlice({
 
             })
             .addCase(editPromocode.fulfilled, (state, action) => {
+                state.status = STATUS.IDLE
                 const response = action.payload
                 if (response)
                     state.list = state.list.map(p => p.id === response.id ? response : p)
             })
+            .addCase(deletePromocode.pending, (state, action) => {
+                const id = action.meta.arg
+                if(id){
+                    state.list = state.list.map(e => e.id === id ? {...e, status: ITEM_STATUS.DELETE} : e)
+                }
+            })
+
     }
 })
 export const {setPage} = promocodeSlice.actions

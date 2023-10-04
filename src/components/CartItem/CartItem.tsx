@@ -6,6 +6,8 @@ import Promocode from "../PromocodeBar/PromocodeBar";
 import React from "react";
 import {useStyles} from './styles'
 import {discountFormat} from "../../utils/utils";
+import {ItemStatus} from "../../api/api";
+import {ITEM_STATUS} from "../../const/statuses";
 
 const CartItem = (props: CartItemPropsType) => {
 
@@ -32,7 +34,7 @@ const CartItem = (props: CartItemPropsType) => {
                     </Flex>
                 </Flex>
                 <Flex className={classes.icon}>
-                    <ActionBar id={props.id} del={props.onDelete}/>
+                    <ActionBar id={props.id} del={props.onDelete} disabled={props.status === ITEM_STATUS.DELETE}/>
                 </Flex>
             </Flex>
             <Promocode promocode={props.promocode}
@@ -57,4 +59,6 @@ type CartItemPropsType = {
     onIncrement: (v: number) => void
     onDecrement: (v: number) => void
     promocode: string | null
+    status: ItemStatus | undefined
+
 }

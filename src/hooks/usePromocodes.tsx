@@ -1,17 +1,33 @@
 import {useSelector} from "react-redux";
 import {RootStateType, useAppDispatch} from "../redux/store";
 import {PromocodesType} from "../api/api";
-import {getPage, getPagePromocode, getPromocodes, getStatus, getTotal, getTotalPromocode} from "../selectors/selectors";
+import {
+    getPage,
+    getPagePromocode,
+    getPromocodes,
+    getStatus,
+    getStatusPromocode,
+    getTotal,
+    getTotalPromocode
+} from "../selectors/selectors";
 import {AppStatus} from "../redux/appReducer";
 import React, {useCallback, useEffect, useState} from "react";
 import {PromocodeInitValueType} from "../components/Promocode/PromocodeForm";
-import {deletePromocode, fetchPromocodes,setPage} from "../redux/promocodesReducer";
+import {deletePromocode, fetchPromocodes, setPage} from "../redux/promocodesReducer";
 import {PAGE} from "../const/page";
+import {Flex} from "@mantine/core";
+import Promocode from "../components/Promocode/Promocode";
+import ActionBar from "../components/ActionBar/ActionBar";
+import {useStyles} from "../features/Admin/Promocodes/styles";
+import {ITEM_STATUS} from "../const/statuses";
 
 
 export const usePromocodes = () => {
+
+    const {classes} = useStyles()
     const promocodes = useSelector<RootStateType, PromocodesType[]>(getPromocodes)
     const status = useSelector<RootStateType, AppStatus>(getStatus)
+
 
     const [isModal, setIsModal] = useState<boolean>(false)
     const [itemEdit, setItemEdit] = useState<PromocodeInitValueType>(undefined)
@@ -46,16 +62,22 @@ export const usePromocodes = () => {
         setItemEdit(undefined)
         setIsModal(true)
     }, [])
+
     const closeModal = useCallback(() => setIsModal(false), [])
 
     const onChangePageHandler = useCallback((page: number) => {
         dispatch(setPage(page))
     }, [page])
 
+    const list = promocodes.map(p =>
+        <Flex key={p.id} className={classes.promocode}>
+            <Promocode date={p.date} title={p.title} discount={p.discount}/>
+            <ActionBar id={p.id} del={deleteItemHandler} edit={editItemHandler}
+                       disabled={p.status === ITEM_STATUS.DELETE}/>
+        </Flex>
+    )
+
     return {
-        promocodes,
-        deleteItemHandler,
-        editItemHandler,
         status,
         onClickHandler,
         closeModal,
@@ -64,6 +86,7 @@ export const usePromocodes = () => {
         onModalCloseHandler,
         pages,
         page,
-        onChangePageHandler
+        onChangePageHandler,
+        list
     }
 }

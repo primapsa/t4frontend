@@ -3,20 +3,20 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../redux/store";
 import {ConcertsType} from "../api/api";
 import {AppStatus} from "../redux/appReducer";
-import {AuthUserType} from "../redux/authReducer";
 import {useLoadScript} from "@react-google-maps/api";
 import {useCallback, useEffect} from "react";
 import {fetchConcert} from "../redux/concertReducer";
 import {dateFormatDelimeter, makePayload} from "../utils/utils";
 import {addCart} from "../redux/cartReducer";
+import {getConcert, getIsStaff, getStatusConcert, getUserId} from "../selectors/selectors";
 
 export const useSingleConcert = () => {
 
     const {id} = useParams()
-    const concert = useSelector<RootStateType, ConcertsType>(state => state.concert.item)
-    const status = useSelector<RootStateType, AppStatus>(state => state.app.status)
-    const user = useSelector<RootStateType, AuthUserType>(state => state.auth.user)
-    const isAdmin = useSelector<RootStateType, boolean>(state => state.auth.isStaff)
+    const concert = useSelector<RootStateType, ConcertsType>(getConcert)
+    const status = useSelector<RootStateType, AppStatus>(getStatusConcert)
+    const userId = useSelector<RootStateType, number | null>(getUserId)
+    const isAdmin = useSelector<RootStateType, boolean>(getIsStaff)
 
     const {isLoaded} = useLoadScript({
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
@@ -32,12 +32,12 @@ export const useSingleConcert = () => {
 
     }, [])
 
-    const addToCartHandler = () => {
-        if (concert) {
-            const payload = makePayload(concert.id, concert.price, user.id)
+    const addToCartHandler = useCallback(() => {
+        if (concert && userId) {
+            const payload = makePayload(concert.id, concert.price, userId)
             dispatch<AppDispatchType>(addCart(payload))
         }
-    }
+    },[concert, userId])
 
     const dateTime = dateFormatDelimeter(concert.date)
 

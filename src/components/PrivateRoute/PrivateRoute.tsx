@@ -4,16 +4,19 @@ import {LINKS} from "../../const/routes";
 import {useSelector} from "react-redux";
 import {RootStateType} from "../../redux/store";
 import HeaderUser from "../Header/Header";
-import {getIsAuth, getIsStaff} from "../../selectors/selectors";
+import {getIsAuth, getIsStaff, getStatusAuth} from "../../selectors/selectors";
+import {AppStatus} from "../../redux/appReducer";
+import {STATUS} from "../../const/statuses";
 
 const PrivateRoute = () => {
 
     const isAuth = useSelector<RootStateType, boolean>(getIsAuth)
     const isAdmin = useSelector<RootStateType, boolean>(getIsStaff)
-
+    const status = useSelector<RootStateType, AppStatus>(getStatusAuth)
     if (isAdmin) {
         return <Navigate to={'admin'}/>
     }
+
     return (
         <>
             {
@@ -22,7 +25,7 @@ const PrivateRoute = () => {
                         <HeaderUser/>
                         <Outlet/>
                     </> :
-                    <Navigate to={LINKS.LOGIN}/>
+                    status === STATUS.LOADING ? null : <Navigate to={LINKS.LOGIN}/>
             }
         </>
     )

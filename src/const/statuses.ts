@@ -5,3 +5,9 @@ export const STATUS = {
     ERROR: 'error',
     OFFLINE: 'offline'
 } as const
+
+export const ITEM_STATUS = {
+    DELETE: 'delete',
+    ADD: 'add',
+    UPDATE: 'update'
+} as const

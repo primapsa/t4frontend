@@ -2,7 +2,9 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {concertAPI, ConcertsType} from "../api/api";
 import {ConcertStatusType} from "./concertsReducer";
 import {STATUS} from "../const/statuses";
-import {asyncThunkActionWithLoading} from "../utils/utils";
+import {handleThunkError, handleUncaughtStatusError} from "../utils/utils";
+import {HTTP_STATUSES} from "../const/htttpStatus";
+import {AxiosError} from "axios";
 
 const initialState: InitialStateType = {
     item: {} as ConcertsType,
@@ -11,7 +13,16 @@ const initialState: InitialStateType = {
 
 export const fetchConcert = createAsyncThunk('concert/fetchConcert', async (id: number, thunkAPI) => {
 
-    return asyncThunkActionWithLoading(concertAPI.fetchConcert, id, thunkAPI)
+    try {
+        const response = await concertAPI.fetchConcert(id)
+
+        if (response.status === HTTP_STATUSES.OK) {
+            return response.data
+        }
+        return handleUncaughtStatusError(thunkAPI)
+    } catch (error) {
+        return handleThunkError(error as AxiosError, thunkAPI)
+    }
 })
 
 export const concertSlice = createSlice({
@@ -25,6 +36,10 @@ export const concertSlice = createSlice({
                 if(concert){
                     state.item = concert[0]
                 }
+                state.status = STATUS.IDLE
+            })
+            .addCase(fetchConcert.pending, (state) => {
+                state.status = STATUS.LOADING
             })
     }
 })

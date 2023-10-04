@@ -14,7 +14,7 @@ import {LINKS} from "../const/routes";
 import Item from "../components/Item/Item";
 import ActionBar from "../components/ActionBar/ActionBar";
 import {useStyles} from "../features/Admin/Concerts/styles";
-import {STATUS} from "../const/statuses";
+import {ITEM_STATUS, STATUS} from "../const/statuses";
 import {addStatus} from "../redux/concertsReducer";
 
 export const useConcerts = () => {
@@ -87,7 +87,7 @@ export const useConcerts = () => {
                       poster={e.poster}
                 />
             </Link>
-            <ActionBar id={e.id} del={onDeleteHandler} edit={onEditHandler}/>
+            <ActionBar id={e.id} del={onDeleteHandler} edit={onEditHandler} disabled={e.status === ITEM_STATUS.DELETE}/>
         </Flex>)
 
     return {

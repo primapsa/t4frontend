@@ -5,8 +5,11 @@ import {addRequestHeader, makeQuery, refreshExpiredToken} from "../utils/utils";
 
 const axiosInstance = axios.create({baseURL: REST_API.BASE_URL})
 axiosInstance.interceptors.request.use(addRequestHeader)
-axiosInstance.interceptors.response.use(config => config, refreshExpiredToken(axiosInstance))
+axiosInstance.interceptors.response.use( async (config) => {
+    const a = await new Promise(resolve => setTimeout(resolve, 500))
+    return config
 
+}, refreshExpiredToken(axiosInstance))
 
 export const concertAPI = {
     fetchConcerts(param: { query: string, type: number, ids: string }, page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
@@ -64,7 +67,7 @@ export const cartAPI = {
     validateCartPomocode(param: { promocode: string, id: number }) {
         return axiosInstance.post<ValidatePromocodeType>(`promocode/`, param)
     },
-    updateCart(param:{id: number, cart: Partial<CartType>}) {
+    updateCart(param: { id: number, cart: Partial<CartType> }) {
         return axiosInstance.patch<PatchCartType>(`cart/${param.id}`, param.cart)
     }
 }
@@ -89,10 +92,15 @@ export const authAPI = {
         return axiosInstance.post<AuthRegisterType>('user/register/', register)
     },
     refreshToken(token: { refresh: string }) {
-        return axios.post<RefreshTokenResponseType>(REST_API.BASE_URL+'token/refresh/', token)
+        return axios.post<RefreshTokenResponseType>(REST_API.BASE_URL + 'token/refresh/', token)
     }
 }
 
+export const geoAPI = {
+    mapGeocoding(address: string) {
+        return axios.get<OpenStreetResponseType[]>(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURI(address)}&countrycodes=by`, {headers: {'Accept-Language': 'ru'}})
+    },
+}
 
 export type ResponseType<T> = {
     data: T
@@ -101,7 +109,7 @@ export type ResponseType<T> = {
 export type PromocodeAddType = Omit<PromocodesType, 'id'>
 export type AuthRequestRegType = Omit<AuthRegisterType, 'id'>
 export type CartAddType = Omit<CartType, 'id'>
-export type ConcertsFileType = Omit<ConcertsType, 'poster'> & {poster: File}
+export type ConcertsFileType = Omit<ConcertsType, 'poster'> & { poster: File }
 export type AuthResponseType = {
     refresh: string
     access: string
@@ -117,6 +125,45 @@ export type PayPalResponseTYpe = {
     payerID: string
     paymentID: string
     paymentSource?: string
+}
+export type GoogleGeoResponse = {
+    results: {
+        formatted_address: string
+        address_components: {
+            long_name: string
+            short_name: string
+            types: string[]
+        }[]
+        geometry: {
+            location: {
+                lat: number
+                lng: number
+            }
+        }
+        place_id: string
+
+    }[]
+}
+
+export type OpenStreetResponseType = {
+    addresstype: string
+    boundingbox: string[]
+    class: string
+    display_name: string
+    importance: number
+    lat: string
+    licence: string
+    lon: string
+    name: string
+    osm_id: number
+    osm_type: number
+    place_id: number
+    place_rank: number
+    type: string
+}
+
+type GooglePlaceResponse = {
+    result: { name: string }
 }
 export type CartType = {
     id: number
@@ -159,13 +206,16 @@ export type CartConcertsType = {
     tickets: number
     title: string
     promocode: string | null
+    status?: ItemStatus
 }
 export type PromocodesType = {
     id: number
     title: string
     discount: number
     date: string
+    status?: ItemStatus
 }
+export type ItemStatus = 'delete' | 'add' | 'update'
 export type ChangeResponseType = {
     id: number
 }
@@ -214,6 +264,7 @@ export type ConcertsType = {
     singerVoiceId_id: number
     poster: string
     desc: string
+    status?: ItemStatus
 }
 export type ConcertTypesType = {
     value: string
