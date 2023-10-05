@@ -22,14 +22,9 @@ export const rootReducer = combineReducers({
 export const store = configureStore({
     reducer: rootReducer,
     middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(thunkMiddleware),
-
 })
 
 export const useAppDispatch: () => DispatchType = useDispatch
-
 export type RootStateType = ReturnType<typeof store.getState>
 export type AppDispatchType = typeof store.dispatch | any
 export type DispatchType = typeof store.dispatch
-
-// @ts-ignore
-window.store = store

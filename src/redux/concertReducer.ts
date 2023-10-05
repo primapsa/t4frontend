@@ -15,7 +15,6 @@ export const fetchConcert = createAsyncThunk('concert/fetchConcert', async (id: 
 
     try {
         const response = await concertAPI.fetchConcert(id)
-
         if (response.status === HTTP_STATUSES.OK) {
             return response.data
         }

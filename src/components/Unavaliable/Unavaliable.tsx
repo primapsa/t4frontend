@@ -8,7 +8,7 @@ import {getMemoOfflineStatus} from "../../selectors/selectors";
 const Unavaliable = ({children}: UnavalibalePropsType) => {
     const {classes} = useStyles();
     const status = useSelector<RootStateType>(getMemoOfflineStatus)
-    console.log('UNAVALIBLE')
+
     return (
         <>
             {status ?

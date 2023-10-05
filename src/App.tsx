@@ -14,17 +14,13 @@ import CartPage from "./features/User/CartPage/CartPage";
 import {Login} from "./components/Login/Login";
 import Unavaliable from "./components/Unavaliable/Unavaliable";
 import Auth from "./components/Auth/Auth";
-import AppPreloader from "./components/Preloader/AppPreloader";
-
 
 
 function App() {
-    console.log('APP')
+
     return (
-        <>
-            <Auth/>
+        <Auth>
             <Unavaliable>
-                <AppPreloader/>
                 <Alert/>
                 <BrowserRouter>
                     <Container w={'100%'} p={'0px'} maw={'100%'}>
@@ -47,7 +43,8 @@ function App() {
                     </Container>
                 </BrowserRouter>
             </Unavaliable>
-        </>
+        </Auth>
+
     );
 }
 

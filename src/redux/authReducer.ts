@@ -1,15 +1,7 @@
 import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
-import {authAPI, AuthRequestRegType, CredentialsType, promocodeAPI} from "../api/api";
+import {authAPI, AuthRequestRegType, CredentialsType} from "../api/api";
 import {HTTP_STATUSES} from "../const/htttpStatus";
-import {
-    asyncThunkActionWithLoading,
-    authPersistGet,
-    authPersistPut, handleThunkError,
-    handleThunkStatusError, handleUncaughtError,
-    handleUncaughtStatusError,
-    parseJwt,
-    setTokens
-} from "../utils/utils";
+import {handleThunkError, handleUncaughtError, handleUncaughtStatusError, parseJwt, setTokens} from "../utils/utils";
 import {MESSAGE} from "../const/messages";
 import {addAppStatus, addPopupContent, AppStatus} from "./appReducer";
 import {STATUS} from "../const/statuses";
@@ -27,7 +19,6 @@ const init: AuthInitialType = {
 
 export const login = createAsyncThunk('auth/login', async (credentials: CredentialsType, thunkAPI) => {
 
-        // thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
         try {
             const response = await authAPI.login(credentials)
             if (response.status === HTTP_STATUSES.OK) {
@@ -35,17 +26,17 @@ export const login = createAsyncThunk('auth/login', async (credentials: Credenti
             }
             return handleUncaughtStatusError(thunkAPI)
         } catch (error) {
-            // thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
             return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError).response?.data))
         }
     }
 )
 
 export const checkAuth = createAsyncThunk('auth/me', async (param, thunkAPI) => {
-    // thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+
     try {
         const response = await authAPI.me()
         if (response.status === HTTP_STATUSES.OK) {
+            thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
             return response.data
         }
         return handleUncaughtError(thunkAPI)
@@ -56,11 +47,8 @@ export const checkAuth = createAsyncThunk('auth/me', async (param, thunkAPI) => 
 
 export const socialLogin = createAsyncThunk('auth/socialLogin', async (credentials: string, thunkAPI) => {
 
-    // return asyncThunkActionWithLoading(authAPI.socialLogin, credentials, thunkAPI)
-    //thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const response = await authAPI.socialLogin(credentials)
-
         if (response.status === HTTP_STATUSES.OK) {
             return response.data
         }
@@ -89,7 +77,6 @@ export const registerUser = createAsyncThunk('auth/register', async (reg: AuthRe
 
 export const authSlice = createSlice({
     name: 'auth',
-    // initialState: authPersistGet() || init,
     initialState: init,
     reducers: {
         logout(state) {
@@ -105,16 +92,18 @@ export const authSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(checkAuth.fulfilled, (state, action) => {
+
                 if (action.payload) {
                     const data = action.payload
                     state.isAuth = true
                     state.user = data
                     state.userId = data.id
                     state.isStaff = data.is_staff
-                    state.error = null
-                    state.status = STATUS.IDLE
-                    // authPersistPut(data)
+                } else {
+                    state.isAuth = false
                 }
+                state.status = STATUS.IDLE
+                state.error = null
             })
             .addCase(checkAuth.rejected, (state, action) => {
                 state.isAuth = false
@@ -166,7 +155,6 @@ export const authSlice = createSlice({
                     state.isStaff = decodedToken.is_staff
                     state.userId = decodedToken.user_id
                     setTokens(data)
-                    // authPersistPut(decodedToken)
                     state.error = null
                     state.status = STATUS.IDLE
                 }

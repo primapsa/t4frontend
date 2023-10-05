@@ -5,15 +5,10 @@ import {addRequestHeader, makeQuery, refreshExpiredToken} from "../utils/utils";
 
 const axiosInstance = axios.create({baseURL: REST_API.BASE_URL})
 axiosInstance.interceptors.request.use(addRequestHeader)
-axiosInstance.interceptors.response.use( async (config) => {
-    const a = await new Promise(resolve => setTimeout(resolve, 500))
-    return config
-
-}, refreshExpiredToken(axiosInstance))
+axiosInstance.interceptors.response.use(config => config, refreshExpiredToken(axiosInstance))
 
 export const concertAPI = {
     fetchConcerts(param: { query: string, type: number, ids: string }, page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
-
         return axiosInstance.get<ResponseType<ConcertsType[]>>(`concerts/${makeQuery(param, page, count)}`)
     },
     fetchConcertType() {
@@ -32,7 +27,8 @@ export const concertAPI = {
         return axiosInstance.get<ConcertsType[]>(`concerts/${id}`)
     },
     updateConcert(id: number, concert: FormData) {
-        return axiosInstance.put<ConcertsType[]>(`concerts/${id}`, concert, {headers: {'Content-Type': 'multipart/form-data'}})
+        return axiosInstance.put<ConcertsType[]>(`concerts/${id}`, concert,
+            {headers: {'Content-Type': 'multipart/form-data'}})
     }
 }
 
@@ -98,7 +94,8 @@ export const authAPI = {
 
 export const geoAPI = {
     mapGeocoding(address: string) {
-        return axios.get<OpenStreetResponseType[]>(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURI(address)}&countrycodes=by`, {headers: {'Accept-Language': 'ru'}})
+        return axios.get<OpenStreetResponseType[]>(`${REST_API.GEOCODING}&q=${encodeURI(address)}`,
+            {headers: {'Accept-Language': 'ru'}})
     },
 }
 

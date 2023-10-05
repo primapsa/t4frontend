@@ -12,7 +12,7 @@ const Header = () => {
 
 
     return (
-        <HeaderMantine height={'100%'} className={classes.header}>
+        <HeaderMantine height={'85px'} className={classes.header}>
             <Container className={classes.container}>
                 <NavLink to={'/'} className={classes.home}>
                     <Title order={1} className={classes.linkHeader}>T4u</Title>

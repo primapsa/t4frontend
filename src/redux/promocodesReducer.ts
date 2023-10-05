@@ -1,4 +1,4 @@
-import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {PromocodeAddType, promocodeAPI} from "../api/api";
 import {PAGE} from "../const/page";
 import {addAppStatus, AppStatus} from "./appReducer";
@@ -35,7 +35,6 @@ export const deletePromocode = createAsyncThunk('promocodes/delete', async (id: 
             return {id}
         }
         return handleUncaughtStatusError(thunkAPI)
-
     } catch (error) {
         return handleThunkStatusError(error as AxiosError, thunkAPI)
     }

@@ -6,7 +6,6 @@ import {addAppStatus, addAppStatusNotification, addPopupContent, AppStatus} from
 import {MESSAGE} from "../const/messages";
 import {makePayPalMessage} from "../utils/paypal";
 import {
-    asyncThunkActionWithLoading,
     getCartCount,
     handleAppNotification,
     handleThunkStatusError,
@@ -26,13 +25,12 @@ export const fetchCart = createAsyncThunk('cart/fetch', async (userId: number, t
 
     try {
         const response = await cartAPI.fetchUserCart(userId)
-
         if (response.status === HTTP_STATUSES.OK) {
             return response.data
         }
-        return handleUncaughtStatusError(thunkAPI,false)
+        return handleUncaughtStatusError(thunkAPI, false)
     } catch (error) {
-        return handleThunkStatusError(error as AxiosError, thunkAPI,false)
+        return handleThunkStatusError(error as AxiosError, thunkAPI, false)
     }
 
 })
@@ -60,7 +58,6 @@ export const deleteCart = createAsyncThunk('cart/delete', async (cartId: number,
 
     try {
         const response = await cartAPI.deleteCart(cartId)
-       // thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
         if (response.status === HTTP_STATUSES.NO_CONTENT) {
             return {cartId}
         }
@@ -72,10 +69,10 @@ export const deleteCart = createAsyncThunk('cart/delete', async (cartId: number,
 
 export const deleteCartUser = createAsyncThunk('cart/deleteCartUser',
     async ({userId, data}: { userId: number, data: PayPalResponseTYpe }, thunkAPI) => {
-       thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
+        thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
         try {
             const response = await cartAPI.deleteUserCart(userId)
-           thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+            thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
             if (response.status === HTTP_STATUSES.NO_CONTENT) {
                 thunkAPI.dispatch(addPopupContent(makePayPalMessage(data)))
                 return response.data
@@ -104,7 +101,6 @@ export const validatePromocode = createAsyncThunk('cart/validatePromocode', asyn
 
     try {
         const response = await cartAPI.validateCartPomocode(param)
-
         if (response.status === HTTP_STATUSES.OK) {
             if (response.data) {
                 handleAppNotification(STATUS.SUCCESS, MESSAGE.ADDED, thunkAPI)
@@ -130,7 +126,7 @@ export const cartSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchCart.fulfilled, (state, action) => {
-                if (action.payload){
+                if (action.payload) {
                     state.list = action.payload
                     state.status = STATUS.IDLE
                     state.total = (action.payload as CartConcertsType[]).length
@@ -140,12 +136,12 @@ export const cartSlice = createSlice({
                 state.status = STATUS.LOADING
             })
             .addCase(addCart.fulfilled, (state, action) => {
-                setCartCount(getCartCount()  + 1)
+                setCartCount(getCartCount() + 1)
                 state.total += 1
             })
             .addCase(deleteCart.fulfilled, (state, action) => {
                 const cartId = action?.payload?.cartId
-                if (cartId){
+                if (cartId) {
                     state.list = state.list.filter(({id}) => id !== cartId)
                     setCartCount(state.list.length)
                     state.total = state.list.length
@@ -153,7 +149,7 @@ export const cartSlice = createSlice({
             })
             .addCase(deleteCart.pending, (state, action) => {
                 const id = action.meta.arg
-                if (id){
+                if (id) {
                     state.list = state.list.map(e => e.id === id ? {...e, status: ITEM_STATUS.DELETE} : e)
                 }
             })

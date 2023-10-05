@@ -1,20 +1,35 @@
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../../redux/store";
-import {getIsAuth} from "../../selectors/selectors";
+import {getStatusAuth} from "../../selectors/selectors";
 import {checkAuth} from "../../redux/authReducer";
+import {AppStatus} from "../../redux/appReducer";
+import {STATUS} from "../../const/statuses";
+import Preloader from "../Preloader/Preloader";
 
-const Auth = () => {
-    console.log('AUTH')
+const Auth = ({children}:AuthPropsType) => {
+
     const dispatch = useDispatch()
-    const isAuth = useSelector<RootStateType, boolean>(getIsAuth)
-    console.log('AUTH - isAuth', isAuth)
+    const status = useSelector<RootStateType, AppStatus>(getStatusAuth)
+
     useEffect(() => {
-        isAuth || dispatch<AppDispatchType>(checkAuth())
+        dispatch<AppDispatchType>(checkAuth())
     }, [])
 
-    return null
+    return (
+        <>
+            {
+                (status === STATUS.LOADING) ? <Preloader/> : children
+            }
+        </>
+
+    )
+
 
 };
 
 export default Auth;
+
+type AuthPropsType = {
+    children: React.ReactNode
+}

@@ -39,10 +39,8 @@ export const fetchConcerts = createAsyncThunk('concerts/fetchConcerts', async (p
     const {page} = state.concerts
     const {query, count, type, ids} = state.filter
 
-    // thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
     try {
         const concerts = await concertAPI.fetchConcerts({query, type, ids}, page, count)
-        //thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
         return concerts.data
     } catch (error) {
         return handleThunkStatusError(error as AxiosError, thunkAPI, false)
@@ -64,7 +62,6 @@ export const fetchSingerVoice = createAsyncThunk
     try {
         const singerVoice = await concertAPI.fetchSingerVoice()
         return singerVoice.data
-
     } catch (error) {
         return handleThunkStatusError(error as AxiosError, thunkAPI, false)
     }
@@ -74,6 +71,7 @@ export const fetchConcertsAdmin = createAsyncThunk('concerts/fetchAdminPage', as
     await thunkAPI.dispatch(fetchConcerts())
     await thunkAPI.dispatch(fetchConcertsTypes())
     await thunkAPI.dispatch(fetchSingerVoice())
+
 })
 
 export const addNewConcert = createAsyncThunk('concerts/addNewConcert', async (concert: any, thunkAPI) => {
@@ -81,12 +79,10 @@ export const addNewConcert = createAsyncThunk('concerts/addNewConcert', async (c
     try {
         const response = await concertAPI.addConcert(concert)
         thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
-
         if (response.status === HTTP_STATUSES.CREATED) {
             handleAppNotification(STATUS.SUCCESS, MESSAGE.ADDED, thunkAPI)
             return response.data
         }
-
     } catch (error) {
         return handleThunkStatusError(error as AxiosError, thunkAPI)
     }
@@ -99,13 +95,10 @@ export const updateConcert = createAppAsyncThunk('concerts/update', async (param
     try {
         const response = await concertAPI.updateConcert(id, concert)
         thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
-
         if (response.status === HTTP_STATUSES.OK) {
             handleAppNotification(STATUS.SUCCESS, MESSAGE.UPDATED, thunkAPI)
-
             return response.data
         }
-
     } catch (error) {
         return handleThunkStatusError(error as AxiosError, thunkAPI)
     }
@@ -117,12 +110,10 @@ export const deleteConcert = createAsyncThunk('concerts/deleteConcert', async (i
     try {
         const deleteConcert = await concertAPI.deleteConcert(id)
         thunkAPI.dispatch(addStatus(STATUS.IDLE))
-
         if (deleteConcert.status === HTTP_STATUSES.OK) {
             handleAppNotification(STATUS.SUCCESS, MESSAGE.REMOVED, thunkAPI)
             return {id} as ChangeResponseType
         }
-
     } catch (error) {
         return handleThunkStatusError(error as AxiosError, thunkAPI)
     }

@@ -6,9 +6,8 @@ import {AppStatus} from "../../redux/appReducer";
 import {getMemoAuthStatus} from "../../selectors/selectors";
 
 const PreloaderExt = () => {
-
     const status = useSelector<RootStateType, AppStatus | undefined>(getMemoAuthStatus)
-    console.log('PRELOADER')
+
     return (
         <>
             {
