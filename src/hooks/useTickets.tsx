@@ -7,6 +7,7 @@ import {
     getFilterType,
     getPage,
     getStatus,
+    getStatusConcerts,
     getTotal,
     getUserId
 } from "../selectors/selectors";
@@ -20,6 +21,7 @@ import {Link} from "react-router-dom";
 import {LINKS} from "../const/routes";
 import Ticket from "../components/Ticket/Ticket";
 import {useStyles} from "../features/User/Tickets/styles";
+import {STATUS} from "../const/statuses";
 
 export const useTickets = () => {
 
@@ -29,7 +31,8 @@ export const useTickets = () => {
     const page = useSelector<RootStateType, number>(getPage)
     const query = useSelector<RootStateType, string>(getFilterQuery)
     const type = useSelector<RootStateType, number>(getFilterType)
-    const status = useSelector<RootStateType, AppStatus>(getStatus)
+    const status = useSelector<RootStateType, AppStatus>(getStatusConcerts)
+    const appStatus = useSelector<RootStateType, AppStatus>(getStatus)
     const userId = useSelector<RootStateType, number | null>(getUserId)
     const {classes} = useStyles()
     const pages = Math.ceil(total / PAGE.ITEM_PER_PAGE)
@@ -51,6 +54,7 @@ export const useTickets = () => {
         }
     }
 
+    const isLoaded = status === STATUS.LOADING && appStatus === STATUS.IDLE
 
     const list = concerts.map(concert =>
         <Link
@@ -64,6 +68,7 @@ export const useTickets = () => {
                 title={concert.title}
                 address={concert.address}
                 source={concert.poster}
+                status={concert.status}
                 onAddToCart={addToCartHandler}
             ></Ticket>
         </Link>
@@ -78,6 +83,6 @@ export const useTickets = () => {
                 })
             ), [concerts])
 
-    return {list, coordinates, page, status, pages, onChangeHandler}
+    return {list, coordinates, page, status,appStatus, pages, onChangeHandler, isLoaded}
 
 }

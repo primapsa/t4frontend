@@ -2,7 +2,7 @@ import {RootStateType, useAppDispatch} from "../redux/store";
 import React, {useCallback, useEffect, useState} from "react";
 import {ConcertsFileType, ConcertsType} from "../api/api";
 import {useSelector} from "react-redux";
-import {getConcerts, getPage, getStatus, getTotal} from "../selectors/selectors";
+import {getConcerts, getPage, getStatus, getStatusConcerts, getTotal} from "../selectors/selectors";
 import {AppStatus} from "../redux/appReducer";
 import {PAGE} from "../const/page";
 import {clearConcertsErrors, deleteConcert, fetchConcertsAdmin, setPage} from "../redux/concertsReducer";
@@ -14,7 +14,7 @@ import {LINKS} from "../const/routes";
 import Item from "../components/Item/Item";
 import ActionBar from "../components/ActionBar/ActionBar";
 import {useStyles} from "../features/Admin/Concerts/styles";
-import {STATUS} from "../const/statuses";
+import {ITEM_STATUS, STATUS} from "../const/statuses";
 import {addStatus} from "../redux/concertsReducer";
 
 export const useConcerts = () => {
@@ -26,7 +26,7 @@ export const useConcerts = () => {
     const concerts = useSelector<RootStateType, ConcertsType[]>(getConcerts)
     const total = useSelector<RootStateType, number>(getTotal)
     const page = useSelector<RootStateType, number>(getPage)
-    const status = useSelector<RootStateType, AppStatus>(getStatus)
+    const status = useSelector<RootStateType, AppStatus>(getStatusConcerts)
 
     const pages = Math.ceil(total / PAGE.ITEM_PER_PAGE)
 
@@ -87,7 +87,7 @@ export const useConcerts = () => {
                       poster={e.poster}
                 />
             </Link>
-            <ActionBar id={e.id} del={onDeleteHandler} edit={onEditHandler}/>
+            <ActionBar id={e.id} del={onDeleteHandler} edit={onEditHandler} disabled={e.status === ITEM_STATUS.DELETE}/>
         </Flex>)
 
     return {

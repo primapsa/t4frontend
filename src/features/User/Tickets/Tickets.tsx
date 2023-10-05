@@ -5,21 +5,20 @@ import Filter from "../../../components/Filter/Filter";
 import Pagination from "../../../components/Pagination/Pagination";
 import {useStyles} from "./styles";
 import PreloaderExt from "../../../components/Preloader/PreloaderExt";
-import {STATUS} from "../../../const/statuses";
-import EmptyStateExt from "../../../components/Empty/EmptyStateExt";
 import {useTickets} from "../../../hooks/useTickets";
+import EmptyStateWithLoader from "../../../components/Empty/EmptyStateWithLoader";
 
 const Tickets = () => {
 
     const {classes} = useStyles()
-    const { list, coordinates, page, status, pages, onChangeHandler} = useTickets()
+    const { list, coordinates, page, pages, onChangeHandler, isLoaded, status} = useTickets()
 
     return (
-        <PreloaderExt isLoaded={status === STATUS.LOADING}>
+        <PreloaderExt isLoaded={isLoaded}>
             <Center className={classes.center}>
                 <Flex className={classes.wrapper}>
                     <Filter/>
-                    <EmptyStateExt isEmpty={!list.length}>
+                    <EmptyStateWithLoader isEmpty={!list.length} status={status} >
                         <Flex className={classes.tickets}>
                             {list}
                         </Flex>
@@ -28,7 +27,7 @@ const Tickets = () => {
                             page={page}
                             onChange={onChangeHandler}/>
                         <Map coordinates={coordinates}/>
-                    </EmptyStateExt>
+                    </EmptyStateWithLoader>
                 </Flex>
             </Center>
         </PreloaderExt>

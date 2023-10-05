@@ -1,17 +1,9 @@
 import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
-import {authAPI, AuthRequestRegType, CredentialsType, promocodeAPI} from "../api/api";
+import {authAPI, AuthRequestRegType, CredentialsType} from "../api/api";
 import {HTTP_STATUSES} from "../const/htttpStatus";
-import {
-    asyncThunkActionWithLoading,
-    authPersistGet,
-    authPersistPut,
-    handleThunkError,
-    handleUncaughtError,
-    parseJwt,
-    setTokens
-} from "../utils/utils";
+import {handleThunkError, handleUncaughtError, handleUncaughtStatusError, parseJwt, setTokens} from "../utils/utils";
 import {MESSAGE} from "../const/messages";
-import {addAppStatus, addPopupContent} from "./appReducer";
+import {addAppStatus, addPopupContent, AppStatus} from "./appReducer";
 import {STATUS} from "../const/statuses";
 import {AxiosError} from "axios/index";
 
@@ -21,21 +13,19 @@ const init: AuthInitialType = {
     error: null,
     isStaff: false,
     user: {} as AuthUserType,
-    userId: null
+    userId: null,
+    status: STATUS.LOADING
 }
 
 export const login = createAsyncThunk('auth/login', async (credentials: CredentialsType, thunkAPI) => {
 
-        thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
         try {
             const response = await authAPI.login(credentials)
-            thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
             if (response.status === HTTP_STATUSES.OK) {
                 return response.data
             }
-            return handleUncaughtError(thunkAPI)
+            return handleUncaughtStatusError(thunkAPI)
         } catch (error) {
-            thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
             return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError).response?.data))
         }
     }
@@ -43,12 +33,29 @@ export const login = createAsyncThunk('auth/login', async (credentials: Credenti
 
 export const checkAuth = createAsyncThunk('auth/me', async (param, thunkAPI) => {
 
-    return asyncThunkActionWithLoading(authAPI.me, undefined, thunkAPI)
+    try {
+        const response = await authAPI.me()
+        if (response.status === HTTP_STATUSES.OK) {
+            thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
+            return response.data
+        }
+        return handleUncaughtError(thunkAPI)
+    } catch (error) {
+        return handleThunkError(error as AxiosError, thunkAPI, false)
+    }
 })
 
 export const socialLogin = createAsyncThunk('auth/socialLogin', async (credentials: string, thunkAPI) => {
 
-    return asyncThunkActionWithLoading(authAPI.socialLogin, credentials, thunkAPI)
+    try {
+        const response = await authAPI.socialLogin(credentials)
+        if (response.status === HTTP_STATUSES.OK) {
+            return response.data
+        }
+        return handleUncaughtError(thunkAPI)
+    } catch (error) {
+        return handleThunkError(error as AxiosError, thunkAPI)
+    }
 })
 
 
@@ -61,7 +68,7 @@ export const registerUser = createAsyncThunk('auth/register', async (reg: AuthRe
             thunkAPI.dispatch(addPopupContent(MESSAGE.NEW_USER_SUCCESS))
             return 'login'
         }
-        return handleUncaughtError(thunkAPI)
+        return handleUncaughtStatusError(thunkAPI)
     } catch (error) {
         thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
         return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError).response?.data))
@@ -70,7 +77,7 @@ export const registerUser = createAsyncThunk('auth/register', async (reg: AuthRe
 
 export const authSlice = createSlice({
     name: 'auth',
-    initialState: authPersistGet() || init,
+    initialState: init,
     reducers: {
         logout(state) {
             state.isAuth = false
@@ -85,15 +92,18 @@ export const authSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(checkAuth.fulfilled, (state, action) => {
+
                 if (action.payload) {
                     const data = action.payload
                     state.isAuth = true
                     state.user = data
                     state.userId = data.id
                     state.isStaff = data.is_staff
-                    state.error = null
-                    authPersistPut(data)
+                } else {
+                    state.isAuth = false
                 }
+                state.status = STATUS.IDLE
+                state.error = null
             })
             .addCase(checkAuth.rejected, (state, action) => {
                 state.isAuth = false
@@ -102,6 +112,10 @@ export const authSlice = createSlice({
                 state.isStaff = false
                 localStorage.clear()
                 state.error = null
+                state.status = STATUS.IDLE
+            })
+            .addCase(checkAuth.pending, (state, action) => {
+                state.status = STATUS.LOADING
             })
             .addCase(registerUser.fulfilled, (state, action) => {
                 if (action.payload) {
@@ -123,6 +137,11 @@ export const authSlice = createSlice({
             })
             .addCase(login.pending, (state) => {
                 state.error = null
+                state.status = STATUS.LOADING
+            })
+            .addCase(socialLogin.pending, (state) => {
+                state.error = null
+                state.status = STATUS.LOADING
             })
             .addCase(registerUser.pending, (state) => {
                 state.error = null
@@ -134,10 +153,10 @@ export const authSlice = createSlice({
                     state.isAuth = true
                     state.user = decodedToken
                     state.isStaff = decodedToken.is_staff
-                    state.userId = decodedToken.id
+                    state.userId = decodedToken.user_id
                     setTokens(data)
-                    authPersistPut(decodedToken)
                     state.error = null
+                    state.status = STATUS.IDLE
                 }
             })
     }
@@ -154,12 +173,13 @@ export type AuthInitialType = {
     user: AuthUserType
     type: LoginType
     error: string | null
+    status: AppStatus
 }
 export type LoginType = 'login' | 'register'
 export type AuthUserType = {
     email: string
     exp?: number
-    user_id?: number
+    user_id: number
     id: number
     is_staff: boolean
 }

@@ -1,7 +1,7 @@
 import {useSelector} from "react-redux";
 import {RootStateType, useAppDispatch} from "../redux/store";
 import {CartConcertsType} from "../api/api";
-import {getCart, getStatus, getUserId} from "../selectors/selectors";
+import {getCart, getStatus, getStatusCart, getTotalCart, getUserId} from "../selectors/selectors";
 import {AppStatus} from "../redux/appReducer";
 import React, {useCallback, useEffect} from "react";
 import {
@@ -18,10 +18,9 @@ export const useCart = () => {
 
     const purchases = useSelector<RootStateType, CartConcertsType[]>(getCart)
     const userId = useSelector<RootStateType, number | null>(getUserId)
-    const status = useSelector<RootStateType, AppStatus>(getStatus)
+    const status = useSelector<RootStateType, AppStatus>(getStatusCart)
+    const total = useSelector<RootStateType, number>(getTotalCart)
     const dispatch = useAppDispatch()
-    const length = purchases.length
-
 
     useEffect(() => {
         if (userId)
@@ -50,35 +49,36 @@ export const useCart = () => {
     }, [userId])
 
     const cart = purchases.reduce((acc, p) => {
-            const price = p.price * p.count
-            const discount = p.discount ? price - price * (1 - p.discount / 100) : 0
-            const fullPrice = discount ? price - discount : discount
+        const price = p.price * p.count
+        const discount = p.discount ? price - price * (1 - p.discount / 100) : 0
+        const fullPrice = discount ? price - discount : discount
 
-            acc.discount += discount
-            acc.price += price - discount
-            acc.ids.push(p.id)
-            acc.items.push(
-                <CartItem
-                    id={p.id}
-                    title={p.title}
-                    price={price}
-                    count={p.count}
-                    discount={fullPrice}
-                    poster={p.poster}
-                    key={p.id}
-                    promocode={p.promocode}
-                    onAdd={promocodeAddHandler}
-                    onDelete={deleteItemHandler}
-                    onChange={changePromocdeHandler}
-                    onDecrement={(count) => counterHandler(p.id, count)}
-                    onIncrement={(count) => counterHandler(p.id, count)}
-                />)
-            return acc
-        }, {price: 0, items: [] as any[], ids: [] as number[], discount: 0})
+        acc.discount += discount
+        acc.price += price - discount
+        acc.ids.push(p.id)
+        acc.items.push(
+            <CartItem
+                id={p.id}
+                title={p.title}
+                price={price}
+                count={p.count}
+                discount={fullPrice}
+                poster={p.poster}
+                key={p.id}
+                promocode={p.promocode}
+                onAdd={promocodeAddHandler}
+                onDelete={deleteItemHandler}
+                onChange={changePromocdeHandler}
+                status={p.status}
+                onDecrement={(count) => counterHandler(p.id, count)}
+                onIncrement={(count) => counterHandler(p.id, count)}
+            />)
+        return acc
+    }, {price: 0, items: [] as any[], ids: [] as number[], discount: 0})
 
 
     return {
-        length,
+        total,
         cart,
         status,
         paymentSuccess

@@ -2,7 +2,7 @@ import {createSlice, Dispatch} from "@reduxjs/toolkit";
 import {STATUS} from "../const/statuses";
 
 const initialState: AppStateType = {
-    status: STATUS.IDLE,
+    status: STATUS.LOADING,
     notification: [],
     popup: null
 }
