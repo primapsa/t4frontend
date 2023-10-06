@@ -16,7 +16,7 @@ const CartItem = (props: CartItemPropsType) => {
     return (
         <Paper className={classes.paper}>
             <Flex className={classes.wrapper}>
-                <Image src={`${MEDIA.URL}/${props.poster}`}
+                <Image src={`${MEDIA.URL}/media/${props.poster}`}
                        width={'100px'} height={'100px'}>
                 </Image>
                 <Flex className={classes.info}>
