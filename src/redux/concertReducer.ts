@@ -33,7 +33,7 @@ export const concertSlice = createSlice({
             .addCase(fetchConcert.fulfilled, (state, action) => {
                 const concert  = action.payload
                 if(concert){
-                    state.item = concert[0]
+                    state.item = concert
                 }
                 state.status = STATUS.IDLE
             })
