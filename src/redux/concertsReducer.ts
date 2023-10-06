@@ -110,7 +110,7 @@ export const deleteConcert = createAsyncThunk('concerts/deleteConcert', async (i
     try {
         const deleteConcert = await concertAPI.deleteConcert(id)
         thunkAPI.dispatch(addStatus(STATUS.IDLE))
-        if (deleteConcert.status === HTTP_STATUSES.OK) {
+        if (deleteConcert.status === HTTP_STATUSES.NO_CONTENT) {
             handleAppNotification(STATUS.SUCCESS, MESSAGE.REMOVED, thunkAPI)
             return {id} as ChangeResponseType
         }

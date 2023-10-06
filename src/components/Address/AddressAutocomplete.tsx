@@ -11,7 +11,7 @@ const AddressAutocomplete = ({value, label, placeholder, onChange, onSetCoordina
     const {classes} = useStyles()
     const [data, setData] = useState<AddressType[]>([])
     const [isFounded, setFounded] = useState(false)
-
+    const [isEdit, setEdit] = useState(false)
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
         if (e && onChange) {
             onChange(e)
@@ -19,6 +19,7 @@ const AddressAutocomplete = ({value, label, placeholder, onChange, onSetCoordina
         if (isFounded) {
             setFounded(false)
         }
+        setEdit(true)
     }
 
     const onBlurHandler = (e: React.FocusEvent<HTMLInputElement, Element>) => {
@@ -48,7 +49,7 @@ const AddressAutocomplete = ({value, label, placeholder, onChange, onSetCoordina
             )
             setData(place)
         }
-        value && !isFounded ? fetch() : setData([])
+        value && !isFounded && isEdit ? fetch() : setData([])
     }, [value])
 
     return (
