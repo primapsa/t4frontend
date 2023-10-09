@@ -69,6 +69,7 @@ export const useTickets = () => {
                 address={concert.address}
                 source={concert.poster}
                 status={concert.status}
+                isSold = {!concert.ticket_limit}
                 onAddToCart={addToCartHandler}
             ></Ticket>
         </Link>

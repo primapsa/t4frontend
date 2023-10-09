@@ -1,5 +1,5 @@
 import React, {useCallback} from "react";
-import {Button, Card, Flex, Image, Text} from "@mantine/core";
+import {Badge, Button, Card, Flex, Image, Text} from "@mantine/core";
 import {MEDIA} from "../../const/media";
 import {IconClockHour3, IconMapPinFilled, IconWallet} from "@tabler/icons-react";
 import {dateFormat} from "../../utils/utils";
@@ -7,7 +7,7 @@ import {useStyles} from "./styles";
 import {ItemStatus} from "../../api/api";
 import {ITEM_STATUS} from "../../const/statuses";
 
-const Ticket = ({id, source, title, address, date, price, onAddToCart, status}: TicketPropsType) => {
+const Ticket = ({id, source, title, address, date, price, onAddToCart, status, isSold = false}: TicketPropsType) => {
 
     const {classes} = useStyles()
     const onclickHandler = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -41,11 +41,17 @@ const Ticket = ({id, source, title, address, date, price, onAddToCart, status}: 
                 <Text className={classes.address}>от {price} USD</Text>
             </Flex>
             <Flex className={classes.buy}>
-                <Button onClick={onclickHandler}
-                        variant={"outline"}
-                        disabled={status === ITEM_STATUS.ADD}>
-                    Купить
-                </Button>
+                {
+                    isSold ?
+                        <Badge variant="outline" color="red" size="xl" radius="md">Билетов нет</Badge>
+                        :
+                        <Button onClick={onclickHandler}
+                                variant={"outline"}
+                                disabled={status === ITEM_STATUS.ADD}>
+                            Купить
+                        </Button>
+                }
+
             </Flex>
         </Card>
     )
@@ -59,5 +65,6 @@ type TicketPropsType = {
     price: number
     onAddToCart: (id: number) => void
     status?: ItemStatus
+    isSold: boolean
 }
 export default React.memo(Ticket);

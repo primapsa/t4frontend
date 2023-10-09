@@ -61,6 +61,7 @@ export const useCart = () => {
                 id={p.id}
                 title={p.title}
                 price={price}
+                ticket={p.ticket_limit}
                 count={p.count}
                 discount={fullPrice}
                 poster={p.poster}

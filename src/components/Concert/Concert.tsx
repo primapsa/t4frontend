@@ -1,6 +1,6 @@
 import React from 'react';
 import {GoogleMap, MarkerF} from "@react-google-maps/api";
-import {Button, Center, Flex, Image, Paper, Text, TypographyStylesProvider} from '@mantine/core';
+import {Button, Center, Flex, Image, Paper, Text, TypographyStylesProvider, Badge} from '@mantine/core';
 import {useStyles} from "./styles";
 import {IconClockHour3, IconMapPinFilled, IconWallet} from "@tabler/icons-react";
 import {MEDIA} from "../../const/media";
@@ -52,7 +52,13 @@ const Concert = () => {
                         </TypographyStylesProvider>
                         {!isAdmin &&
                             <Flex>
-                                <Button onClick={addToCartHandler} size={"lg"}>Купить билет</Button>
+                                {
+                                    concert.ticket < concert.ticket_limit ?
+                                        <Button onClick={addToCartHandler} size={"lg"}>Купить билет</Button>
+                                        :
+                                        <Badge variant="outline" color="red" size="xl" radius="md">Билетов нет</Badge>
+                                }
+
                             </Flex>
                         }
                         <div className={classes.map}>

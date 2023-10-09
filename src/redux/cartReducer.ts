@@ -2,7 +2,7 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {CartAddType, cartAPI, CartConcertsType, CartType, PayPalResponseTYpe, ValidatePromocodeType} from "../api/api";
 import {HTTP_STATUSES} from "../const/htttpStatus";
 import {ITEM_STATUS, STATUS} from "../const/statuses";
-import {addAppStatus, addAppStatusNotification, addPopupContent, AppStatus} from "./appReducer";
+import {addAppStatus, addAppStatusNotification, addPopupContent, AppNotificationType, AppStatus} from "./appReducer";
 import {MESSAGE} from "../const/messages";
 import {makePayPalMessage} from "../utils/paypal";
 import {
@@ -36,18 +36,18 @@ export const fetchCart = createAsyncThunk('cart/fetch', async (userId: number, t
 })
 
 export const addCart = createAsyncThunk('cart/add', async (cart: CartAddType, thunkAPI) => {
-
+    const notification = {status: STATUS.SUCCESS, message: MESSAGE.ADDED_TO_CART} as AppNotificationType
+    let newItemInCart = true;
     thunkAPI.dispatch(setConcertStatus(cart.concertId))
     try {
         const response = await cartAPI.addCart(cart)
         thunkAPI.dispatch(removeConcertStatus(cart.concertId))
-
-        if (response.status === HTTP_STATUSES.CREATED) {
-            const notification = {status: STATUS.SUCCESS, message: MESSAGE.ADDED_TO_CART}
-            thunkAPI.dispatch(addAppStatusNotification(notification))
-            return response.data
+        if (response.status === HTTP_STATUSES.NO_CONTENT) {
+             notification.message = MESSAGE.REMOVED_FROM_CART
+             newItemInCart = false
         }
-        return handleUncaughtStatusError(thunkAPI)
+        thunkAPI.dispatch(addAppStatusNotification(notification))
+        return newItemInCart
 
     } catch (error) {
         return handleThunkStatusError(error as AxiosError, thunkAPI)
@@ -132,12 +132,14 @@ export const cartSlice = createSlice({
                     state.total = (action.payload as CartConcertsType[]).length
                 }
             })
-            .addCase(fetchCart.pending, (state, action) => {
+            .addCase(fetchCart.pending, (state) => {
                 state.status = STATUS.LOADING
             })
             .addCase(addCart.fulfilled, (state, action) => {
-                setCartCount(getCartCount() + 1)
-                state.total += 1
+                const isNewCartItem = action.payload
+                const lsTotal = isNewCartItem ? getCartCount() + 1 : getCartCount() - 1
+                setCartCount(lsTotal)
+                state.total = isNewCartItem ?  state.total + 1 : state.total -1
             })
             .addCase(deleteCart.fulfilled, (state, action) => {
                 const cartId = action?.payload?.cartId
@@ -167,6 +169,7 @@ export const cartSlice = createSlice({
             })
             .addCase(deleteCartUser.fulfilled, (state, action) => {
                 state.list = []
+                state.total = 0
             })
     }
 })

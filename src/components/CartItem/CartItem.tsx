@@ -16,7 +16,7 @@ const CartItem = (props: CartItemPropsType) => {
     return (
         <Paper className={classes.paper}>
             <Flex className={classes.wrapper}>
-                <Image src={`${MEDIA.URL}/media/${props.poster}`}
+                <Image src={`${MEDIA.URL}${props.poster}`}
                        width={'100px'} height={'100px'}>
                 </Image>
                 <Flex className={classes.info}>
@@ -24,6 +24,7 @@ const CartItem = (props: CartItemPropsType) => {
                     <Flex className={classes.control}>
                         <NumberedCounter
                             value={props.count}
+                            limit = {props.ticket}
                             onDecrement={props.onDecrement}
                             onIncrement={props.onIncrement}
                         />
@@ -51,6 +52,7 @@ type CartItemPropsType = {
     poster: string
     title: string
     count: number
+    ticket: number
     price: number
     discount: number
     onDelete: (id: number) => void

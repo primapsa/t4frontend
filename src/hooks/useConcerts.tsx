@@ -84,6 +84,7 @@ export const useConcerts = () => {
                       voice={e.voice}
                       price={e.price}
                       ticket={e.ticket}
+                      ticket_limit={e.ticket_limit}
                       poster={e.poster}
                 />
             </Link>

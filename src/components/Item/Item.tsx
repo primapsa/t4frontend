@@ -26,7 +26,7 @@ const Item = (props: ItemPropsType) => {
                             <Text>{dateFormatDelimeter(props.date)}</Text>
                         </Flex>
                         <Flex className={classes.concert__tickets}>
-                            <Text>Билетов: {props.ticket}</Text>
+                            <Text>Билетов: {props.ticket} / {props.ticket_limit} </Text>
                             <Text>Стоимость: {props.price} USD</Text>
                             <Text>Место: {props.address}</Text>
                         </Flex>
@@ -61,5 +61,6 @@ type ItemPropsType = {
     voice: string
     price: number
     ticket: number
+    ticket_limit: number
     poster: string
 }

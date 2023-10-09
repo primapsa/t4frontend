@@ -2,12 +2,12 @@ export const HeaderLinks = {
     admin: [
         {link: '/', label: 'Концерты'},
         {link: 'promocodes', label: 'Промокоды'},
-
     ],
     user: [
         {link: 'tickets', label: 'Билеты'},
     ]
 }
+
 export const ROUTES = {USER: 'user', ADMIN: 'admin'}
 export const LINKS = {
     CONCERT: 'concert/',

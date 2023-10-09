@@ -105,7 +105,7 @@ export type ResponseType<T> = {
 }
 export type PromocodeAddType = Omit<PromocodesType, 'id'>
 export type AuthRequestRegType = Omit<AuthRegisterType, 'id'>
-export type CartAddType = Omit<CartType, 'id'>
+export type CartAddType = Omit<CartType, 'id'> & {id?: number}
 export type ConcertsFileType = Omit<ConcertsType, 'poster'> & { poster: File }
 export type AuthResponseType = {
     refresh: string
@@ -201,6 +201,7 @@ export type CartConcertsType = {
     poster: string
     price: number
     tickets: number
+    ticket_limit: number
     title: string
     promocode: string | null
     status?: ItemStatus
@@ -257,6 +258,7 @@ export type ConcertsType = {
     voice: string
     price: number
     ticket: number
+    ticket_limit: number
     address: string
     singerVoiceId_id: number
     poster: string
