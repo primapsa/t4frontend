@@ -20,6 +20,8 @@ export const getFilterQuery = (state: RootStateType) => state.filter.query
 export const getFilterType = (state: RootStateType) => state.filter.type
 export const getIsAuth = (state: RootStateType) => state.auth.isAuth
 export const getIsStaff = (state: RootStateType) => state.auth.isStaff
+export const getAuthType = (state: RootStateType) => state.auth.type
+export const getAuthError = (state: RootStateType) => state.auth.error
 export const getPromocodes = (state: RootStateType) => state.promocode.list
 export const getTotal = (state: RootStateType) => state.concerts.total
 export const getPage = (state: RootStateType) => state.concerts.page

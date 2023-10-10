@@ -1,7 +1,7 @@
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatchType, RootStateType} from "../redux/store";
-import {login, LoginType, registerUser, setLoginType, socialLogin} from "../redux/authReducer";
-import {getIsAuth, getMemoLoadingStatus} from "../selectors/selectors";
+import {AuthUserType, login, LoginType, registerUser, setLoginType, socialLogin} from "../redux/authReducer";
+import {getAuthError, getAuthType, getIsAuth, getMemoLoadingStatus, getUser} from "../selectors/selectors";
 import {AppStatus} from "../redux/appReducer";
 import {useForm, yupResolver} from "@mantine/form";
 import {FORM} from "../const/form";
@@ -10,10 +10,11 @@ import {CredentialResponse} from "@react-oauth/google";
 
 export const useLogin = () => {
 
-    const type = useSelector<RootStateType, LoginType>(state => state.auth.type)
+    const type = useSelector<RootStateType, LoginType>(getAuthType)
     const isAuth = useSelector<RootStateType, boolean>(getIsAuth)
     const isLoading = useSelector<RootStateType, AppStatus | undefined>(getMemoLoadingStatus)
-    const error = useSelector<RootStateType, string | null>(state => state.auth.error)
+    const error = useSelector<RootStateType, string | null>(getAuthError)
+    const user =  useSelector<RootStateType, AuthUserType>(getUser)
 
 
     const form = useForm({
@@ -23,7 +24,8 @@ export const useLogin = () => {
 
     useEffect(() => {
         if(error){
-            form.setFieldError('email', error);
+            form.setFieldValue('email', user.email || '')
+            form.setFieldError('email', error)
         }
     },[error])
 
@@ -38,14 +40,12 @@ export const useLogin = () => {
         const credentials = {...fields, username: fields.email}
         const action = type === 'login' ? login : registerUser
         dispatch<AppDispatchType>(action(credentials))
-
     })
 
     const onClickHandler = useCallback(() => {
         const toggleType = type === 'register' ? 'login' : 'register'
         dispatch<AppDispatchType>(setLoginType(toggleType))
         form.reset()
-
     }, [type])
 
 

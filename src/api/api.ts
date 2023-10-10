@@ -18,7 +18,7 @@ export const concertAPI = {
         return axiosInstance.get<SingerVoiceType[]>('voice/')
     },
     addConcert(concert: FormData) {
-        return axiosInstance.post<ConcertsType[]>('concerts/', concert, {headers: {'Content-Type': 'multipart/form-data'}})
+        return axiosInstance.post<ConcertsType>('concerts/', concert, {headers: {'Content-Type': 'multipart/form-data'}})
     },
     deleteConcert(id: number) {
         return axiosInstance.delete<ChangeResponseType>(`concerts/${id}`)

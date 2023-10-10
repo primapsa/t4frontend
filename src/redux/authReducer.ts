@@ -26,7 +26,9 @@ export const login = createAsyncThunk('auth/login', async (credentials: Credenti
             }
             return handleUncaughtStatusError(thunkAPI)
         } catch (error) {
-            return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError).response?.data))
+            return thunkAPI.rejectWithValue({
+                credentials, error: JSON.stringify((error as AxiosError).response?.data)
+            })
         }
     }
 )
@@ -129,10 +131,13 @@ export const authSlice = createSlice({
                 }
             })
             .addCase(login.rejected, (state, action) => {
-
-                if (action.payload) {
-                    const err = JSON.parse(action.payload as string)
+                state.status = STATUS.IDLE
+                const data = action.payload as {credentials: CredentialsType, error: string}
+                if (data) {
+                    const {credentials} = data
+                    const err = JSON.parse(data.error)
                     state.error = err.detail
+                    state.user = {'email': credentials.email} as AuthUserType
                 }
             })
             .addCase(login.pending, (state) => {

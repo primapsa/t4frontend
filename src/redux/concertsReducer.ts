@@ -185,7 +185,7 @@ export const concertSlice = createSlice({
                     state.total += 1
                     state.errors = null
                     if (state.list.length < PAGE.ITEM_PER_PAGE) {
-                        state.list.push(action.payload[0] as ConcertsType)
+                        state.list.push(action.payload as ConcertsType)
                     }
                 }
             })
