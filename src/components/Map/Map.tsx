@@ -5,7 +5,7 @@ import {Flex, Loader} from '@mantine/core';
 const Map = ({coordinates}: MapPropsType) => {
 
     const {isLoaded} = useLoadScript({
-        googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
+        googleMapsApiKey: 'AIzaSyDPif_2RLdimRxXRC3LwWxgnpwiK1Y-5Vc'
     });
 
     const center = useMemo(() => coordinates[0], [coordinates])
