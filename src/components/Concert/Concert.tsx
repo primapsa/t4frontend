@@ -53,7 +53,7 @@ const Concert = () => {
                         {!isAdmin &&
                             <Flex>
                                 {
-                                    concert.ticket < concert.ticket_limit ?
+                                    Boolean(concert.ticket_limit) ?
                                         <Button onClick={addToCartHandler} size={"lg"}>Купить билет</Button>
                                         :
                                         <Badge variant="outline" color="red" size="xl" radius="md">Билетов нет</Badge>
