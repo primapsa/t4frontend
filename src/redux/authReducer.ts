@@ -43,6 +43,7 @@ export const checkAuth = createAsyncThunk('auth/me', async (param, thunkAPI) => 
         }
         return handleUncaughtError(thunkAPI)
     } catch (error) {
+        thunkAPI.dispatch(addAppStatus(STATUS.IDLE))
         return handleThunkError(error as AxiosError, thunkAPI, false)
     }
 })
