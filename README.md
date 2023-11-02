@@ -81,26 +81,30 @@
 <IMG src="https://github.com/primapsa/t4frontend/assets/15349919/c85c4978-5072-46a9-ab68-ad16b2ef8455"  alt="image"/>
 </details>
 <details>
-  <summary>5.	Администратор может удалить концерт, если в этом возникла необходимость</summary>
+  <summary>5.	Администратор видит дублирование заголовка концерта при добавлении (совпадение загловок, дата, место)</summary>
+<IMG src="https://github.com/primapsa/t4frontend/assets/15349919/d520bced-c254-4c6a-8ecc-48b0e3bb5d17"  alt="image"/>
+</details>
+<details>
+  <summary>6.	Администратор может удалить концерт, если в этом возникла необходимость</summary>
 <IMG src="https://github.com/primapsa/t4frontend/assets/15349919/dde667df-d2b0-4476-a32d-f7bd45c4cae0"  alt="image"/>
 </details>
 <details>
-  <summary>6.	Администратор может посмотреть детальную информацию о концерте</summary>
+  <summary>7.	Администратор может посмотреть детальную информацию о концерте</summary>
 <IMG src="https://github.com/primapsa/t4frontend/assets/15349919/0bea3847-593c-475e-bfe8-f7f7fd7d5873"  alt="image"/>
 </details>
 <details>
-  <summary>7.	Администратор видит актуальный список промо-кодов</summary>
+  <summary>8.	Администратор видит актуальный список промо-кодов</summary>
 <IMG src="https://github.com/primapsa/t4frontend/assets/15349919/0d2a37ab-7af0-4ed3-9c51-7a03c0f4431e"  alt="image"/>
 </details>
 <details>
-  <summary>8.	Администратор может добавить новый промо-код</summary>
+  <summary>9.	Администратор может добавить новый промо-код</summary>
 <IMG src="https://github.com/primapsa/t4frontend/assets/15349919/3d4cd159-83bd-46d1-8aed-89c3b3378db0"  alt="image"/>
 </details>
 <details>
-  <summary>9.	Администратор может редактировать существующий промо-код</summary>
+  <summary>10.	Администратор может редактировать существующий промо-код</summary>
 <IMG src="https://github.com/primapsa/t4frontend/assets/15349919/2d534e25-f5b1-459f-8ea7-fe9d626b1081"  alt="image"/>
 </details>
 <details>
-  <summary>10.	 Администратор может удалить существующий промо-код  </summary>
+  <summary>11.	 Администратор может удалить существующий промо-код  </summary>
 <IMG src="https://github.com/primapsa/t4frontend/assets/15349919/0f3ed95c-9546-4461-9b21-25dad20c2fcb"  alt="image"/>
 </details>
