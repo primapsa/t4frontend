@@ -17,7 +17,8 @@ const initialState: InitialStateType = {
     list: [],
     total: PAGE.TOTAL,
     page: PAGE.NUMBER,
-    status: STATUS.IDLE
+    status: STATUS.IDLE,
+    error: null
 }
 
 export const fetchPromocodes = createAsyncThunk('promocodes/fetch', async (page: number, thunkAPI) => {
@@ -85,6 +86,9 @@ export const promocodeSlice = createSlice({
         setPage(state, action) {
             state.page = action.payload
         },
+        setPromocodeStatus(state, action) {
+            state.status = action.payload
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -101,7 +105,8 @@ export const promocodeSlice = createSlice({
                 }
             })
             .addCase(addPromocode.fulfilled, (state, action) => {
-                state.status = STATUS.IDLE
+                state.status = STATUS.SUCCESS
+                state.error = null
                 if (action.payload) {
                     state.total += 1
                     if (state.list.length < PAGE.ITEM_PER_PAGE) {
@@ -110,11 +115,22 @@ export const promocodeSlice = createSlice({
                 }
 
             })
+            .addCase(addPromocode.rejected, (state, action) => {
+                state.status = STATUS.ERROR
+                const error = action.payload as string
+                if (error) {
+                    state.error = JSON.parse(error) as PromocodeErrorType
+                }
+            })
             .addCase(editPromocode.fulfilled, (state, action) => {
-                state.status = STATUS.IDLE
+                state.status = STATUS.SUCCESS
                 const response = action.payload
                 if (response)
                     state.list = state.list.map(p => p.id === response.id ? response : p)
+
+            })
+            .addCase(editPromocode.pending, (state, action) => {
+                state.status = STATUS.LOADING
             })
             .addCase(deletePromocode.pending, (state, action) => {
                 const id = action.meta.arg
@@ -125,7 +141,7 @@ export const promocodeSlice = createSlice({
 
     }
 })
-export const {setPage} = promocodeSlice.actions
+export const {setPage,setPromocodeStatus} = promocodeSlice.actions
 export default promocodeSlice.reducer
 
 type InitialStateType = {
@@ -133,10 +149,14 @@ type InitialStateType = {
     total: number
     page: number
     status: AppStatus
+    error: PromocodeErrorType | null
 }
 export type PromocodesType = {
     id: number
     title: string
     discount: number
     date: string
+}
+export type PromocodeErrorType = {
+    [key: string]: string
 }

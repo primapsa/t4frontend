@@ -66,7 +66,7 @@ export const useTickets = () => {
                 date={concert.date}
                 price={concert.price}
                 title={concert.title}
-                address={concert.address}
+                address={concert.place.address}
                 source={concert.poster}
                 status={concert.status}
                 isSold = {!concert.ticket_limit}
@@ -79,8 +79,8 @@ export const useTickets = () => {
         () => concerts
             .map(c =>
                 ({
-                    lat: parseFloat(c.latitude),
-                    lng: parseFloat(c.longitude), title: c.title
+                    lat: parseFloat(c.place.latitude),
+                    lng: parseFloat(c.place.longitude), title: c.title
                 })
             ), [concerts])
 

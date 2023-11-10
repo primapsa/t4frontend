@@ -7,6 +7,7 @@ import TextEditor from "../TextEditor/TextEditor";
 import {useStyles} from "./style";
 import {useConcertForm} from "../../hooks/useConcertForm";
 import AddressAutocomplete from "../Address/AddressAutocomplete";
+import {STATUS} from "../../const/statuses";
 
 const ConcertsForm = ({init, onClose}: InitialValuesType) => {
 
@@ -19,7 +20,8 @@ const ConcertsForm = ({init, onClose}: InitialValuesType) => {
         concertsType,
         concertType,
         singerVoice,
-        onSetCoordinates
+        onSetCoordinates,
+        status
     } = useConcertForm({init, onClose})
 
     return (
@@ -41,13 +43,16 @@ const ConcertsForm = ({init, onClose}: InitialValuesType) => {
                             icon={<IconCalendarTime size={rem(16)}/>}
                             {...form.getInputProps('date')}
                         />
-                        <Select
-                            label="Тип концерта"
-                            placeholder="Выберите"
-                            data={concertsType}
-                            {...form.getInputProps('typeId')}
-                            onChange={onChangeHandler}
-                        />
+                        {
+                            !init &&
+                            <Select
+                                label="Тип концерта"
+                                placeholder="Выберите"
+                                data={concertsType}
+                                {...form.getInputProps('type')}
+                                onChange={onChangeHandler}
+                            />
+                        }
                     </Box>
                     <Box className={classes.box}>
                         <AddressAutocomplete
@@ -94,7 +99,7 @@ const ConcertsForm = ({init, onClose}: InitialValuesType) => {
                                 label="Тип голоса солиста"
                                 placeholder="Выберите"
                                 data={singerVoice}
-                                {...form.getInputProps('singerVoiceId')}
+                                {...form.getInputProps('singerVoice')}
                             />
                             <TextInput
                                 label="Название концерта"
@@ -135,7 +140,8 @@ const ConcertsForm = ({init, onClose}: InitialValuesType) => {
                 </Flex>
                 <TextEditor name={'desc'} form={form}/>
                 <Flex className={classes.submit}>
-                    <Button type="submit" disabled={!form.isValid()}>Добавить</Button>
+                    {/*<Button type="submit" disabled={!form.isValid()}>Добавить</Button>*/}
+                    <Button type="submit" disabled={status === STATUS.LOADING}>Добавить</Button>
                 </Flex>
             </form>
         </Box>

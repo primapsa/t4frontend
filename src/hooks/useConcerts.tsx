@@ -1,12 +1,20 @@
 import {RootStateType, useAppDispatch} from "../redux/store";
 import React, {useCallback, useEffect, useState} from "react";
-import {ConcertsFileType, ConcertsType} from "../api/api";
+import {ConcertsFileType, ConcertsType, ConcertTypesType, SingerVoiceType} from "../api/api";
 import {useSelector} from "react-redux";
-import {getConcerts, getPage, getStatus, getStatusConcerts, getTotal} from "../selectors/selectors";
+import {
+    getConcerts,
+    getConcertType,
+    getPage,
+    getSingerVoice,
+    getStatus,
+    getStatusConcerts,
+    getTotal
+} from "../selectors/selectors";
 import {AppStatus} from "../redux/appReducer";
 import {PAGE} from "../const/page";
 import {clearConcertsErrors, deleteConcert, fetchConcertsAdmin, setPage} from "../redux/concertsReducer";
-import {generateImageFromUrl} from "../utils/utils";
+import {generateImageFromUrl, getConcertTitle, getSingerVOiceTitle} from "../utils/utils";
 import {MEDIA} from "../const/media";
 import {Flex} from "@mantine/core";
 import {Link} from "react-router-dom";
@@ -27,6 +35,8 @@ export const useConcerts = () => {
     const total = useSelector<RootStateType, number>(getTotal)
     const page = useSelector<RootStateType, number>(getPage)
     const status = useSelector<RootStateType, AppStatus>(getStatusConcerts)
+    const concertType = useSelector<RootStateType, ConcertTypesType[]>(getConcertType)
+    const singerVoice = useSelector<RootStateType, SingerVoiceType[]>(getSingerVoice)
 
     const pages = Math.ceil(total / PAGE.ITEM_PER_PAGE)
 
@@ -68,6 +78,7 @@ export const useConcerts = () => {
         }
     }, [concerts])
 
+
     const list = concerts.map(e =>
         <Flex key={e.id} className={classes.item}>
             <Link to={`${LINKS.CONCERT}${e.id}`} className={classes.link}>
@@ -79,9 +90,9 @@ export const useConcerts = () => {
                       headliner={e.headliner}
                       censor={e.censor}
                       date={e.date}
-                      address={e.address}
-                      type={e.type}
-                      voice={e.voice}
+                      address={e.place.address}
+                      type={getConcertTitle(+e.type, concertType)}
+                      voice={getSingerVOiceTitle(+e.singerVoice, singerVoice)}
                       price={e.price}
                       ticket={e.ticket}
                       ticket_limit={e.ticket_limit}

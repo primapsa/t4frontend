@@ -9,13 +9,20 @@ export const formatConcertRequest = (fields: any) => {
             latitude: fields.latitude,
             longitude: fields.longitude
         },
-        typeId: Number(fields.typeId),
+        type: Number(fields.type),
         date: new Date(fields.date).toISOString()
     }
     let fieldsKey: keyof typeof concert
     for (fieldsKey in concert) {
-        if (concert[fieldsKey]) {
-            outputFormData.append(fieldsKey, concert[fieldsKey] as any)
+        let value = concert[fieldsKey]
+        if (value) {
+            if(!(value instanceof File) && typeof value === 'object' ){
+
+                value = JSON.stringify(value)
+
+            }
+
+            outputFormData.append(fieldsKey, value)
         }
     }
     return outputFormData
@@ -28,7 +35,6 @@ export const formatConcertUpdateRequest = (fields: any) => {
         typeId: Number(fields.typeId),
         date: new Date(fields.date).toISOString()
     }
-   
     let fieldsKey: keyof typeof concert
     for (fieldsKey in concert) {
         outputFormData.append(fieldsKey, concert[fieldsKey] as any)

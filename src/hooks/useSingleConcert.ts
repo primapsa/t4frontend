@@ -22,7 +22,7 @@ export const useSingleConcert = () => {
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
     });
 
-    const place = {lat: parseFloat(concert.latitude), lng: parseFloat(concert.longitude)} as const
+    const place = {lat: parseFloat(concert?.place?.latitude), lng: parseFloat(concert?.place?.longitude)} as const
     const dispatch = useDispatch()
 
     useEffect(() => {

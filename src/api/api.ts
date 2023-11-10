@@ -8,11 +8,15 @@ axiosInstance.interceptors.request.use(addRequestHeader)
 axiosInstance.interceptors.response.use(config => config, refreshExpiredToken(axiosInstance))
 
 export const concertAPI = {
-    fetchConcerts(param: { query: string, type: number, ids: string }, page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
+    fetchConcerts(param: {
+        query: string,
+        type: number,
+        ids: string
+    }, page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
         return axiosInstance.get<ResponseType<ConcertsType[]>>(`concerts/${makeQuery(param, page, count)}`)
     },
     fetchConcertType() {
-        return axiosInstance.get<ConcertTypesType[]>('type/')
+        return axiosInstance.get<ConcertTypeResponse[]>('type/')
     },
     fetchSingerVoice() {
         return axiosInstance.get<SingerVoiceType[]>('voice/')
@@ -105,7 +109,7 @@ export type ResponseType<T> = {
 }
 export type PromocodeAddType = Omit<PromocodesType, 'id'>
 export type AuthRequestRegType = Omit<AuthRegisterType, 'id'>
-export type CartAddType = Omit<CartType, 'id'> & {id?: number}
+export type CartAddType = Omit<CartType, 'id'> & { id?: number }
 export type ConcertsFileType = Omit<ConcertsType, 'poster'> & { poster: File }
 export type AuthResponseType = {
     refresh: string
@@ -251,16 +255,19 @@ export type ConcertsType = {
     headliner: null | string
     censor: null | string
     date: string
-    latitude: string
-    longitude: string
+    place: {
+        address: string
+        latitude: string
+        longitude: string
+    }
     type: string
-    typeId_id: number
+    type_id: number
     voice: string
     price: number
     ticket: number
     ticket_limit: number
-    address: string
-    singerVoiceId_id: number
+
+    singerVoice: number
     poster: string
     desc: string
     status?: ItemStatus
@@ -268,6 +275,10 @@ export type ConcertsType = {
 export type ConcertTypesType = {
     value: string
     label: string
+}
+export type ConcertTypeResponse = {
+    id: string
+    title: string
 }
 export type SingerVoiceType = {
     value: string

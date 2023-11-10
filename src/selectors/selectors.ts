@@ -29,6 +29,9 @@ export const getTotalPromocode = (state: RootStateType) => state.promocode.total
 export const getPagePromocode = (state: RootStateType) => state.promocode.page
 export const getStatusPromocode = (state: RootStateType) => state.promocode.status
 export const getTotalCart = (state: RootStateType) => state.cart.total
+export const getConcertErrors = (state: RootStateType) => state.concerts.errors
+export const getPromocodeErrors = (state: RootStateType) => state.promocode.error
+
 
 export const getMemoOfflineStatus = createSelector(getStatus,
     (status) => status === STATUS.OFFLINE ? status : undefined)

@@ -2,7 +2,7 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {
     ChangeResponseType,
     concertAPI,
-    ConcertsType,
+    ConcertsType, ConcertTypeResponse,
     ConcertTypesType,
     ResponseType,
     SingerVoiceType
@@ -71,7 +71,6 @@ export const fetchConcertsAdmin = createAsyncThunk('concerts/fetchAdminPage', as
     await thunkAPI.dispatch(fetchConcerts())
     await thunkAPI.dispatch(fetchConcertsTypes())
     await thunkAPI.dispatch(fetchSingerVoice())
-
 })
 
 export const addNewConcert = createAsyncThunk('concerts/addNewConcert', async (concert: any, thunkAPI) => {
@@ -88,7 +87,10 @@ export const addNewConcert = createAsyncThunk('concerts/addNewConcert', async (c
     }
 })
 
-export const updateConcert = createAppAsyncThunk('concerts/update', async (param: { id: number, concert: FormData }, thunkAPI) => {
+export const updateConcert = createAppAsyncThunk('concerts/update', async (param: {
+    id: number,
+    concert: FormData
+}, thunkAPI) => {
     const {id, concert} = param
 
     thunkAPI.dispatch(addAppStatus(STATUS.LOADING))
@@ -100,7 +102,8 @@ export const updateConcert = createAppAsyncThunk('concerts/update', async (param
             return response.data
         }
     } catch (error) {
-        return handleThunkStatusError(error as AxiosError, thunkAPI)
+        // return handleThunkStatusError(error as AxiosError, thunkAPI)
+        return thunkAPI.rejectWithValue(JSON.stringify((error as AxiosError).response?.data))
     }
 })
 
@@ -156,8 +159,13 @@ export const concertSlice = createSlice({
                 state.list = (action.payload as ResponseType<ConcertsType[]>).data
                 state.total = (action.payload as ResponseType<ConcertsType[]>).total
             })
-            .addCase(fetchConcertsTypes.fulfilled, (state, action) => {
-                state.type = action.payload as ConcertTypesType[]
+            .addCase(fetchConcertsTypes.fulfilled, (state, {payload}) => {
+                if (payload) {
+                    state.type = (payload as ConcertTypeResponse[]).map(e => ({
+                        value: e.id,
+                        label: e.title
+                    } as ConcertTypesType))
+                }
             })
             .addCase(fetchSingerVoice.fulfilled, (state, action) => {
                 state.singerVoice = action.payload as SingerVoiceType[]
@@ -167,7 +175,6 @@ export const concertSlice = createSlice({
                 if (id) {
                     state.list = state.list.map(e => e.id === id ? {...e, status: ITEM_STATUS.DELETE} : e)
                 }
-
             })
             .addCase(deleteConcert.fulfilled, (state, action) => {
                 const id = Number((action.payload as ChangeResponseType).id)

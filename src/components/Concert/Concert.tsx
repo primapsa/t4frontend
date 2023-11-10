@@ -26,7 +26,7 @@ const Concert = () => {
                             </Flex>
                             <Flex className={classes.pin}>
                                 <IconMapPinFilled/>
-                                <Text>{concert.address}</Text>
+                                <Text>{concert?.place?.address}</Text>
                             </Flex>
                             <Flex>
                                 <IconWallet/>

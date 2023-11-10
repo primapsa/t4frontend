@@ -1,10 +1,11 @@
-import {authAPI, CartAddType} from "../api/api";
+import {authAPI, CartAddType, ConcertTypesType, SingerVoiceType} from "../api/api";
 import {AuthInitialType, AuthUserType, LoginType} from "../redux/authReducer";
 import {AxiosError, AxiosInstance, InternalAxiosRequestConfig} from "axios/index";
 import {HTTP_STATUSES} from "../const/htttpStatus";
 import {STATUS} from "../const/statuses";
 import {addAppStatus, addAppStatusNotification, AppStatus} from "../redux/appReducer";
 import {MESSAGE} from "../const/messages";
+import {ConcertErrorsType} from "../redux/concertsReducer";
 
 
 export const makeQuery = (param: { query: string, type: number, ids: string }, page: number, count: number) => {
@@ -119,6 +120,12 @@ export const fetchImagebyUrl = async (url: string) => {
     return new Blob([buffer], {type: "image/png"});
 }
 
+export const isCorrectImgExtension = (filename: string) => {
+    const supportedFormats = ['jpg', 'jpeg', 'png'];
+    const splitted = filename.split('.')
+    const extension = splitted[splitted.length - 1]
+    return supportedFormats.includes(extension)
+}
 export const generateImageFromUrl = async (url: string, name: string) => {
     const blob = await fetchImagebyUrl(url)
     const file = await new File([blob], name)
@@ -149,7 +156,7 @@ export const handleThunkError = (error: AxiosError, thunkAPI: any, notification:
     if (error.message === 'Network Error') {
         thunkAPI.dispatch(addAppStatus(STATUS.OFFLINE))
     } else {
-        if(notification)
+        if (notification)
             thunkAPI.dispatch(addAppStatusNotification(record))
     }
 
@@ -192,5 +199,14 @@ export const handleAppNotification = (status: AppStatus, message: string, thunkA
     if (status === STATUS.ERROR)
         return thunkAPI.rejectWithValue(message)
 }
-
+export const getConcertTitle = (id: number, concerts: ConcertTypesType[]): string =>
+    concerts.find(e => +e.value === id)?.label || ''
+export const getSingerVOiceTitle = (id: number, concerts: SingerVoiceType[]): string =>
+    concerts.find(e => +e.value === id)?.label || ''
+export const getCommonErrors = (errors: ConcertErrorsType | ConcertErrorsType[]): ConcertErrorsType => {
+    if (Array.isArray(errors)) {
+        errors = errors.reduce((e, acc) => ({...acc, ...e}), {})
+    }
+    return errors
+}
 type AxiosConfigType = InternalAxiosRequestConfig & { isRetry: boolean }

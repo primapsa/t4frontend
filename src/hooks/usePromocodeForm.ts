@@ -1,14 +1,20 @@
 import {PromocodeItemTypeForm} from "../components/Promocode/PromocodeForm";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {useForm, yupResolver} from "@mantine/form";
 import {FORM} from "../const/form";
-import {addPromocode, editPromocode} from "../redux/promocodesReducer";
+import {addPromocode, editPromocode, PromocodeErrorType, setPromocodeStatus} from "../redux/promocodesReducer";
 import {dateFormatDelimeter} from "../utils/utils";
-import {AppDispatchType} from "../redux/store";
+import {AppDispatchType, RootStateType} from "../redux/store";
+import {getPromocodeErrors, getStatusPromocode} from "../selectors/selectors";
+import {useEffect} from "react";
+import {STATUS} from "../const/statuses";
+import {AppStatus} from "../redux/appReducer";
 
-export const usePromocodeForm = ({onClose, initValues}:PromocodeItemTypeForm) => {
+export const usePromocodeForm = ({onClose, initValues}: PromocodeItemTypeForm) => {
 
     const init = initValues ? {...initValues, date: new Date(initValues.date)} : initValues
+    const error = useSelector<RootStateType, PromocodeErrorType | null>(getPromocodeErrors)
+    const status = useSelector<RootStateType, AppStatus>(getStatusPromocode)
     const dispatch = useDispatch()
     const form = useForm({
         validateInputOnBlur: true,
@@ -24,9 +30,17 @@ export const usePromocodeForm = ({onClose, initValues}:PromocodeItemTypeForm) =>
 
         const promocode = {...fields, date: dateFormatDelimeter(new Date(fields.date).toISOString()), id: init?.id || 0}
         dispatch<AppDispatchType>(executePromocode(promocode))
-        //form.reset()
-        onClose()
     })
+
+    useEffect(() => {
+        if (error && status === STATUS.ERROR) {
+            form.setErrors(error)
+        }
+        if (status === STATUS.SUCCESS) {
+            onClose()
+            dispatch(setPromocodeStatus(STATUS.IDLE))
+        }
+    }, [status])
 
     return {
         formHandler,
