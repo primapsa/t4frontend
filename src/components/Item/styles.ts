@@ -1,41 +1,41 @@
-import {createStyles} from "@mantine/core";
+import { createStyles } from '@mantine/core'
 
-export const useStyles = createStyles((theme) => ({
-    paper: {
-        padding: '10px',
-        width: '100%'
+export const useStyles = createStyles(theme => ({
+  concert: {
+    flexDirection: 'column',
+    marginLeft: '10px',
+    width: '100%',
+  },
+  concert__flex: {
+    flexDirection: 'column',
+  },
+  concert__info: {
+    [theme.fn.smallerThan('550')]: {
+      flexDirection: 'column',
+      marginTop: '10px',
     },
-    concert: {
-        flexDirection: "column",
-        marginLeft: "10px",
-        width: '100%'
+    [theme.fn.smallerThan('678')]: {
+      justifyContent: 'space-between',
     },
-    concert__info: {
-        width: '100%',
-        [theme.fn.smallerThan('678')]: {
-            justifyContent: 'space-between'
-        },
-        [theme.fn.smallerThan('550')]: {
-            marginTop: '10px',
-            flexDirection: "column",
-        },
+    width: '100%',
+  },
+  concert__tickets: {
+    flexDirection: 'column',
+    margin: '0 20px',
+    [theme.fn.smallerThan('550')]: {
+      margin: 0,
     },
-    concert__title: {
-        fontWeight: 'bolder'
+  },
+  concert__title: {
+    fontWeight: 'bolder',
+  },
+  image: {
+    [theme.fn.smallerThan('678')]: {
+      display: 'none',
     },
-    concert__tickets: {
-        flexDirection: "column",
-        margin: '0 20px',
-        [theme.fn.smallerThan('550')]: {
-            margin: 0
-        },
-    },
-    concert__flex: {
-        flexDirection: "column",
-    },
-    image: {
-        [theme.fn.smallerThan('678')]: {
-            display: 'none'
-        },
-    }
-}));
+  },
+  paper: {
+    padding: '10px',
+    width: '100%',
+  },
+}))

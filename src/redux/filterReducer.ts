@@ -1,37 +1,39 @@
-import {createSlice} from "@reduxjs/toolkit";
-import {PAGE} from "../const/page";
-import {FILTER} from "../const/filter";
+import { createSlice } from '@reduxjs/toolkit'
+
+import { FILTER } from '../const/filter'
+import { PAGE } from '../const/page'
 
 const initialState: InitialStateType = {
-    query: FILTER.QUERY,
-    type: FILTER.TYPE,
-    count: PAGE.ITEM_PER_PAGE,
-    ids: FILTER.IDS
+  count: PAGE.ITEM_PER_PAGE,
+  ids: FILTER.IDS,
+  query: FILTER.QUERY,
+  type: FILTER.TYPE,
 }
+
 export const filterSlice = createSlice({
-    name: 'filter',
-    initialState,
-    reducers: {
-        resetFilter(state) {
-            state.query = FILTER.QUERY
-            state.type = FILTER.TYPE
-        },
-        setFilter(state, action) {
-            state.query = action.payload.query
-            state.type = action.payload.type
-        },
-        setFilterIds(state, action){
-            state.ids = action.payload
-        }
+  initialState,
+  name: 'filter',
+  reducers: {
+    resetFilter(state) {
+      state.query = FILTER.QUERY
+      state.type = FILTER.TYPE
     },
+    setFilter(state, action) {
+      state.query = action.payload.query
+      state.type = action.payload.type
+    },
+    setFilterIds(state, action) {
+      state.ids = action.payload
+    },
+  },
 })
 
-export const {resetFilter, setFilter} = filterSlice.actions
+export const { resetFilter, setFilter } = filterSlice.actions
 export default filterSlice.reducer
 
 type InitialStateType = {
-    query: string
-    type: number
-    count: number
-    ids: string
+  count: number
+  ids: string
+  query: string
+  type: number
 }

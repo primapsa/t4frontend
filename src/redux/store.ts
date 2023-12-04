@@ -1,30 +1,32 @@
-import {combineReducers, configureStore} from "@reduxjs/toolkit";
-import concertsReducer from "./concertsReducer";
-import thunkMiddleware from 'redux-thunk'
-import filterReducer from "./filterReducer";
-import concertReducer from "./concertReducer";
-import appReducer from "./appReducer";
-import promocodesReducer from "./promocodesReducer";
-import cartReducer from "./cartReducer";
-import authReducer from "./authReducer";
 import { useDispatch } from 'react-redux'
 
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
+import thunkMiddleware from 'redux-thunk'
+
+import appReducer from './appReducer'
+import authReducer from './authReducer'
+import cartReducer from './cartReducer'
+import concertReducer from './concertReducer'
+import concertsReducer from './concertsReducer'
+import filterReducer from './filterReducer'
+import promocodesReducer from './promocodesReducer'
+
 export const rootReducer = combineReducers({
-    concerts: concertsReducer,
-    filter: filterReducer,
-    concert: concertReducer,
-    app: appReducer,
-    promocode: promocodesReducer,
-    cart: cartReducer,
-    auth: authReducer
+  app: appReducer,
+  auth: authReducer,
+  cart: cartReducer,
+  concert: concertReducer,
+  concerts: concertsReducer,
+  filter: filterReducer,
+  promocode: promocodesReducer,
 })
 
 export const store = configureStore({
-    reducer: rootReducer,
-    middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(thunkMiddleware),
+  middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(thunkMiddleware),
+  reducer: rootReducer,
 })
 
 export const useAppDispatch: () => DispatchType = useDispatch
 export type RootStateType = ReturnType<typeof store.getState>
-export type AppDispatchType = typeof store.dispatch | any
+export type AppDispatchType = any | typeof store.dispatch
 export type DispatchType = typeof store.dispatch

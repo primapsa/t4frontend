@@ -1,17 +1,14 @@
-import React from 'react';
-import EmptyState from "./EmptyState";
+import React from 'react'
 
-const EmptyStateExt = ({isEmpty, children}: EmptyStateProps) => {
-    return (
-        <>
-            {isEmpty ? <EmptyState/> : children}
-        </>
-    );
-};
+import EmptyState from './EmptyState'
 
-export default React.memo(EmptyStateExt);
+const EmptyStateExt = ({ children, isEmpty }: EmptyStateProps) => {
+  return <>{isEmpty ? <EmptyState /> : children}</>
+}
+
+export default React.memo(EmptyStateExt)
 
 type EmptyStateProps = {
-    isEmpty: boolean
-    children: React.ReactNode
+  children: React.ReactNode
+  isEmpty: boolean
 }

@@ -1,4 +1,4 @@
 export const COLOR = {
-    RED: 'red',
-    TEAL: 'teal'
+  RED: 'red',
+  TEAL: 'teal',
 }

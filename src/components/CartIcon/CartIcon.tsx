@@ -1,24 +1,24 @@
-import React from 'react';
-import {IconShoppingCart} from '@tabler/icons-react'
-import {NavLink} from "react-router-dom";
-import {LINKS} from "../../const/routes";
-import {useStyles} from "./style"
+import React from 'react'
+import { NavLink } from 'react-router-dom'
 
-const CartIcon = ({count}: CartIconPropsType) => {
-    const {classes} = useStyles()
+import { IconShoppingCart } from '@tabler/icons-react'
 
-    return (
-        <NavLink to={LINKS.CART} className={classes.container}>
-            {
-                !!count &&  <div className={classes.round}>{count}</div>
-            }
-            <IconShoppingCart size={'25px'}/>
-        </NavLink>
-    );
-};
+import { LINKS } from '../../const/routes'
+import { useStyles } from './style'
 
-export default React.memo(CartIcon);
+const CartIcon = ({ count }: CartIconPropsType) => {
+  const { classes } = useStyles()
+
+  return (
+    <NavLink className={classes.container} to={LINKS.CART}>
+      {!!count && <div className={classes.round}>{count}</div>}
+      <IconShoppingCart size={'25px'} />
+    </NavLink>
+  )
+}
+
+export default React.memo(CartIcon)
 
 type CartIconPropsType = {
-    count: number
+  count: number
 }

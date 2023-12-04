@@ -1,16 +1,14 @@
-import {createStyles} from "@mantine/core";
+import { createStyles } from '@mantine/core'
 
 export const useStyles = createStyles(() => ({
-    container:
-        {
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '10px',
-            height: '80vh'
-        },
-    wrapper: {
-        width: '100%',
-        maxWidth: '320px'
-    }
-
-}));
+  container: {
+    alignItems: 'center',
+    height: '80vh',
+    justifyContent: 'center',
+    margin: '10px',
+  },
+  wrapper: {
+    maxWidth: '320px',
+    width: '100%',
+  },
+}))

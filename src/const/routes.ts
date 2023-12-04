@@ -1,19 +1,16 @@
 export const HeaderLinks = {
-    admin: [
-        {link: '/', label: 'Концерты'},
-        {link: 'promocodes', label: 'Промокоды'},
-    ],
-    user: [
-        {link: 'tickets', label: 'Билеты'},
-    ]
+  admin: [
+    { label: 'Концерты', link: '/' },
+    { label: 'Промокоды', link: 'promocodes' },
+  ],
+  user: [{ label: 'Билеты', link: 'tickets' }],
 }
 
-export const ROUTES = {USER: 'user', ADMIN: 'admin'}
+export const ROUTES = { ADMIN: 'admin', USER: 'user' }
 export const LINKS = {
-    CONCERT: 'concert/',
-    LOGIN: 'login',
-    CART: 'cart',
-    ADMIN: 'admin/',
-    NOT_FOUND: '404'
-
+  ADMIN: 'admin/',
+  CART: 'cart',
+  CONCERT: 'concert/',
+  LOGIN: 'login',
+  NOT_FOUND: '404',
 }

@@ -1,30 +1,29 @@
-import React from 'react';
-import {Modal} from '@mantine/core';
-import {useAlert} from "../../hooks/useAlert";
-import {useStyles} from "./style";
+import React from 'react'
 
+import { Modal } from '@mantine/core'
+
+import { useAlert } from '../../hooks/useAlert'
+import { useStyles } from './style'
 
 const Alert = () => {
+  const { isShown, notifications, onPopupClose, popup } = useAlert()
+  const { style } = useStyles()
 
-    const {notifications, isShown, popup, onPopupClose} = useAlert()
-    const {style} = useStyles()
+  return (
+    <>
+      {isShown && <div style={style}>{notifications}</div>}
+      <Modal
+        centered
+        onClose={onPopupClose}
+        opened={!!popup}
+        title={popup?.title}
+        withCloseButton
+        zIndex={10}
+      >
+        {popup?.message}
+      </Modal>
+    </>
+  )
+}
 
-    return (
-        <>
-            {
-                isShown && <div style={style}>{notifications}</div>
-            }
-            <Modal opened={!!popup}
-                   onClose={onPopupClose}
-                   title={popup?.title}
-                   withCloseButton={true}
-                   zIndex={10}
-                   centered={true}>
-                {popup?.message}
-            </Modal>
-        </>
-    )
-};
-
-
-export default Alert;
+export default Alert

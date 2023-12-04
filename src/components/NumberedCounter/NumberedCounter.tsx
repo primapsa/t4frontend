@@ -1,36 +1,42 @@
-import React from 'react';
-import {ActionIcon, Group, Text} from '@mantine/core';
+import React from 'react'
 
-const NumberedCounter = ({value, limit, onIncrement, onDecrement}: NumberedCounterType) => {
+import { ActionIcon, Group, Text } from '@mantine/core'
 
-    const incrementHandler = () => {
-        if (value < limit) {
-            onIncrement(value + 1)
-        }
+const NumberedCounter = ({ limit, onDecrement, onIncrement, value }: NumberedCounterType) => {
+  const incrementHandler = () => {
+    if (value < limit) {
+      onIncrement(value + 1)
     }
-    const decrementHandler = () => {
-        if (value > 1) {
-            onDecrement(value - 1)
-        }
+  }
+  const decrementHandler = () => {
+    if (value > 1) {
+      onDecrement(value - 1)
     }
+  }
 
-    return (
-        <Group spacing={5}>
-            <ActionIcon size={30} variant="default" onClick={decrementHandler} disabled={value === 1}>
-                –
-            </ActionIcon>
-            <Text p={'0 10px'}>{value}</Text>
-            <ActionIcon size={30} variant="default" onClick={incrementHandler} disabled={value === limit}>
-                +
-            </ActionIcon>
-        </Group>
-    );
+  return (
+    <Group spacing={5}>
+      <ActionIcon disabled={value === 1} onClick={decrementHandler} size={30} variant={'default'}>
+        –
+      </ActionIcon>
+      <Text p={'0 10px'}>{value}</Text>
+      <ActionIcon
+        disabled={value === limit}
+        onClick={incrementHandler}
+        size={30}
+        variant={'default'}
+      >
+        +
+      </ActionIcon>
+    </Group>
+  )
 }
+
 export default React.memo(NumberedCounter)
 
 type NumberedCounterType = {
-    value: number
-    limit: number
-    onIncrement: (v: number) => void
-    onDecrement: (v: number) => void
+  limit: number
+  onDecrement: (v: number) => void
+  onIncrement: (v: number) => void
+  value: number
 }

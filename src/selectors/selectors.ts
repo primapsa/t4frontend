@@ -1,6 +1,7 @@
-import {RootStateType} from "../redux/store";
-import {createSelector} from "@reduxjs/toolkit";
-import {STATUS} from "../const/statuses";
+import { createSelector } from '@reduxjs/toolkit'
+
+import { STATUS } from '../const/statuses'
+import { RootStateType } from '../redux/store'
 
 export const getNotice = (state: RootStateType) => state.app.notification
 export const getConcerts = (state: RootStateType) => state.concerts.list
@@ -32,12 +33,14 @@ export const getTotalCart = (state: RootStateType) => state.cart.total
 export const getConcertErrors = (state: RootStateType) => state.concerts.errors
 export const getPromocodeErrors = (state: RootStateType) => state.promocode.error
 
+export const getMemoOfflineStatus = createSelector(getStatus, status =>
+  status === STATUS.OFFLINE ? status : undefined
+)
 
-export const getMemoOfflineStatus = createSelector(getStatus,
-    (status) => status === STATUS.OFFLINE ? status : undefined)
+export const getMemoLoadingStatus = createSelector(getStatus, status =>
+  status === STATUS.LOADING ? status : undefined
+)
 
-export const getMemoLoadingStatus = createSelector(getStatus,
-    (status) => status === STATUS.LOADING ? status : undefined)
-
-export const getMemoAuthStatus = createSelector(getStatusAuth,
-    (status) => status === STATUS.LOADING ? status : undefined)
+export const getMemoAuthStatus = createSelector(getStatusAuth, status =>
+  status === STATUS.LOADING ? status : undefined
+)

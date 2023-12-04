@@ -1,24 +1,23 @@
-import {createStyles} from "@mantine/core";
+import { createStyles } from '@mantine/core'
 
 export const useStyles = createStyles(() => ({
-    wrapper: {
-        marginTop: '10px',
-        alignItems: 'center',
-        width: '100%'
-    },
-    badge: {
-       justifyContent: "flex-end"
-    },
-    input: {
-        margin: '0 5px',
-        minHeight: '15px',
-        height: '22px'
-    },
-    button: {
-        marginLeft: '15px'
-    },
-    icon: {
-        height: '15px'
-    },
-
+  badge: {
+    justifyContent: 'flex-end',
+  },
+  button: {
+    marginLeft: '15px',
+  },
+  icon: {
+    height: '15px',
+  },
+  input: {
+    height: '22px',
+    margin: '0 5px',
+    minHeight: '15px',
+  },
+  wrapper: {
+    alignItems: 'center',
+    marginTop: '10px',
+    width: '100%',
+  },
 }))

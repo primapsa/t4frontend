@@ -1,5 +1,5 @@
 export const FILTER = {
-    QUERY: '',
-    TYPE: 0,
-    IDS: ''
+  IDS: '',
+  QUERY: '',
+  TYPE: 0,
 }

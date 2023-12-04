@@ -1,20 +1,20 @@
-import React from 'react';
-import {Pagination as Paginate} from '@mantine/core';
+import React from 'react'
 
-const Pagination = ({total, page, onChange}: PaginationPropsType) => {
-    return (
-        <>
-            {
-                total > 1 &&
-                <Paginate total={total} value={page} onChange={onChange} position={'center'}></Paginate>
-            }
-        </>
-    )
+import { Pagination as Paginate } from '@mantine/core'
 
-};
-type PaginationPropsType = {
-    total: number
-    page: number
-    onChange: (p: number) => void
+const Pagination = ({ onChange, page, total }: PaginationPropsType) => {
+  return (
+    <>
+      {total > 1 && (
+        <Paginate onChange={onChange} position={'center'} total={total} value={page}></Paginate>
+      )}
+    </>
+  )
 }
-export default React.memo(Pagination);
+
+type PaginationPropsType = {
+  onChange: (p: number) => void
+  page: number
+  total: number
+}
+export default React.memo(Pagination)

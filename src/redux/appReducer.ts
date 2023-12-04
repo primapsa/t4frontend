@@ -1,63 +1,70 @@
-import {createSlice, Dispatch} from "@reduxjs/toolkit";
-import {STATUS} from "../const/statuses";
+import { Dispatch, createSlice } from '@reduxjs/toolkit'
+
+import { STATUS } from '../const/statuses'
 
 const initialState: AppStateType = {
-    status: STATUS.LOADING,
-    notification: [],
-    popup: null
+  notification: [],
+  popup: null,
+  status: STATUS.LOADING,
 }
 
 export const appSlice = createSlice({
-    name: 'app',
-    initialState,
-    reducers: {
-        addAppStatus(state, action: ActionType<AppStatus>) {
-            state.status = action.payload
-        },
-        addAppStatusNotification(state, action: ActionType<AppNotificationType>) {
-            state.status = action.payload.status
-            state.notification.push(action.payload)
-        },
-        clearAppNotification(state) {
-            state.notification = []
-        },
-        addPopupContent(state, action){
-            state.popup = action.payload
-        },
-        clearPopup(state) {
-            state.popup = null
-        }
+  initialState,
+  name: 'app',
+  reducers: {
+    addAppStatus(state, action: ActionType<AppStatus>) {
+      state.status = action.payload
     },
+    addAppStatusNotification(state, action: ActionType<AppNotificationType>) {
+      state.status = action.payload.status
+      state.notification.push(action.payload)
+    },
+    addPopupContent(state, action) {
+      state.popup = action.payload
+    },
+    clearAppNotification(state) {
+      state.notification = []
+    },
+    clearPopup(state) {
+      state.popup = null
+    },
+  },
 })
 
-export const {addAppStatus, addAppStatusNotification, clearAppNotification, addPopupContent, clearPopup} = appSlice.actions
+export const {
+  addAppStatus,
+  addAppStatusNotification,
+  addPopupContent,
+  clearAppNotification,
+  clearPopup,
+} = appSlice.actions
 export default appSlice.reducer
 
 export type ActionType<T> = {
-    payload: T
+  payload: T
 }
-export type AppStatus = 'idle' | 'loading' | 'error' | 'success' | 'offline'
+export type AppStatus = 'error' | 'idle' | 'loading' | 'offline' | 'success'
 export type AppNotificationType = {
-    status: AppStatus
-    message: string
+  message: string
+  status: AppStatus
 }
 export type PopupType = {
-    title: string
-    message: string
+  message: string
+  title: string
 }
 export type AppStateType = {
-    status: AppStatus
-    notification: AppNotificationType[]
-    popup: PopupType | null
+  notification: AppNotificationType[]
+  popup: PopupType | null
+  status: AppStatus
 }
 
 export type AsyncThunkConfig = {
-    state?: unknown
-    dispatch?: Dispatch
-    extra?: unknown
-    rejectValue?: unknown
-    serializedErrorType?: unknown
-    pendingMeta?: unknown
-    fulfilledMeta?: unknown
-    rejectedMeta?: unknown
+  dispatch?: Dispatch
+  extra?: unknown
+  fulfilledMeta?: unknown
+  pendingMeta?: unknown
+  rejectValue?: unknown
+  rejectedMeta?: unknown
+  serializedErrorType?: unknown
+  state?: unknown
 }

@@ -1,51 +1,51 @@
-import React from 'react';
-import './App.css';
-import {BrowserRouter, Route, Routes} from "react-router-dom";
-import {Container} from "@mantine/core";
-import MainPage from "./features/Admin/Concerts/Concerts";
-import Concert from "./components/Concert/Concert";
-import Alert from "./components/Alert/Alert";
-import Promocodes from "./features/Admin/Promocodes/Promocodes";
-import Tickets from "./features/User/Tickets/Tickets";
-import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
-import {NotFound} from "./components/404/NotFound";
-import ProtectedRote from "./components/ProtectedRoute/ProtectedRote";
-import CartPage from "./features/User/CartPage/CartPage";
-import {Login} from "./components/Login/Login";
-import Unavaliable from "./components/Unavaliable/Unavaliable";
-import Auth from "./components/Auth/Auth";
+import React from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
+import { Container } from '@mantine/core'
+
+import './App.css'
+
+import { NotFound } from './components/404/NotFound'
+import Alert from './components/Alert/Alert'
+import Auth from './components/Auth/Auth'
+import Concert from './components/Concert/Concert'
+import { Login } from './components/Login/Login'
+import PrivateRoute from './components/PrivateRoute/PrivateRoute'
+import ProtectedRote from './components/ProtectedRoute/ProtectedRote'
+import Unavaliable from './components/Unavaliable/Unavaliable'
+import MainPage from './features/Admin/Concerts/Concerts'
+import Promocodes from './features/Admin/Promocodes/Promocodes'
+import CartPage from './features/User/CartPage/CartPage'
+import Tickets from './features/User/Tickets/Tickets'
 
 function App() {
-
-    return (
-        <Auth>
-            <Unavaliable>
-                <Alert/>
-                <BrowserRouter>
-                    <Container w={'100%'} p={'0px'} maw={'100%'}>
-                        <Routes>
-                            <Route path={'/'} element={<PrivateRoute/>}>
-                                <Route index element={<Tickets/>}/>
-                                <Route path={`tickets`} element={<Tickets/>}/>
-                                <Route path={`cart`} element={<CartPage/>}/>
-                                <Route path={`concert/:id`} element={<Concert/>}/>
-                            </Route>
-                            <Route path={'admin'} element={<ProtectedRote/>}>
-                                <Route index element={<MainPage/>}/>
-                                <Route path={'concerts'} element={<MainPage/>}/>
-                                <Route path={`concert/:id`} element={<Concert/>}/>
-                                <Route path={`promocodes`} element={<Promocodes/>}/>
-                            </Route>
-                            <Route path={'login'} element={<Login/>}/>
-                            <Route path="*" element={<NotFound/>}/>
-                        </Routes>
-                    </Container>
-                </BrowserRouter>
-            </Unavaliable>
-        </Auth>
-
-    );
+  return (
+    <Auth>
+      <Unavaliable>
+        <Alert />
+        <BrowserRouter>
+          <Container maw={'100%'} p={'0px'} w={'100%'}>
+            <Routes>
+              <Route element={<PrivateRoute />} path={'/'}>
+                <Route element={<Tickets />} index />
+                <Route element={<Tickets />} path={`tickets`} />
+                <Route element={<CartPage />} path={`cart`} />
+                <Route element={<Concert />} path={`concert/:id`} />
+              </Route>
+              <Route element={<ProtectedRote />} path={'admin'}>
+                <Route element={<MainPage />} index />
+                <Route element={<MainPage />} path={'concerts'} />
+                <Route element={<Concert />} path={`concert/:id`} />
+                <Route element={<Promocodes />} path={`promocodes`} />
+              </Route>
+              <Route element={<Login />} path={'login'} />
+              <Route element={<NotFound />} path={'*'} />
+            </Routes>
+          </Container>
+        </BrowserRouter>
+      </Unavaliable>
+    </Auth>
+  )
 }
 
-export default React.memo(App);
+export default React.memo(App)

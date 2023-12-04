@@ -1,27 +1,27 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import {store} from "./redux/store";
-import {Provider} from 'react-redux';
-import {MantineProvider, Button} from '@mantine/core';
-import {appTheme} from "./appTheme";
+import React from 'react'
+import { Provider } from 'react-redux'
 
-const root = ReactDOM.createRoot(
-    document.getElementById('root') as HTMLElement
-);
+import { Button, MantineProvider } from '@mantine/core'
+import ReactDOM from 'react-dom/client'
+
+import './index.css'
+
+import App from './App'
+import { appTheme } from './appTheme'
+import { store } from './redux/store'
+import reportWebVitals from './reportWebVitals'
+
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+
 root.render(
-
-        <Provider store={store}>
-            <MantineProvider withGlobalStyles withNormalizeCSS theme={appTheme}>
-                <App/>
-            </MantineProvider>
-        </Provider>
-
-);
+  <Provider store={store}>
+    <MantineProvider theme={appTheme} withGlobalStyles withNormalizeCSS>
+      <App />
+    </MantineProvider>
+  </Provider>
+)
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+reportWebVitals()

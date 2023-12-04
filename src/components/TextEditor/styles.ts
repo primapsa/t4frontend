@@ -1,13 +1,13 @@
-import {createStyles} from "@mantine/core";
+import { createStyles } from '@mantine/core'
 
-export const useStyles = createStyles((theme) => ({
-    root: {
-        width: '100%',
-        [theme.fn.smallerThan('370')]: {
-            width: '250px'
-        },
+export const useStyles = createStyles(theme => ({
+  mirror: {
+    height: '500px',
+  },
+  root: {
+    [theme.fn.smallerThan('370')]: {
+      width: '250px',
     },
-    mirror: {
-        height: '500px'
-    },
-}));
+    width: '100%',
+  },
+}))

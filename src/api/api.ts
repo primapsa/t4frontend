@@ -1,286 +1,298 @@
-import axios, {AxiosResponse} from "axios";
-import {REST_API} from "../const/restApi";
-import {PAGE} from "../const/page";
-import {addRequestHeader, makeQuery, refreshExpiredToken} from "../utils/utils";
+import axios, { AxiosResponse } from 'axios'
 
-const axiosInstance = axios.create({baseURL: REST_API.BASE_URL})
+import { PAGE } from '../const/page'
+import { REST_API } from '../const/restApi'
+import { addRequestHeader, makeQuery, refreshExpiredToken } from '../utils/utils'
+
+const axiosInstance = axios.create({ baseURL: REST_API.BASE_URL })
+
 axiosInstance.interceptors.request.use(addRequestHeader)
 axiosInstance.interceptors.response.use(config => config, refreshExpiredToken(axiosInstance))
 
 export const concertAPI = {
-    fetchConcerts(param: {
-        query: string,
-        type: number,
-        ids: string
-    }, page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
-        return axiosInstance.get<ResponseType<ConcertsType[]>>(`concerts/${makeQuery(param, page, count)}`)
+  addConcert(concert: FormData) {
+    return axiosInstance.post<ConcertsType>('concerts/', concert, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  deleteConcert(id: number) {
+    return axiosInstance.delete<ChangeResponseType>(`concerts/${id}`)
+  },
+  fetchConcert(id: number) {
+    return axiosInstance.get<ConcertsType[]>(`concerts/${id}`)
+  },
+  fetchConcertType() {
+    return axiosInstance.get<ConcertTypeResponse[]>('type/')
+  },
+  fetchConcerts(
+    param: {
+      ids: string
+      query: string
+      type: number
     },
-    fetchConcertType() {
-        return axiosInstance.get<ConcertTypeResponse[]>('type/')
-    },
-    fetchSingerVoice() {
-        return axiosInstance.get<SingerVoiceType[]>('voice/')
-    },
-    addConcert(concert: FormData) {
-        return axiosInstance.post<ConcertsType>('concerts/', concert, {headers: {'Content-Type': 'multipart/form-data'}})
-    },
-    deleteConcert(id: number) {
-        return axiosInstance.delete<ChangeResponseType>(`concerts/${id}`)
-    },
-    fetchConcert(id: number) {
-        return axiosInstance.get<ConcertsType[]>(`concerts/${id}`)
-    },
-    updateConcert(id: number, concert: FormData) {
-        return axiosInstance.put<ConcertsType[]>(`concerts/${id}`, concert,
-            {headers: {'Content-Type': 'multipart/form-data'}})
-    }
+    page: number = PAGE.NUMBER,
+    count: number = PAGE.ITEM_PER_PAGE
+  ) {
+    return axiosInstance.get<ResponseType<ConcertsType[]>>(
+      `concerts/${makeQuery(param, page, count)}`
+    )
+  },
+  fetchSingerVoice() {
+    return axiosInstance.get<SingerVoiceType[]>('voice/')
+  },
+  updateConcert(id: number, concert: FormData) {
+    return axiosInstance.put<ConcertsType[]>(`concerts/${id}`, concert, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
 }
 
 export const promocodeAPI = {
-    fetchPromocodes(page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
-        return axiosInstance.get<ResponseType<PromocodesType[]>>(`promocodes/?count=${count}&page=${page}`)
-    },
-    deletePromocode(id: number) {
-        return axiosInstance.delete<AxiosResponse>(`promocodes/${id}`)
-    },
-    addPromocode(promocode: PromocodeAddType) {
-        return axiosInstance.post<PromocodesType>('promocodes/', promocode)
-    },
-    editPromocode(promocode: PromocodesType) {
-        return axiosInstance.put<PromocodesType>(`promocodes/${promocode.id}`, promocode)
-    }
+  addPromocode(promocode: PromocodeAddType) {
+    return axiosInstance.post<PromocodesType>('promocodes/', promocode)
+  },
+  deletePromocode(id: number) {
+    return axiosInstance.delete<AxiosResponse>(`promocodes/${id}`)
+  },
+  editPromocode(promocode: PromocodesType) {
+    return axiosInstance.put<PromocodesType>(`promocodes/${promocode.id}`, promocode)
+  },
+  fetchPromocodes(page: number = PAGE.NUMBER, count: number = PAGE.ITEM_PER_PAGE) {
+    return axiosInstance.get<ResponseType<PromocodesType[]>>(
+      `promocodes/?count=${count}&page=${page}`
+    )
+  },
 }
 
 export const cartAPI = {
-    fetchUserCart(userId: number) {
-        return axiosInstance.get<CartConcertsType[]>(`cart/user/${userId}`)
-    },
-    deleteUserCart(userId: number) {
-        return axiosInstance.delete(`cart/user/${userId}`)
-    },
-    addCart(cart: CartAddType) {
-        return axiosInstance.post<CartType>('cart/', cart)
-    },
-    deleteCart(id: number) {
-        return axiosInstance.delete(`cart/${id}`)
-    },
-    validateCartPomocode(param: { promocode: string, id: number }) {
-        return axiosInstance.post<ValidatePromocodeType>(`promocode/`, param)
-    },
-    updateCart(param: { id: number, cart: Partial<CartType> }) {
-        return axiosInstance.patch<PatchCartType>(`cart/${param.id}`, param.cart)
-    }
+  addCart(cart: CartAddType) {
+    return axiosInstance.post<CartType>('cart/', cart)
+  },
+  deleteCart(id: number) {
+    return axiosInstance.delete(`cart/${id}`)
+  },
+  deleteUserCart(userId: number) {
+    return axiosInstance.delete(`cart/user/${userId}`)
+  },
+  fetchUserCart(userId: number) {
+    return axiosInstance.get<CartConcertsType[]>(`cart/user/${userId}`)
+  },
+  updateCart(param: { cart: Partial<CartType>; id: number }) {
+    return axiosInstance.patch<PatchCartType>(`cart/${param.id}`, param.cart)
+  },
+  validateCartPomocode(param: { id: number; promocode: string }) {
+    return axiosInstance.post<ValidatePromocodeType>(`promocode/`, param)
+  },
 }
 
 export const paypalAPI = {
-    createOrder(ids: number[]) {
-        return axiosInstance.post('paypal/create/', {ids})
-    },
+  createOrder(ids: number[]) {
+    return axiosInstance.post('paypal/create/', { ids })
+  },
 }
 
 export const authAPI = {
-    login(credentials: CredentialsType) {
-        return axiosInstance.post<AuthResponseType>('user/login/', credentials)
-    },
-    me() {
-        return axiosInstance.get<AuthMeResponse>('user/me/')
-    },
-    socialLogin(jwt: string) {
-        return axiosInstance.post<AuthResponseType>('user/login/social/', {jwt})
-    },
-    register(register: AuthRequestRegType) {
-        return axiosInstance.post<AuthRegisterType>('user/register/', register)
-    },
-    refreshToken(token: { refresh: string }) {
-        return axios.post<RefreshTokenResponseType>(REST_API.BASE_URL + 'token/refresh/', token)
-    }
+  login(credentials: CredentialsType) {
+    return axiosInstance.post<AuthResponseType>('user/login/', credentials)
+  },
+  me() {
+    return axiosInstance.get<AuthMeResponse>('user/me/')
+  },
+  refreshToken(token: { refresh: string }) {
+    return axios.post<RefreshTokenResponseType>(REST_API.BASE_URL + 'token/refresh/', token)
+  },
+  register(register: AuthRequestRegType) {
+    return axiosInstance.post<AuthRegisterType>('user/register/', register)
+  },
+  socialLogin(jwt: string) {
+    return axiosInstance.post<AuthResponseType>('user/login/social/', { jwt })
+  },
 }
 
 export const geoAPI = {
-    mapGeocoding(address: string) {
-        return axios.get<OpenStreetResponseType[]>(`${REST_API.GEOCODING}&q=${encodeURI(address)}`,
-            {headers: {'Accept-Language': 'ru'}})
-    },
+  mapGeocoding(address: string) {
+    return axios.get<OpenStreetResponseType[]>(`${REST_API.GEOCODING}&q=${encodeURI(address)}`, {
+      headers: { 'Accept-Language': 'ru' },
+    })
+  },
 }
 
 export type ResponseType<T> = {
-    data: T
-    total: number
+  data: T
+  total: number
 }
 export type PromocodeAddType = Omit<PromocodesType, 'id'>
 export type AuthRequestRegType = Omit<AuthRegisterType, 'id'>
 export type CartAddType = Omit<CartType, 'id'> & { id?: number }
 export type ConcertsFileType = Omit<ConcertsType, 'poster'> & { poster: File }
 export type AuthResponseType = {
-    refresh: string
-    access: string
+  access: string
+  refresh: string
 }
 type PatchCartType = {
-    id: number
-    data: Partial<CartType>
+  data: Partial<CartType>
+  id: number
 }
 export type PayPalResponseTYpe = {
-    billingToken: string | null
-    facilitatorAccessToken: string
-    orderID: string
-    payerID: string
-    paymentID: string
-    paymentSource?: string
+  billingToken: null | string
+  facilitatorAccessToken: string
+  orderID: string
+  payerID: string
+  paymentID: string
+  paymentSource?: string
 }
 export type GoogleGeoResponse = {
-    results: {
-        formatted_address: string
-        address_components: {
-            long_name: string
-            short_name: string
-            types: string[]
-        }[]
-        geometry: {
-            location: {
-                lat: number
-                lng: number
-            }
-        }
-        place_id: string
-
+  results: {
+    address_components: {
+      long_name: string
+      short_name: string
+      types: string[]
     }[]
+    formatted_address: string
+    geometry: {
+      location: {
+        lat: number
+        lng: number
+      }
+    }
+    place_id: string
+  }[]
 }
 
 export type OpenStreetResponseType = {
-    addresstype: string
-    boundingbox: string[]
-    class: string
-    display_name: string
-    importance: number
-    lat: string
-    licence: string
-    lon: string
-    name: string
-    osm_id: number
-    osm_type: number
-    place_id: number
-    place_rank: number
-    type: string
+  addresstype: string
+  boundingbox: string[]
+  class: string
+  display_name: string
+  importance: number
+  lat: string
+  licence: string
+  lon: string
+  name: string
+  osm_id: number
+  osm_type: number
+  place_id: number
+  place_rank: number
+  type: string
 }
 
 type GooglePlaceResponse = {
-    result: { name: string }
+  result: { name: string }
 }
 export type CartType = {
-    id: number
-    userId: number
-    concertId: number
-    count: number
-    promocodeId?: number | null
-    price: number
-    statusId?: number
+  concertId: number
+  count: number
+  id: number
+  price: number
+  promocodeId?: null | number
+  statusId?: number
+  userId: number
 }
 export type AuthRegisterType = {
-    id: number
-    username: string
-    first_name?: string
-    last_name?: string
-    email: string
+  email: string
+  first_name?: string
+  id: number
+  last_name?: string
+  username: string
 }
 type RefreshTokenResponseType = {
-    access: string
+  access: string
 }
 export type AuthMeResponse = {
-    data: AuthMeType
+  data: AuthMeType
 }
 export type AuthMeType = {
-    email: string
-    is_staff: boolean
-    id: number
+  email: string
+  id: number
+  is_staff: boolean
 }
 export type CredentialsType = {
-    username: string
-    password: string
-    email: string
+  email: string
+  password: string
+  username: string
 }
 export type CartConcertsType = {
-    count: number
-    discount: number | null
-    id: number
-    poster: string
-    price: number
-    tickets: number
-    ticket_limit: number
-    title: string
-    promocode: string | null
-    status?: ItemStatus
+  count: number
+  discount: null | number
+  id: number
+  poster: string
+  price: number
+  promocode: null | string
+  status?: ItemStatus
+  ticket_limit: number
+  tickets: number
+  title: string
 }
 export type PromocodesType = {
-    id: number
-    title: string
-    discount: number
-    date: string
-    status?: ItemStatus
+  date: string
+  discount: number
+  id: number
+  status?: ItemStatus
+  title: string
 }
-export type ItemStatus = 'delete' | 'add' | 'update'
+export type ItemStatus = 'add' | 'delete' | 'update'
 export type ChangeResponseType = {
-    id: number
+  id: number
 }
 export type ValidatePromocodeType = {
-    cartId: number
-    title: string
-    discount: number
+  cartId: number
+  discount: number
+  title: string
 }
 export type ConcertAddType = {
-    title: string
-    date: string
-    place: {
-        address: string
-        latitude: string
-        longitude: string
-    }
-    typeId: number
-    singerVoiceId: string
-    concertName: string
-    composer: null | string
-    wayHint: null | string
-    headliner: null | string
-    censor: null | string
-    price: number
-    tickets: number
-
+  censor: null | string
+  composer: null | string
+  concertName: string
+  date: string
+  headliner: null | string
+  place: {
+    address: string
+    latitude: string
+    longitude: string
+  }
+  price: number
+  singerVoiceId: string
+  tickets: number
+  title: string
+  typeId: number
+  wayHint: null | string
 }
 export type ConcertsType = {
-    id: number
-    title: string
-    singer: string
-    concertName: string
-    composer: null | string
-    wayHint: null | string
-    headliner: null | string
-    censor: null | string
-    date: string
-    place: {
-        address: string
-        latitude: string
-        longitude: string
-    }
-    type: string
-    type_id: number
-    voice: string
-    price: number
-    ticket: number
-    ticket_limit: number
+  censor: null | string
+  composer: null | string
+  concertName: string
+  date: string
+  desc: string
+  headliner: null | string
+  id: number
+  place: {
+    address: string
+    latitude: string
+    longitude: string
+  }
+  poster: string
+  price: number
+  singer: string
+  singerVoice: number
+  status?: ItemStatus
+  ticket: number
+  ticket_limit: number
+  title: string
 
-    singerVoice: number
-    poster: string
-    desc: string
-    status?: ItemStatus
+  type: string
+  type_id: number
+  voice: string
+  wayHint: null | string
 }
 export type ConcertTypesType = {
-    value: string
-    label: string
+  label: string
+  value: string
 }
 export type ConcertTypeResponse = {
-    id: string
-    title: string
+  id: string
+  title: string
 }
 export type SingerVoiceType = {
-    value: string
-    label: string
+  label: string
+  value: string
 }

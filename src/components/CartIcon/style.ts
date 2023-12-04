@@ -1,23 +1,22 @@
-import {createStyles} from "@mantine/core";
+import { createStyles } from '@mantine/core'
 
 export const useStyles = createStyles(() => ({
-
-    container: {
-        position: "relative",
-        display: "flex"
-    },
-    round: {
-        position: "absolute",
-        top: '-10px',
-        right: '-10px',
-        width: '20px',
-        height: '20px',
-        borderRadius: '50%',
-        backgroundColor: 'red',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '13px',
-        lineHeight: '13px'
-    },
-}));
+  container: {
+    display: 'flex',
+    position: 'relative',
+  },
+  round: {
+    alignItems: 'center',
+    backgroundColor: 'red',
+    borderRadius: '50%',
+    display: 'flex',
+    fontSize: '13px',
+    height: '20px',
+    justifyContent: 'center',
+    lineHeight: '13px',
+    position: 'absolute',
+    right: '-10px',
+    top: '-10px',
+    width: '20px',
+  },
+}))

@@ -1,70 +1,89 @@
-import React, {useCallback} from "react";
-import {Badge, Button, Card, Flex, Image, Text} from "@mantine/core";
-import {MEDIA} from "../../const/media";
-import {IconClockHour3, IconMapPinFilled, IconWallet} from "@tabler/icons-react";
-import {dateFormat} from "../../utils/utils";
-import {useStyles} from "./styles";
-import {ItemStatus} from "../../api/api";
-import {ITEM_STATUS} from "../../const/statuses";
+import React, { useCallback } from 'react'
 
-const Ticket = ({id, source, title, address, date, price, onAddToCart, status, isSold = false}: TicketPropsType) => {
+import { Badge, Button, Card, Flex, Image, Text } from '@mantine/core'
+import { IconClockHour3, IconMapPinFilled, IconWallet } from '@tabler/icons-react'
 
-    const {classes} = useStyles()
-    const onclickHandler = useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault()
-        onAddToCart(id)
-    }, [id, onAddToCart])
+import { ItemStatus } from '../../api/api'
+import { MEDIA } from '../../const/media'
+import { ITEM_STATUS } from '../../const/statuses'
+import { dateFormat } from '../../utils/utils'
+import { useStyles } from './styles'
 
-    const dateTime = dateFormat(date)
+const Ticket = ({
+  address,
+  date,
+  id,
+  isSold = false,
+  onAddToCart,
+  price,
+  source,
+  status,
+  title,
+}: TicketPropsType) => {
+  const { classes } = useStyles()
+  const onclickHandler = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.preventDefault()
+      onAddToCart(id)
+    },
+    [id, onAddToCart]
+  )
 
-    return (
-        <Card className={classes.wrapper}>
-            <Image className={classes.img}
-                   src={`${MEDIA.URL}${source}`}
-                   withPlaceholder
-                   alt={'poster'}
-                   fit={'fill'}/>
-            <Text className={classes.title}>{title}</Text>
-            <Flex className={classes.address}>
-                <IconMapPinFilled/>
-                <Text className={classes.address__text}>{address}</Text>
-            </Flex>
-            <Flex>
-                <IconClockHour3/>
-                <Flex className={classes.date}>
-                    <Text className={classes.date__text}>{dateTime.date} </Text>
-                    <Text className={classes.date__text}>{dateTime.time} </Text>
-                </Flex>
-            </Flex>
-            <Flex className={classes.wallet}>
-                <IconWallet/>
-                <Text className={classes.address}>от {price} USD</Text>
-            </Flex>
-            <Flex className={classes.buy}>
-                {
-                    isSold ?
-                        <Badge variant="outline" color="red" size="xl" radius="md">Билетов нет</Badge>
-                        :
-                        <Button onClick={onclickHandler}
-                                variant={"outline"}
-                                disabled={status === ITEM_STATUS.ADD}>
-                            Купить
-                        </Button>
-                }
+  const dateTime = dateFormat(date)
 
-            </Flex>
-        </Card>
-    )
+  return (
+    <Card className={classes.wrapper}>
+      <Image
+        alt={'poster'}
+        className={classes.img}
+        fit={'fill'}
+        src={`${MEDIA.URL}${source}`}
+        withPlaceholder
+      />
+      <Text className={classes.title}>{title}</Text>
+      <Flex className={classes.address}>
+        <IconMapPinFilled />
+        <Text className={classes.address__text}>{address}</Text>
+      </Flex>
+      <Flex>
+        <IconClockHour3 />
+        <Flex className={classes.date}>
+          <Text className={classes.date__text}>{dateTime.date} </Text>
+          <Text className={classes.date__text}>{dateTime.time} </Text>
+        </Flex>
+      </Flex>
+      <Flex className={classes.wallet}>
+        <IconWallet />
+        <Text className={classes.address}>от {price} USD</Text>
+      </Flex>
+      <Flex className={classes.buy}>
+        {isSold ? (
+          <Badge color={'red'} radius={'md'} size={'xl'} variant={'outline'}>
+            Билетов нет
+          </Badge>
+        ) : (
+          <Button
+            disabled={status === ITEM_STATUS.ADD}
+            onClick={onclickHandler}
+            variant={'outline'}
+          >
+            Купить
+          </Button>
+        )}
+      </Flex>
+    </Card>
+  )
 }
+
 type TicketPropsType = {
-    id: number
-    source: string
-    title: string
-    address: string
-    date: string
-    price: number
-    onAddToCart: (id: number) => void
-    status?: ItemStatus
-    isSold: boolean
+  address: string
+  date: string
+  id: number
+  isSold: boolean
+  onAddToCart: (id: number) => void
+  price: number
+  source: string
+  status?: ItemStatus
+  title: string
 }
-export default React.memo(Ticket);
+export default React.memo(Ticket)

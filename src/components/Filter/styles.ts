@@ -1,43 +1,42 @@
-import {createStyles, rem} from "@mantine/core";
+import { createStyles, rem } from '@mantine/core'
 
-export const useStyles = createStyles((theme) => ({
+export const useStyles = createStyles(theme => ({
+  form: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    margin: '15px 0',
+    padding: '0 10px',
+    [theme.fn.smallerThan('650')]: {
+      width: rem(320),
+    },
 
-    form: {
-        padding: '0 10px',
-        display: 'flex',
-        width: '1280px',
-        margin: '15px 0',
-        justifyContent: 'space-between',
-
-        [theme.fn.smallerThan('1280')]: {
-            width: rem(950),
-        },
-        [theme.fn.smallerThan('980')]: {
-           flexDirection: "column",
-            width: rem(650),
-            alignItems: 'center'
-        },
-        [theme.fn.smallerThan('650')]: {
-            width: rem(320),
-        },
+    [theme.fn.smallerThan('980')]: {
+      alignItems: 'center',
+      flexDirection: 'column',
+      width: rem(650),
     },
-    search: {
-        maxWidth: '500px',
-        width: '100%',
-        [theme.fn.smallerThan('1280')]: {
-            maxWidth: '380px',
-        },
-        [theme.fn.smallerThan('980')]: {
-            maxWidth: '400px',
-        },
+    [theme.fn.smallerThan('1280')]: {
+      width: rem(950),
     },
-    type: {
-        maxWidth: '300px',
-        width: '100%',
-        [theme.fn.smallerThan('980')]: {
-            maxWidth: '400px',
-            width: '100%',
-            margin: '10px 0'
-        },
+    width: '1280px',
+  },
+  search: {
+    maxWidth: '500px',
+    [theme.fn.smallerThan('980')]: {
+      maxWidth: '400px',
     },
-}));
+    [theme.fn.smallerThan('1280')]: {
+      maxWidth: '380px',
+    },
+    width: '100%',
+  },
+  type: {
+    maxWidth: '300px',
+    [theme.fn.smallerThan('980')]: {
+      margin: '10px 0',
+      maxWidth: '400px',
+      width: '100%',
+    },
+    width: '100%',
+  },
+}))

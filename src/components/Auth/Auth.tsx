@@ -1,35 +1,26 @@
-import React, {useEffect} from 'react';
-import {useDispatch, useSelector} from "react-redux";
-import {AppDispatchType, RootStateType} from "../../redux/store";
-import {getStatusAuth} from "../../selectors/selectors";
-import {checkAuth} from "../../redux/authReducer";
-import {AppStatus} from "../../redux/appReducer";
-import {STATUS} from "../../const/statuses";
-import Preloader from "../Preloader/Preloader";
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
-const Auth = ({children}:AuthPropsType) => {
+import { STATUS } from '../../const/statuses'
+import { AppStatus } from '../../redux/appReducer'
+import { checkAuth } from '../../redux/authReducer'
+import { AppDispatchType, RootStateType } from '../../redux/store'
+import { getStatusAuth } from '../../selectors/selectors'
+import Preloader from '../Preloader/Preloader'
 
-    const dispatch = useDispatch()
-    const status = useSelector<RootStateType, AppStatus>(getStatusAuth)
+const Auth = ({ children }: AuthPropsType) => {
+  const dispatch = useDispatch()
+  const status = useSelector<RootStateType, AppStatus>(getStatusAuth)
 
-    useEffect(() => {
-        dispatch<AppDispatchType>(checkAuth())
-    }, [])
+  useEffect(() => {
+    dispatch<AppDispatchType>(checkAuth())
+  }, [])
 
-    return (
-        <>
-            {
-                (status === STATUS.LOADING) ? <Preloader/> : children
-            }
-        </>
+  return <>{status === STATUS.LOADING ? <Preloader /> : children}</>
+}
 
-    )
-
-
-};
-
-export default Auth;
+export default Auth
 
 type AuthPropsType = {
-    children: React.ReactNode
+  children: React.ReactNode
 }

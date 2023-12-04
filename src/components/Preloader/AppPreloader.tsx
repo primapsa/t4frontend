@@ -1,25 +1,24 @@
-import React from 'react';
-import {Flex, Loader} from '@mantine/core';
-import {useSelector} from "react-redux";
-import {RootStateType} from "../../redux/store";
-import {AppStatus} from "../../redux/appReducer";
-import {getMemoAuthStatus} from "../../selectors/selectors";
+import React from 'react'
+import { useSelector } from 'react-redux'
+
+import { Flex, Loader } from '@mantine/core'
+
+import { AppStatus } from '../../redux/appReducer'
+import { RootStateType } from '../../redux/store'
+import { getMemoAuthStatus } from '../../selectors/selectors'
 
 const PreloaderExt = () => {
-    const status = useSelector<RootStateType, AppStatus | undefined>(getMemoAuthStatus)
+  const status = useSelector<RootStateType, AppStatus | undefined>(getMemoAuthStatus)
 
-    return (
-        <>
-            {
-                status ?
-                    <Flex style={{height: '100vh'}} justify={'center'} align={'center'}>
-                        <Loader variant="dots"/>
-                    </Flex> :
-                    null
-            }
-        </>
-    )
+  return (
+    <>
+      {status ? (
+        <Flex align={'center'} justify={'center'} style={{ height: '100vh' }}>
+          <Loader variant={'dots'} />
+        </Flex>
+      ) : null}
+    </>
+  )
+}
 
-};
-export default React.memo(PreloaderExt);
-
+export default React.memo(PreloaderExt)

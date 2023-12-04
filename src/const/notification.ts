@@ -1,3 +1,3 @@
 export const NOTIFICATION = {
-    AUTO_CLOSE: 4000
+  AUTO_CLOSE: 4000,
 }

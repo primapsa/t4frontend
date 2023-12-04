@@ -1,19 +1,20 @@
-import {Modal} from "@mantine/core";
-import React from "react";
+import React from 'react'
 
-const Popup = ({title, message, onClose, isOpened}:PopupPropsType) => {
+import { Modal } from '@mantine/core'
 
-    return (
-        <Modal opened={isOpened} onClose={onClose} title={title}>
-            {message}
-        </Modal>
-    )
+const Popup = ({ isOpened, message, onClose, title }: PopupPropsType) => {
+  return (
+    <Modal onClose={onClose} opened={isOpened} title={title}>
+      {message}
+    </Modal>
+  )
 }
+
 export default React.memo(Popup)
 
 type PopupPropsType = {
-    title: string
-    message: string
-    onClose: () => void
-    isOpened: boolean
+  isOpened: boolean
+  message: string
+  onClose: () => void
+  title: string
 }

@@ -1,98 +1,96 @@
-import {createStyles, rem} from "@mantine/core";
+import { createStyles, rem } from '@mantine/core'
 
-export const useStyles = createStyles((theme) => ({
-    header: {
-        border: 0,
-        [theme.fn.smallerThan('xs')]: {
-           padding: '0 10px'
-        }
+export const useStyles = createStyles(theme => ({
+  active: {
+    color: '#5E96FC',
+  },
+  button: {
+    '&:hover': {
+      color: 'red',
     },
-    text: {
-      fontSize: '15px',
-        [theme.fn.smallerThan('xs')]: {
-            display: 'none'
-        }
-    },
-    container: {
-        display: 'flex',
-        alignItems: 'center',
-        width: '100%',
-        maxWidth: rem(1116),
-        height: rem(84),
-        margin: `0px auto`,
-        padding: 0,
-        border: 0,
-        justifyContent: 'space-between',
-        [theme.fn.smallerThan('lg')]: {
-            maxWidth: rem(950),
-        },
-        [theme.fn.smallerThan('md')]: {
-            maxWidth: rem(700),
-        },
-        [theme.fn.smallerThan('sm')]: {
-            maxWidth: rem(500),
-            paddingLeft: rem(20)
-            //   justifyContent: 'space-between',
-        },
-        [theme.fn.smallerThan('xs')]: {
-            maxWidth: rem(400),
-            paddingLeft: rem(10)
-        },
-    },
+    cursor: 'pointer',
+    marginLeft: '20px',
+    maxWidth: '150px',
+  },
 
-    links: {
-        display: 'flex',
+  container: {
+    alignItems: 'center',
+    border: 0,
+    display: 'flex',
+    height: rem(84),
+    justifyContent: 'space-between',
+    margin: `0px auto`,
+    maxWidth: rem(1116),
+    padding: 0,
+    [theme.fn.smallerThan('lg')]: {
+      maxWidth: rem(950),
     },
-    home: {
-        display: 'flex',
-        textDecoration: 'none'
+    [theme.fn.smallerThan('md')]: {
+      maxWidth: rem(700),
     },
-    button: {
-        maxWidth: '150px',
-        cursor: "pointer",
-        marginLeft: '20px',
-        '&:hover': {
-            color: 'red'}
+    [theme.fn.smallerThan('sm')]: {
+      maxWidth: rem(500),
+      paddingLeft: rem(20),
+      //   justifyContent: 'space-between',
     },
+    [theme.fn.smallerThan('xs')]: {
+      maxWidth: rem(400),
+      paddingLeft: rem(10),
+    },
+    width: '100%',
+  },
+  header: {
+    border: 0,
+    [theme.fn.smallerThan('xs')]: {
+      padding: '0 10px',
+    },
+  },
+  home: {
+    display: 'flex',
+    textDecoration: 'none',
+  },
+  link: {
+    '&:hover': {
+      backgroundColor: 'transparent',
+    },
+    '&:last-child': {
+      marginRight: 0,
+    },
+    color: '#232134',
+    display: 'flex',
+    fontSize: rem(16),
+    fontWeight: 500,
+    lineHeight: rem(20),
 
-    linkHeader: {
-        marginLeft: rem(12),
-        color: '#232134',
-        fontWeight: 600,
-        fontSize: rem(24),
-        fontStyle: 'normal',
+    marginRight: rem(56),
+    textDecoration: 'none',
+    [theme.fn.smallerThan('sm')]: {
+      marginRight: rem(20),
+    },
+  },
+  linkActive: {
+    '&, &:hover': {
+      color: '#5E96FC',
+    },
+  },
+  linkHeader: {
+    color: '#232134',
+    fontSize: rem(24),
+    fontStyle: 'normal',
+    fontWeight: 600,
+    marginLeft: rem(12),
 
-        [theme.fn.smallerThan('xs')]: {
-            display: 'none'
-        }
+    [theme.fn.smallerThan('xs')]: {
+      display: 'none',
     },
-    link: {
-        marginRight: rem(56),
-        display: 'flex',
-        textDecoration: 'none',
-        color: '#232134',
-        fontSize: rem(16),
-        fontWeight: 500,
-        lineHeight: rem(20),
-
-        '&:last-child': {
-            marginRight: 0
-        },
-        '&:hover':
-            {
-                backgroundColor: "transparent",
-            },
-        [theme.fn.smallerThan('sm')]: {
-            marginRight: rem(20)
-        }
+  },
+  links: {
+    display: 'flex',
+  },
+  text: {
+    fontSize: '15px',
+    [theme.fn.smallerThan('xs')]: {
+      display: 'none',
     },
-    active: {
-        color: '#5E96FC'
-    },
-    linkActive: {
-        '&, &:hover':
-            {
-                color: '#5E96FC'
-            },
-    },
-}));
+  },
+}))

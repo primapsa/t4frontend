@@ -1,16 +1,16 @@
 export const TICKETS = {
-    COUNT: {
-        MIN: 1,
-        MAX: 1000
-    },
-    PRICE: {
-        MIN: 1,
-        MAX: 1000000
-    }
+  COUNT: {
+    MAX: 1000,
+    MIN: 1,
+  },
+  PRICE: {
+    MAX: 1000000,
+    MIN: 1,
+  },
 }
 export const PROMOCODES = {
-    DISCOUNT: {
-        MIN: 0,
-        MAX: 99
-    }
+  DISCOUNT: {
+    MAX: 99,
+    MIN: 0,
+  },
 }

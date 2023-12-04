@@ -1,22 +1,23 @@
-import React from "react";
-import {Notification} from "@mantine/core";
-import {useStyles} from "./style";
+import React from 'react'
 
-const Notice = ({color, callback, message}: NoticePropsType) => {
+import { Notification } from '@mantine/core'
 
-    const {classes} = useStyles()
+import { useStyles } from './style'
 
-    return (
-        <Notification color={color} classNames={{root: classes.root}} onClose={callback}>
-            {message}
-        </Notification>
-    )
+const Notice = ({ callback, color, message }: NoticePropsType) => {
+  const { classes } = useStyles()
+
+  return (
+    <Notification classNames={{ root: classes.root }} color={color} onClose={callback}>
+      {message}
+    </Notification>
+  )
 }
 
 export default React.memo(Notice)
 
 type NoticePropsType = {
-    color: string
-    message: string
-    callback: () => void
+  callback: () => void
+  color: string
+  message: string
 }

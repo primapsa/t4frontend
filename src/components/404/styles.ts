@@ -1,39 +1,39 @@
-import {createStyles, rem} from "@mantine/core";
+import { createStyles, rem } from '@mantine/core'
 
-export const useStyles = createStyles((theme) => ({
-    root: {
-        paddingTop: rem(80),
-        paddingBottom: rem(80),
+export const useStyles = createStyles(theme => ({
+  description: {
+    margin: 'auto',
+    marginBottom: `calc(${theme.spacing.xl} * 1.5)`,
+    marginTop: theme.spacing.xl,
+    maxWidth: rem(500),
+  },
+
+  label: {
+    color: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2],
+    fontSize: rem(220),
+    fontWeight: 900,
+    lineHeight: 1,
+    marginBottom: `calc(${theme.spacing.xl} * 1.5)`,
+    textAlign: 'center',
+
+    [theme.fn.smallerThan('sm')]: {
+      fontSize: rem(120),
     },
+  },
 
-    label: {
-        textAlign: 'center',
-        fontWeight: 900,
-        fontSize: rem(220),
-        lineHeight: 1,
-        marginBottom: `calc(${theme.spacing.xl} * 1.5)`,
-        color: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2],
+  root: {
+    paddingBottom: rem(80),
+    paddingTop: rem(80),
+  },
 
-        [theme.fn.smallerThan('sm')]: {
-            fontSize: rem(120),
-        },
+  title: {
+    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+    fontSize: rem(38),
+    fontWeight: 900,
+    textAlign: 'center',
+
+    [theme.fn.smallerThan('sm')]: {
+      fontSize: rem(32),
     },
-
-    title: {
-        fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-        textAlign: 'center',
-        fontWeight: 900,
-        fontSize: rem(38),
-
-        [theme.fn.smallerThan('sm')]: {
-            fontSize: rem(32),
-        },
-    },
-
-    description: {
-        maxWidth: rem(500),
-        margin: 'auto',
-        marginTop: theme.spacing.xl,
-        marginBottom: `calc(${theme.spacing.xl} * 1.5)`,
-    },
-}));
+  },
+}))

@@ -1,5 +1,5 @@
 export const PAGE = {
-    "NUMBER": 1,
-    "ITEM_PER_PAGE": 8,
-    "TOTAL": 0
+  ITEM_PER_PAGE: 8,
+  NUMBER: 1,
+  TOTAL: 0,
 }
