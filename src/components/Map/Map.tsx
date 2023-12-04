@@ -1,41 +1,43 @@
-import React, {useMemo} from 'react';
-import {GoogleMap, MarkerF, useLoadScript} from "@react-google-maps/api";
-import {Flex, Loader} from '@mantine/core';
+import React, { useMemo } from 'react'
 
-const Map = ({coordinates}: MapPropsType) => {
+import { Flex, Loader } from '@mantine/core'
+import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api'
 
-    const {isLoaded} = useLoadScript({
-        googleMapsApiKey: 'AIzaSyDPif_2RLdimRxXRC3LwWxgnpwiK1Y-5Vc'
-    });
+const Map = ({ coordinates }: MapPropsType) => {
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
+  })
 
-    const center = useMemo(() => coordinates[0], [coordinates])
-    const places = useMemo(() =>
-        coordinates.map((p, i) =>
-            <MarkerF position={p} key={i} title={p.title}/>), [coordinates])
+  const center = useMemo(() => coordinates[0], [coordinates])
+  const places = useMemo(
+    () => coordinates.map((p, i) => <MarkerF key={i} position={p} title={p.title} />),
+    [coordinates]
+  )
 
-    return (
-        <Flex align={'center'} h={'300px'} w={'100%'} justify={'center'} m={'30px 0'}>
-            {isLoaded ?
-                <GoogleMap
-                    mapContainerClassName="map-container"
-                    mapContainerStyle={{width: '100%', height: '100%'}}
-                    center={center}
-                    zoom={10}>
-                    {places}
-                </GoogleMap>
-                :
-                <Loader/>
-            }
-        </Flex>
-    );
-};
+  return (
+    <Flex align={'center'} h={'300px'} justify={'center'} m={'30px 0'} w={'100%'}>
+      {isLoaded ? (
+        <GoogleMap
+          center={center}
+          mapContainerClassName={'map-container'}
+          mapContainerStyle={{ height: '100%', width: '100%' }}
+          zoom={10}
+        >
+          {places}
+        </GoogleMap>
+      ) : (
+        <Loader />
+      )}
+    </Flex>
+  )
+}
+
 export default React.memo(Map)
 
-
 type MapPropsType = {
-    coordinates: Array<{
-        lat: number
-        lng: number
-        title: string
-    }>
+  coordinates: Array<{
+    lat: number
+    lng: number
+    title: string
+  }>
 }
