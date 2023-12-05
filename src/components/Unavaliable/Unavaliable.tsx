@@ -18,7 +18,7 @@ const Unavaliable = ({ children }: UnavalibalePropsType) => {
           <Flex className={classes.root}>
             <div className={classes.label}>Unavaliable</div>
             <Title className={classes.title}>Something went wrong.</Title>
-            <Text align={'center'} className={classes.description} color={'dimmed'} size={'lg'}>
+            <Text className={classes.description}>
               Unfortunately,the server is unavailable. Please, try later
             </Text>
           </Flex>
