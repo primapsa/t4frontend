@@ -6,8 +6,8 @@ import ReactDOM from 'react-dom/client'
 
 import './index.css'
 
-import App from './App'
-import { appTheme } from './appTheme'
+import App from './features/App/App'
+import { appTheme } from './features/App/appTheme'
 import { store } from './redux/store'
 import reportWebVitals from './reportWebVitals'
 

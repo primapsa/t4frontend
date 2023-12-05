@@ -5,18 +5,18 @@ import { Container } from '@mantine/core'
 
 import './App.css'
 
-import { NotFound } from './components/404/NotFound'
-import Alert from './components/Alert/Alert'
-import Auth from './components/Auth/Auth'
-import Concert from './components/Concert/Concert'
-import { Login } from './components/Login/Login'
-import PrivateRoute from './components/PrivateRoute/PrivateRoute'
-import ProtectedRote from './components/ProtectedRoute/ProtectedRote'
-import Unavaliable from './components/Unavaliable/Unavaliable'
-import MainPage from './features/Admin/Concerts/Concerts'
-import Promocodes from './features/Admin/Promocodes/Promocodes'
-import CartPage from './features/User/CartPage/CartPage'
-import Tickets from './features/User/Tickets/Tickets'
+import { NotFound } from '../../components/404/NotFound'
+import Alert from '../../components/Alert/Alert'
+import Auth from '../../components/Auth/Auth'
+import Concert from '../../components/Concert/Concert'
+import { Login } from '../../components/Login/Login'
+import PrivateRoute from '../../components/PrivateRoute/PrivateRoute'
+import ProtectedRote from '../../components/ProtectedRoute/ProtectedRote'
+import Unavaliable from '../../components/Unavaliable/Unavaliable'
+import MainPage from '../Admin/Concerts/Concerts'
+import Promocodes from '../Admin/Promocodes/Promocodes'
+import CartPage from '../User/CartPage/CartPage'
+import Tickets from '../User/Tickets/Tickets'
 
 function App() {
   return (
@@ -24,7 +24,7 @@ function App() {
       <Unavaliable>
         <Alert />
         <BrowserRouter>
-          <Container maw={'100%'} p={'0px'} w={'100%'}>
+          <Container className={'container'}>
             <Routes>
               <Route element={<PrivateRoute />} path={'/'}>
                 <Route element={<Tickets />} index />
@@ -39,6 +39,7 @@ function App() {
                 <Route element={<Promocodes />} path={`promocodes`} />
               </Route>
               <Route element={<Login />} path={'login'} />
+              <Route element={<NotFound />} path={'test'} />
               <Route element={<NotFound />} path={'*'} />
             </Routes>
           </Container>

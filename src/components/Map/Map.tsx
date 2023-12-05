@@ -3,11 +3,14 @@ import React, { useMemo } from 'react'
 import { Flex, Loader } from '@mantine/core'
 import { GoogleMap, MarkerF, useLoadScript } from '@react-google-maps/api'
 
+import { MAP } from '../../const/settings'
+import { useStyles } from './style'
+
 const Map = ({ coordinates }: MapPropsType) => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY as string,
   })
-
+  const { classes } = useStyles()
   const center = useMemo(() => coordinates[0], [coordinates])
   const places = useMemo(
     () => coordinates.map((p, i) => <MarkerF key={i} position={p} title={p.title} />),
@@ -15,14 +18,9 @@ const Map = ({ coordinates }: MapPropsType) => {
   )
 
   return (
-    <Flex align={'center'} h={'300px'} justify={'center'} m={'30px 0'} w={'100%'}>
+    <Flex className={classes.wrapper}>
       {isLoaded ? (
-        <GoogleMap
-          center={center}
-          mapContainerClassName={'map-container'}
-          mapContainerStyle={{ height: '100%', width: '100%' }}
-          zoom={10}
-        >
+        <GoogleMap center={center} mapContainerClassName={classes.mapContainer} zoom={MAP.ZOOM}>
           {places}
         </GoogleMap>
       ) : (

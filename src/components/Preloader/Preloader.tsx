@@ -2,21 +2,15 @@ import React from 'react'
 
 import { Flex, Loader } from '@mantine/core'
 
+import { useStyles } from './style'
+
 const PreloaderExt = ({ isLoaded = true }: PleloaderType) => {
+  const { classes } = useStyles()
+
   return (
     <>
       {isLoaded && (
-        <Flex
-          style={{
-            alignItems: 'center',
-            height: '100vh',
-            justifyContent: 'center',
-            position: 'absolute',
-            top: '0',
-            width: '100vw',
-            zIndex: '10',
-          }}
-        >
+        <Flex className={classes.preloader}>
           <Loader variant={'dots'} />
         </Flex>
       )}

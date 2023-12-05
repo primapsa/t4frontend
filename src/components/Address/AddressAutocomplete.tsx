@@ -94,7 +94,7 @@ const Modal = React.memo(({ address = [], isHidden, onAddress }: ModalPropsType)
     <>
       {isDisplayed ? (
         <Flex className={classes.dropdown}>
-          <ScrollArea.Autosize mah={250}>{list}</ScrollArea.Autosize>
+          <ScrollArea.Autosize className={classes.scroll}>{list}</ScrollArea.Autosize>
         </Flex>
       ) : null}
     </>

@@ -1,6 +1,10 @@
 import { createStyles } from '@mantine/core'
 
 export const useStyles = createStyles(theme => ({
+  box: {
+    margin: '0 auto',
+    maxWidth: '300px',
+  },
   promocode: {
     padding: '10px',
     [theme.fn.smallerThan('500')]: {

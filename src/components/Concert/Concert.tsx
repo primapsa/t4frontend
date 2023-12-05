@@ -14,6 +14,7 @@ import { GoogleMap, MarkerF } from '@react-google-maps/api'
 import { IconClockHour3, IconMapPinFilled, IconWallet } from '@tabler/icons-react'
 
 import { MEDIA } from '../../const/media'
+import { MAP } from '../../const/settings'
 import { useSingleConcert } from '../../hooks/useSingleConcert'
 import EmptyStateWithLoader from '../Empty/EmptyStateWithLoader'
 import Preloader from '../Preloader/Preloader'
@@ -80,9 +81,8 @@ const Concert = () => {
               {isLoaded ? (
                 <GoogleMap
                   center={place}
-                  mapContainerClassName={'map-container'}
-                  mapContainerStyle={{ height: '100%', width: '100%' }}
-                  zoom={10}
+                  mapContainerClassName={classes.mapContainer}
+                  zoom={MAP.ZOOM}
                 >
                   <MarkerF position={place} />
                 </GoogleMap>

@@ -38,6 +38,10 @@ export const useStyles = createStyles(theme => ({
     marginTop: '20px',
     width: '100%',
   },
+  mapContainer: {
+    height: '100%',
+    width: '100%',
+  },
   optional: {
     flexDirection: 'column',
     margin: '20px 0',
@@ -71,10 +75,10 @@ export const useStyles = createStyles(theme => ({
       margin: '20px 0',
     },
   },
+
   text: {
     fontWeight: 'bolder',
   },
-
   title: {
     fontSize: '36px',
     fontWeight: 'bold',

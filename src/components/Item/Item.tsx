@@ -8,18 +8,23 @@ import { useStyles } from './styles'
 
 const Item = (props: ItemPropsType) => {
   const { classes } = useStyles()
+  const innerClasses = {
+    image: classes.image,
+    imageWrapper: classes.imgWrapper,
+  }
 
   return (
     <Paper className={classes.paper}>
       <Flex>
-        <Image
-          alt={'poster'}
-          className={classes.image}
-          height={100}
-          src={`${MEDIA.URL}${props.poster}`}
-          width={100}
-          withPlaceholder
-        />
+        <div className={classes.imgWrapper}>
+          <Image
+            alt={'poster'}
+            classNames={innerClasses}
+            src={`${MEDIA.URL}${props.poster}`}
+            withPlaceholder
+          />
+        </div>
+
         <Flex className={classes.concert}>
           <Text className={classes.concert__title}>{props.title}</Text>
           <Flex className={classes.concert__info}>

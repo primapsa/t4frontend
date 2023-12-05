@@ -2,28 +2,37 @@ import React from 'react'
 
 import { ActionIcon, Group, Text } from '@mantine/core'
 
+import { GROUP, ICONS, TICKETS } from '../../const/settings'
+import { useStyles } from './style'
+
 const NumberedCounter = ({ limit, onDecrement, onIncrement, value }: NumberedCounterType) => {
+  const { classes } = useStyles()
   const incrementHandler = () => {
     if (value < limit) {
-      onIncrement(value + 1)
+      onIncrement(++value)
     }
   }
   const decrementHandler = () => {
-    if (value > 1) {
-      onDecrement(value - 1)
+    if (value) {
+      onDecrement(--value)
     }
   }
 
   return (
-    <Group spacing={5}>
-      <ActionIcon disabled={value === 1} onClick={decrementHandler} size={30} variant={'default'}>
+    <Group spacing={GROUP.SPACING5}>
+      <ActionIcon
+        disabled={value === TICKETS.COUNT.MIN}
+        onClick={decrementHandler}
+        size={ICONS.COUNTER}
+        variant={'default'}
+      >
         –
       </ActionIcon>
-      <Text p={'0 10px'}>{value}</Text>
+      <Text className={classes.counterText}>{value}</Text>
       <ActionIcon
         disabled={value === limit}
         onClick={incrementHandler}
-        size={30}
+        size={ICONS.COUNTER}
         variant={'default'}
       >
         +

@@ -5,18 +5,20 @@ import { DateTimePicker } from '@mantine/dates'
 import { IconCalendarTime } from '@tabler/icons-react'
 
 import { PromocodesType } from '../../api/api'
-import { PROMOCODES } from '../../const/settings'
+import { ICONS, PROMOCODES } from '../../const/settings'
 import { usePromocodeForm } from '../../hooks/usePromocodeForm'
+import { useStyles } from './style'
 
 const PromocodeForm = ({ initValues, onClose }: PromocodeItemTypeForm) => {
   const { buttonDisable, buttonName, currentDate, form, formHandler } = usePromocodeForm({
     initValues,
     onClose,
   })
+  const { classes } = useStyles()
 
   return (
     <form onSubmit={formHandler}>
-      <Box maw={300} mx={'auto'}>
+      <Box className={classes.box}>
         <TextInput label={'Промокод'} placeholder={'Введите'} {...form.getInputProps('title')} />
         <NumberInput
           label={'Скидка (в %)'}
@@ -28,7 +30,7 @@ const PromocodeForm = ({ initValues, onClose }: PromocodeItemTypeForm) => {
         <DateTimePicker
           clearable
           dropdownType={'modal'}
-          icon={<IconCalendarTime size={rem(16)} />}
+          icon={<IconCalendarTime size={rem(ICONS.SIZE)} />}
           label={'Дата и время'}
           locale={'ru'}
           minDate={currentDate}

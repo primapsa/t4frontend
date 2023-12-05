@@ -4,7 +4,7 @@ import { Box, Button, FileInput, Flex, NumberInput, Select, TextInput, rem } fro
 import { DateTimePicker } from '@mantine/dates'
 import { IconCalendarTime, IconPhotoPlus } from '@tabler/icons-react'
 
-import { TICKETS } from '../../const/settings'
+import { ICONS, TICKETS } from '../../const/settings'
 import { STATUS } from '../../const/statuses'
 import { useConcertForm } from '../../hooks/useConcertForm'
 import AddressAutocomplete from '../Address/AddressAutocomplete'
@@ -37,7 +37,7 @@ const ConcertsForm = ({ init, onClose }: InitialValuesType) => {
             />
             <DateTimePicker
               clearable
-              icon={<IconCalendarTime size={rem(16)} />}
+              icon={<IconCalendarTime size={rem(ICONS.SIZE)} />}
               label={'Дата и время'}
               minDate={currentDate}
               placeholder={'Выберите'}
@@ -75,7 +75,7 @@ const ConcertsForm = ({ init, onClose }: InitialValuesType) => {
           <Box className={classes.box}>
             <FileInput
               accept={'image/png,image/jpeg'}
-              icon={<IconPhotoPlus size={rem(16)} />}
+              icon={<IconPhotoPlus size={rem(ICONS.SIZE)} />}
               label={'Постер концерта'}
               placeholder={'Добавить'}
               {...form.getInputProps('poster')}
@@ -139,7 +139,6 @@ const ConcertsForm = ({ init, onClose }: InitialValuesType) => {
         </Flex>
         <TextEditor form={form} name={'desc'} />
         <Flex className={classes.submit}>
-          {/*<Button type="submit" disabled={!form.isValid()}>Добавить</Button>*/}
           <Button disabled={status === STATUS.LOADING} type={'submit'}>
             Добавить
           </Button>

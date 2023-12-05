@@ -2,10 +2,12 @@ import React from 'react'
 
 import { Pagination as Paginate } from '@mantine/core'
 
+import { PAGE } from '../../const/page'
+
 const Pagination = ({ onChange, page, total }: PaginationPropsType) => {
   return (
     <>
-      {total > 1 && (
+      {total > PAGE.PAGINATION && (
         <Paginate onChange={onChange} position={'center'} total={total} value={page}></Paginate>
       )}
     </>

@@ -2,10 +2,8 @@ import React from 'react'
 
 import { Button, Center, Flex, Modal } from '@mantine/core'
 
-import ActionBar from '../../../components/ActionBar/ActionBar'
 import EmptyStateWithLoader from '../../../components/Empty/EmptyStateWithLoader'
 import Pagination from '../../../components/Pagination/Pagination'
-import Promocode from '../../../components/Promocode/Promocode'
 import PromocodeForm from '../../../components/Promocode/PromocodeForm'
 import { STATUS } from '../../../const/statuses'
 import { usePromocodes } from '../../../hooks/usePromocodes'

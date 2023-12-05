@@ -2,23 +2,24 @@ import React from 'react'
 
 import { Modal } from '@mantine/core'
 
+import { MODAL } from '../../const/settings'
 import { useAlert } from '../../hooks/useAlert'
 import { useStyles } from './style'
 
 const Alert = () => {
   const { isShown, notifications, onPopupClose, popup } = useAlert()
-  const { style } = useStyles()
+  const { classes } = useStyles()
 
   return (
     <>
-      {isShown && <div style={style}>{notifications}</div>}
+      {isShown && <div className={classes.alert}>{notifications}</div>}
       <Modal
         centered
         onClose={onPopupClose}
         opened={!!popup}
         title={popup?.title}
         withCloseButton
-        zIndex={10}
+        zIndex={MODAL.POSITION}
       >
         {popup?.message}
       </Modal>

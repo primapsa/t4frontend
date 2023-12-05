@@ -47,6 +47,9 @@ export const useStyles = createStyles(theme => ({
     marginTop: '10px',
     padding: '5px 12px',
   },
+  scroll: {
+    maxHeight: '250px',
+  },
   submit: {
     alignItems: 'center',
     justifyContent: 'right',

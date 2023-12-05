@@ -30,9 +30,15 @@ export const useStyles = createStyles(theme => ({
     fontWeight: 'bolder',
   },
   image: {
+    height: '100% !important',
     [theme.fn.smallerThan('678')]: {
       display: 'none',
     },
+    width: '100%',
+  },
+  imgWrapper: {
+    height: '100px',
+    width: '100px',
   },
   paper: {
     padding: '10px',

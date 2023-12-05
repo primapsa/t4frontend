@@ -8,6 +8,7 @@ export const useStyles = createStyles(theme => ({
   },
   control__price: {
     flexDirection: 'column',
+    marginLeft: '10px',
   },
   icon: {
     position: 'absolute',
@@ -15,6 +16,10 @@ export const useStyles = createStyles(theme => ({
     top: '5px',
   },
   img: {
+    height: '100% !important',
+    width: '100%',
+  },
+  imgWrapper: {
     height: '100px',
     width: '100px',
   },

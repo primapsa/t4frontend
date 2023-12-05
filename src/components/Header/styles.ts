@@ -41,6 +41,7 @@ export const useStyles = createStyles(theme => ({
   },
   header: {
     border: 0,
+
     [theme.fn.smallerThan('xs')]: {
       padding: '0 10px',
     },

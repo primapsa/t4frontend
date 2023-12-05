@@ -13,11 +13,17 @@ import { useStyles } from './styles'
 
 const CartItem = (props: CartItemPropsType) => {
   const { classes } = useStyles()
+  const innerClasses = {
+    image: classes.img,
+    imageWrapper: classes.imgWrapper,
+  }
 
   return (
     <Paper className={classes.paper}>
       <Flex className={classes.wrapper}>
-        <Image height={'100px'} src={`${MEDIA.URL}${props.poster}`} width={'100px'}></Image>
+        <div className={classes.imgWrapper}>
+          <Image classNames={innerClasses} src={`${MEDIA.URL}${props.poster}`}></Image>
+        </div>
         <Flex className={classes.info}>
           <Text className={classes.title}>{props.title}</Text>
           <Flex className={classes.control}>
