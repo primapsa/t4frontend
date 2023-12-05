@@ -18,7 +18,7 @@ const Map = ({ coordinates }: MapPropsType) => {
   )
 
   return (
-    <Flex className={classes.wrapper}>
+    <Flex className={classes.map}>
       {isLoaded ? (
         <GoogleMap center={center} mapContainerClassName={classes.mapContainer} zoom={MAP.ZOOM}>
           {places}
