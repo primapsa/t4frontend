@@ -1,4 +1,5 @@
 {
+  
   "name": "t4frontend",
   "version": "0.1.0",
   "private": true,
@@ -60,6 +61,9 @@
     "eject": "react-scripts eject",
     "lint": "eslint --fix src/**/*.{tsx,ts,jsx,js} --no-error-on-unmatched-pattern && stylelint --fix src/{,*/}*.{scss,css} --allow-empty-input"
   },
+  "engines": {
+  "node": ">=16.0.0"
+},
   "browserslist": {
     "production": [
       ">0.2%",
